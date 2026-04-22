@@ -1,0 +1,21 @@
+[area]
+id = "mi_area_kpi_texto"
+display_name = "Mi Area (KPI texto con Cantidad)"
+source_glob = "*.xlsx"
+sheet_name = "Form responses"
+date_column = "Periodo Evaluado"
+agent_columns = ["Perito - Nombre(s)", "Perito - Apellido Paterno", "Perito - Apellido Materno"]
+agent_output_column = "Agente/Titular"
+
+[[kpis]]
+name = "kpi_numerico_directo"
+source_column = "Visita domiciliaria"
+aggregation = "sum"
+value_parser = "numeric"
+
+[[kpis]]
+name = "kpi_texto_con_cantidad"
+source_column = "Estudios Realizados por Dictamen"
+aggregation = "sum"
+value_parser = "sum_cantidad"
+

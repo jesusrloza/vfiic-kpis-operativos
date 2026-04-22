@@ -1,0 +1,23 @@
+[area]
+id = "mi_area_agente_unico"
+display_name = "Mi Area (Agente en columna unica)"
+source_glob = "*.xlsx"
+sheet_name = "Form responses"
+date_column = "Periodo Evaluado"
+
+# Si ya existe una sola columna con el nombre completo:
+agent_column = "Agente/Titular"
+agent_output_column = "Agente/Titular"
+
+[[kpis]]
+name = "dictamenes"
+source_column = "Dictámenes Realizados"
+aggregation = "sum"
+value_parser = "numeric"
+
+[[kpis]]
+name = "informes"
+source_column = "Informes"
+aggregation = "sum"
+value_parser = "numeric"
+

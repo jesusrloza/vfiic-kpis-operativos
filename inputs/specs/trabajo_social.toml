@@ -1,0 +1,37 @@
+[area]
+id = "trabajo_social"
+display_name = "Trabajo Social"
+source_glob = "Ejemplo VFIIC KPIs Periciales - Trabajo Social.xlsx"
+sheet_name = "Form responses"
+date_column = "Periodo Evaluado"
+agent_columns = [
+  "Perito - Nombre(s)",
+  "Perito - Apellido Paterno",
+  "Perito - Apellido Materno",
+]
+agent_output_column = "Agente/Titular"
+
+[[kpis]]
+name = "dictamenes_trabajo_social"
+source_column = "Dictámenes Realizados"
+aggregation = "sum"
+value_parser = "numeric"
+
+[[kpis]]
+name = "peritajes_sociales"
+source_column = "Estudios Realizados por Dictamen"
+aggregation = "sum"
+value_parser = "sum_cantidad"
+
+[[kpis]]
+name = "informes_trabajo_social"
+source_column = "Informe de trabajo social"
+aggregation = "sum"
+value_parser = "numeric"
+
+[[kpis]]
+name = "visitas_domiciliarias"
+source_column = "Visita domiciliaria"
+aggregation = "sum"
+value_parser = "numeric"
+

@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# Archivos temporales de Excel
+~$*.xlsx
+
+# Salidas generadas
+outputs/**/*.xlsx
+
