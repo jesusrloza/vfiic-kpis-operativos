@@ -1,0 +1,67 @@
+# Tema del workbook comparativo (MoM / YoY).
+# Valores de color sin "#": RGB hex de 6 caracteres (openpyxl los antepone con FF).
+
+[header]
+fill = "1F4E79"
+font_color = "FFFFFF"
+bold = true
+
+[table]
+style = "TableStyleMedium2"
+show_row_stripes = true
+show_column_stripes = false
+
+[layout]
+freeze_panes = "A2"
+show_grid_lines = true
+
+[column_width]
+min = 12
+max = 48
+margin = 1.5
+
+# Porcentajes en datos: escala 0–100 (ver metrics._safe_percentage).
+[[column_formats]]
+match = "exact"
+pattern = "diferencia_porcentaje_mom"
+number_format = "0.00\"%\""
+align = "right"
+
+[[column_formats]]
+match = "exact"
+pattern = "diferencia_porcentaje_yoy"
+number_format = "0.00\"%\""
+align = "right"
+
+[[column_formats]]
+match = "prefix"
+pattern = "valor_"
+number_format = "0"
+align = "right"
+
+[[column_formats]]
+match = "prefix"
+pattern = "diferencia_numero"
+number_format = "0"
+align = "right"
+
+[[column_formats]]
+match = "exact"
+pattern = "indicador"
+number_format = "General"
+align = "left"
+
+[header_labels]
+area_id = "ID área"
+area_nombre = "Área"
+indicador = "Indicador"
+ultimo_mes = "Último mes"
+valor_ultimo_mes = "Valor último mes"
+mes_anterior = "Mes anterior"
+valor_mes_anterior = "Valor mes anterior"
+diferencia_numero_mom = "Diferencia (mes anterior)"
+diferencia_porcentaje_mom = "Variación % (mes anterior)"
+mes_anio_previo = "Mismo mes año anterior"
+valor_mes_anio_previo = "Valor mismo mes año anterior"
+diferencia_numero_yoy = "Diferencia (año anterior)"
+diferencia_porcentaje_yoy = "Variación % (año anterior)"

@@ -15,11 +15,22 @@ python scripts/build_partitioned_workbook.py
 python scripts/build_monthly_comparison.py
 ```
 
+Cada script acepta `--theme` con la ruta a un TOML de maquetación (por defecto `inputs/themes/excel_partitioned.toml` y `inputs/themes/excel_comparison.toml`). En una sola corrida, `run_all_reports.py` expone `--partitioned-theme` y `--comparison-theme`.
+
 Alternativa en una sola corrida:
 
 ```bash
 python scripts/run_all_reports.py
 ```
+
+## Temas de presentación Excel
+
+Los estilos (encabezado azul oscuro, tabla con bandas, formatos de porcentaje, anchos, filtros y congelado de paneles) viven en TOML versionables:
+
+- `inputs/themes/excel_partitioned.toml` — hojas `original` y mensuales del particionado.
+- `inputs/themes/excel_comparison.toml` — hoja `comparativo`.
+
+El código los carga con `excel_theme.load_excel_theme` y los aplica tras `pandas.to_excel` mediante `excel_styling.apply_sheet_theme`, sin cambiar los nombres de columnas en los `DataFrame` de negocio.
 
 ## Flujo general
 
@@ -49,7 +60,11 @@ flowchart TD
   - Calcula comparativo MoM y YoY por KPI.
   - Soporta parseo `numeric` y `sum_cantidad`.
 - `src/vfiic_kpis/excel_export.py`
-  - Escribe salidas en formato XLSX.
+  - Escribe salidas en formato XLSX y dispara la maquetación por tema.
+- `src/vfiic_kpis/excel_theme.py`
+  - Parsea TOML de tema (colores, estilo de tabla, reglas de formato y etiquetas de encabezado).
+- `src/vfiic_kpis/excel_styling.py`
+  - Post-proceso openpyxl: etiquetas legibles, formatos numéricos, tabla de Excel, autofiltro y anchos.
 
 ## Contrato del spec TOML
 

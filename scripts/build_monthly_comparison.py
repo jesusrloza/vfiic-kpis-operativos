@@ -14,6 +14,7 @@ from vfiic_kpis.io import read_all_inputs
 from vfiic_kpis.metrics import build_monthly_comparison
 from vfiic_kpis.paths import (
     DEFAULT_COMPARISON_OUTPUT,
+    DEFAULT_COMPARISON_THEME,
     DEFAULT_INPUT_DIR,
     DEFAULT_SPECS_DIR,
 )
@@ -31,6 +32,12 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=DEFAULT_COMPARISON_OUTPUT,
     )
+    parser.add_argument(
+        "--theme",
+        type=Path,
+        default=DEFAULT_COMPARISON_THEME,
+        help="TOML de tema para maquetación del comparativo.",
+    )
     return parser
 
 
@@ -45,7 +52,7 @@ def main() -> None:
     if comparison.empty:
         raise SystemExit("No fue posible calcular filas de comparativo.")
 
-    write_comparison_workbook(comparison=comparison, output_path=args.output)
+    write_comparison_workbook(comparison=comparison, output_path=args.output, theme_path=args.theme)
     print(f"Comparativo generado: {args.output}")
 
 

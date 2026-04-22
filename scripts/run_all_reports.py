@@ -14,8 +14,10 @@ from vfiic_kpis.io import read_all_inputs
 from vfiic_kpis.metrics import build_monthly_comparison
 from vfiic_kpis.paths import (
     DEFAULT_COMPARISON_OUTPUT,
+    DEFAULT_COMPARISON_THEME,
     DEFAULT_INPUT_DIR,
     DEFAULT_PARTITIONED_OUTPUT,
+    DEFAULT_PARTITIONED_THEME,
     DEFAULT_SPECS_DIR,
 )
 from vfiic_kpis.spec_loader import load_all_specs
@@ -37,6 +39,18 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=DEFAULT_COMPARISON_OUTPUT,
     )
+    parser.add_argument(
+        "--partitioned-theme",
+        type=Path,
+        default=DEFAULT_PARTITIONED_THEME,
+        help="TOML de tema para el workbook particionado.",
+    )
+    parser.add_argument(
+        "--comparison-theme",
+        type=Path,
+        default=DEFAULT_COMPARISON_THEME,
+        help="TOML de tema para el comparativo.",
+    )
     return parser
 
 
@@ -47,14 +61,22 @@ def main() -> None:
     if data.empty:
         raise SystemExit("No se encontraron datos para generar reportes.")
 
-    write_partitioned_workbook(data=data, output_path=args.partitioned_output)
+    write_partitioned_workbook(
+        data=data,
+        output_path=args.partitioned_output,
+        theme_path=args.partitioned_theme,
+    )
     print(f"Reporte particionado generado: {args.partitioned_output}")
 
     comparison = build_monthly_comparison(data, specs=specs)
     if comparison.empty:
         raise SystemExit("No fue posible calcular filas de comparativo.")
 
-    write_comparison_workbook(comparison=comparison, output_path=args.comparison_output)
+    write_comparison_workbook(
+        comparison=comparison,
+        output_path=args.comparison_output,
+        theme_path=args.comparison_theme,
+    )
     print(f"Comparativo generado: {args.comparison_output}")
 
 

@@ -1,0 +1,80 @@
+# Tema del workbook particionado (original + hojas por mes).
+
+[header]
+fill = "1F4E79"
+font_color = "FFFFFF"
+bold = true
+
+[table]
+style = "TableStyleMedium2"
+show_row_stripes = true
+show_column_stripes = false
+
+[layout]
+freeze_panes = "A2"
+show_grid_lines = true
+
+[column_width]
+min = 10
+max = 45
+margin = 1.5
+
+[[column_formats]]
+match = "exact"
+pattern = "periodo_dt"
+number_format = "dd/mm/yyyy"
+align = "center"
+
+[[column_formats]]
+match = "exact"
+pattern = "periodo_mes_label"
+number_format = "General"
+align = "left"
+
+[[column_formats]]
+match = "exact"
+pattern = "area_id"
+number_format = "General"
+align = "left"
+
+[[column_formats]]
+match = "exact"
+pattern = "area_nombre"
+number_format = "General"
+align = "left"
+
+[[column_formats]]
+match = "exact"
+pattern = "source_file"
+number_format = "General"
+align = "left"
+
+# Evita notación científica en IDs / teléfonos largos (ajusta nombres si tu fuente usa otros).
+[[column_formats]]
+match = "suffix"
+pattern = "_id"
+number_format = "@"
+align = "left"
+coerce_large_number_to_text = true
+
+[[column_formats]]
+match = "suffix"
+pattern = "Phone"
+number_format = "@"
+align = "left"
+coerce_large_number_to_text = true
+
+[[column_formats]]
+match = "suffix"
+pattern = "phone"
+number_format = "@"
+align = "left"
+coerce_large_number_to_text = true
+
+[header_labels]
+periodo_dt = "Periodo (fecha)"
+periodo_mes_key = "Clave mes"
+periodo_mes_label = "Periodo (etiqueta)"
+area_id = "ID área"
+area_nombre = "Área"
+source_file = "Archivo origen"

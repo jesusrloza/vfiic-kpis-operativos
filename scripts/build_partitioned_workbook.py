@@ -14,6 +14,7 @@ from vfiic_kpis.io import read_all_inputs
 from vfiic_kpis.paths import (
     DEFAULT_INPUT_DIR,
     DEFAULT_PARTITIONED_OUTPUT,
+    DEFAULT_PARTITIONED_THEME,
     DEFAULT_SPECS_DIR,
 )
 from vfiic_kpis.spec_loader import load_all_specs
@@ -30,6 +31,12 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         default=DEFAULT_PARTITIONED_OUTPUT,
     )
+    parser.add_argument(
+        "--theme",
+        type=Path,
+        default=DEFAULT_PARTITIONED_THEME,
+        help="TOML de tema para maquetación del Excel particionado.",
+    )
     return parser
 
 
@@ -40,7 +47,7 @@ def main() -> None:
     if data.empty:
         raise SystemExit("No se encontraron datos para generar el reporte particionado.")
 
-    write_partitioned_workbook(data=data, output_path=args.output)
+    write_partitioned_workbook(data=data, output_path=args.output, theme_path=args.theme)
     print(f"Reporte generado: {args.output}")
 
 
