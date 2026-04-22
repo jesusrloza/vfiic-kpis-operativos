@@ -6,6 +6,21 @@ Procesar insumos heterogeneos por area y producir dos artefactos ejecutivos:
 1. Workbook particionado por periodo mensual.
 2. Workbook comparativo de variacion mensual y anual.
 
+## Ejecucion recomendada
+
+Comandos cortos desde la raiz del proyecto:
+
+```bash
+python scripts/build_partitioned_workbook.py
+python scripts/build_monthly_comparison.py
+```
+
+Alternativa en una sola corrida:
+
+```bash
+python scripts/run_all_reports.py
+```
+
 ## Flujo general
 
 ```mermaid

@@ -44,6 +44,21 @@ Plantillas incluidas para acelerar altas de nuevas areas:
 
 Sugerencia: copiar una plantilla y renombrarla como `nombre_area.toml`, luego ajustar columnas/KPIs.
 
+## Uso rapido (recomendado)
+
+Desde la raiz del proyecto:
+
+```bash
+python scripts/build_partitioned_workbook.py
+python scripts/build_monthly_comparison.py
+```
+
+Opcional: ejecutar ambos reportes con un solo comando:
+
+```bash
+python scripts/run_all_reports.py
+```
+
 ## Script 1: workbook particionado por mes
 
 Genera un solo Excel con:
@@ -52,10 +67,7 @@ Genera un solo Excel con:
 - orden alfabetico ascendente por `Agente/Titular` con normalizacion de acentos/mayusculas.
 
 ```bash
-python scripts/build_partitioned_workbook.py \
-  --input-dir data \
-  --specs-dir inputs/specs \
-  --output outputs/particionados/particionado_kpis.xlsx
+python scripts/build_partitioned_workbook.py
 ```
 
 ## Script 2: comparativo mensual
@@ -65,10 +77,35 @@ Genera un Excel con tabla comparativa por KPI:
 - opcionalmente ultimo mes vs mismo mes del ano previo (si existe).
 
 ```bash
+python scripts/build_monthly_comparison.py
+```
+
+## Uso avanzado (sobrescribir rutas)
+
+Si necesitas otra carpeta de entrada o otro archivo de salida:
+
+```bash
+python scripts/build_partitioned_workbook.py \
+  --input-dir data \
+  --specs-dir inputs/specs \
+  --output outputs/particionados/particionado_kpis.xlsx
+```
+
+```bash
 python scripts/build_monthly_comparison.py \
   --input-dir data \
   --specs-dir inputs/specs \
   --output outputs/comparativos/comparativo_kpis.xlsx
+```
+
+Para el comando unificado:
+
+```bash
+python scripts/run_all_reports.py \
+  --input-dir data \
+  --specs-dir inputs/specs \
+  --partitioned-output outputs/particionados/particionado_kpis.xlsx \
+  --comparison-output outputs/comparativos/comparativo_kpis.xlsx
 ```
 
 ## Extender a nuevas areas
