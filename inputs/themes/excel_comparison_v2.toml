@@ -50,6 +50,6 @@ align = "left"
 
 [header_labels]
 indicador = "Indicador"
-diferencia = "Cambio"
-porcentaje = "Cambio porcentual"
+diferencia = "Diferencia (mes anterior)"
+porcentaje = "Variación % (mes anterior)"
 tendencia = "Tendencia"
