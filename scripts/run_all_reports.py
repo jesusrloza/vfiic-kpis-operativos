@@ -11,14 +11,11 @@ if str(SRC_DIR) not in sys.path:
 
 from vfiic_kpis.excel_export import (
     write_comparison_v2_workbook,
-    write_comparison_workbook,
     write_partitioned_workbook,
 )
 from vfiic_kpis.io import read_all_inputs
-from vfiic_kpis.metrics import build_monthly_comparison, build_monthly_comparison_v2
+from vfiic_kpis.metrics import build_monthly_comparison_v2
 from vfiic_kpis.paths import (
-    DEFAULT_COMPARISON_OUTPUT,
-    DEFAULT_COMPARISON_THEME,
     DEFAULT_COMPARISON_V2_OUTPUT,
     DEFAULT_COMPARISON_V2_THEME,
     DEFAULT_INPUT_DIR,
@@ -43,7 +40,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--comparison-output",
         type=Path,
-        default=DEFAULT_COMPARISON_OUTPUT,
+        default=DEFAULT_COMPARISON_V2_OUTPUT,
     )
     parser.add_argument(
         "--partitioned-theme",
@@ -54,24 +51,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--comparison-theme",
         type=Path,
-        default=DEFAULT_COMPARISON_THEME,
-        help="TOML de tema para el comparativo.",
-    )
-    parser.add_argument(
-        "--with-comparison-v2",
-        action="store_true",
-        help="Si se activa, genera tambien el comparativo V2.",
-    )
-    parser.add_argument(
-        "--comparison-v2-output",
-        type=Path,
-        default=DEFAULT_COMPARISON_V2_OUTPUT,
-    )
-    parser.add_argument(
-        "--comparison-v2-theme",
-        type=Path,
         default=DEFAULT_COMPARISON_V2_THEME,
-        help="TOML de tema para el comparativo V2.",
+        help="TOML de tema para el comparativo (v2).",
     )
     return parser
 
@@ -90,27 +71,16 @@ def main() -> None:
     )
     print(f"Reporte particionado generado: {args.partitioned_output}")
 
-    comparison = build_monthly_comparison(data, specs=specs)
+    comparison = build_monthly_comparison_v2(data, specs=specs)
     if comparison.empty:
-        raise SystemExit("No fue posible calcular filas de comparativo.")
+        raise SystemExit("No fue posible calcular filas de comparativo v2.")
 
-    write_comparison_workbook(
+    write_comparison_v2_workbook(
         comparison=comparison,
         output_path=args.comparison_output,
         theme_path=args.comparison_theme,
     )
-    print(f"Comparativo generado: {args.comparison_output}")
-
-    if args.with_comparison_v2:
-        comparison_v2 = build_monthly_comparison_v2(data, specs=specs)
-        if comparison_v2.empty:
-            raise SystemExit("No fue posible calcular filas de comparativo V2.")
-        write_comparison_v2_workbook(
-            comparison=comparison_v2,
-            output_path=args.comparison_v2_output,
-            theme_path=args.comparison_v2_theme,
-        )
-        print(f"Comparativo V2 generado: {args.comparison_v2_output}")
+    print(f"Comparativo V2 generado: {args.comparison_output}")
 
 
 if __name__ == "__main__":
