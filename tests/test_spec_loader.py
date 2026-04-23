@@ -40,6 +40,59 @@ value_parser = "numeric"
         finally:
             path.unlink(missing_ok=True)
 
+    def test_rejects_duplicate_kpi_names(self) -> None:
+        body = """
+[area]
+id = "x"
+display_name = "X"
+source_glob = "*.xlsx"
+sheet_name = "Form responses"
+date_column = "Periodo Evaluado"
+agent_column = "Agente/Titular"
+agent_output_column = "Agente/Titular"
+
+[[kpis]]
+name = "k1"
+source_column = "Col 1"
+
+[[kpis]]
+name = "k1"
+source_column = "Col 2"
+"""
+        with tempfile.NamedTemporaryFile("w", suffix=".toml", delete=False, encoding="utf-8") as handle:
+            handle.write(body)
+            path = Path(handle.name)
+        try:
+            with self.assertRaises(ValueError):
+                load_area_spec(path)
+        finally:
+            path.unlink(missing_ok=True)
+
+    def test_rejects_invalid_aggregation(self) -> None:
+        body = """
+[area]
+id = "x"
+display_name = "X"
+source_glob = "*.xlsx"
+sheet_name = "Form responses"
+date_column = "Periodo Evaluado"
+agent_column = "Agente/Titular"
+agent_output_column = "Agente/Titular"
+
+[[kpis]]
+name = "k1"
+source_column = "Col 1"
+aggregation = "median"
+"""
+        with tempfile.NamedTemporaryFile("w", suffix=".toml", delete=False, encoding="utf-8") as handle:
+            handle.write(body)
+            path = Path(handle.name)
+        try:
+            with self.assertRaises(ValueError):
+                load_area_spec(path)
+        finally:
+            path.unlink(missing_ok=True)
+
 
 if __name__ == "__main__":
     unittest.main()

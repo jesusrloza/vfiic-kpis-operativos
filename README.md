@@ -6,6 +6,7 @@ Proyecto Python para procesar insumos de KPIs por area (Jotform/Google Sheets ex
 
 - `inputs/raw/`: archivos fuente de entrada.
 - `inputs/specs/`: archivo `*.toml` por area/formato.
+- `inputs/themes/`: temas TOML por tipo de reporte de salida.
 - `scripts/`: puntos de entrada CLI.
 - `src/vfiic_kpis/`: modulos compartidos de lectura, normalizacion, metricas y exportacion.
 - `outputs/particionados/`: Excel con hoja original + hojas por mes.
@@ -37,6 +38,7 @@ Ejemplo inicial: `inputs/specs/trabajo_social.toml`, donde se define:
 - columna de fecha (`YYYY-MM-DD` esperado en negocio; se soporta valor tipo fecha Excel),
 - columnas para componer `Agente/Titular`,
 - KPIs a reportar y su parser (`numeric` o `sum_cantidad`).
+- agregación por KPI (`sum`, `count`, `avg`).
 
 Plantillas incluidas para acelerar altas de nuevas areas:
 - `inputs/specs/_template_area_base.toml`
@@ -53,6 +55,15 @@ Desde la raiz del proyecto:
 python scripts/build_partitioned_workbook.py
 python scripts/build_monthly_comparison.py
 python scripts/build_monthly_comparison_v2.py
+```
+
+Alternativa vía entry points del paquete:
+
+```bash
+vfiic-partitioned
+vfiic-comparison
+vfiic-comparison-v2
+vfiic-run-all
 ```
 
 Opcional: ejecutar ambos reportes con un solo comando:
@@ -118,9 +129,7 @@ python scripts/run_all_reports.py \
   --input-dir data \
   --specs-dir inputs/specs \
   --partitioned-output outputs/particionados/particionado_kpis.xlsx \
-  --comparison-output outputs/comparativos/comparativo_kpis.xlsx \
-  --with-comparison-v2 \
-  --comparison-v2-output outputs/comparativos/comparativo_v2_kpis.xlsx
+  --comparison-output outputs/comparativos/comparativo_v2_kpis.xlsx
 ```
 
 ## Extender a nuevas areas
@@ -129,7 +138,8 @@ python scripts/run_all_reports.py \
 2. Crear un nuevo spec TOML en `inputs/specs/`.
 3. Definir mapeo de fecha, agente y KPIs.
 4. En cada KPI, opcionalmente definir `change_direction = "up_is_good"` o `change_direction = "down_is_good"` para semaforo del comparativo v2.
-5. Ejecutar scripts requeridos (v1 y/o v2).
+5. Definir `aggregation = "sum" | "count" | "avg"` según cada KPI.
+6. Ejecutar scripts requeridos (v1 y/o v2).
 
 ## Nota sobre carpeta de entrada
 

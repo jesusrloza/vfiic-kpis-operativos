@@ -51,10 +51,10 @@ def _safe_percentage(delta: float | None, baseline: float | None) -> float | Non
     return (delta / baseline) * 100.0
 
 
-def _parse_numeric_like(value: object, parser: str) -> float:
+def _parse_numeric_like(value: object, parser: str) -> float | None:
     if parser == "numeric":
         parsed = pd.to_numeric(pd.Series([value]), errors="coerce").iloc[0]
-        return 0.0 if pd.isna(parsed) else float(parsed)
+        return None if pd.isna(parsed) else float(parsed)
 
     if parser == "sum_cantidad":
         text = "" if value is None else str(value)
@@ -64,10 +64,15 @@ def _parse_numeric_like(value: object, parser: str) -> float:
     raise ValueError(f"value_parser no soportado: {parser}")
 
 
-def _sum_for_month(df: pd.DataFrame, month_dt: datetime, kpi: KpiSpec) -> float:
+def _aggregate_for_month(df: pd.DataFrame, month_dt: datetime, kpi: KpiSpec) -> float:
     mask = (df["periodo_dt"].dt.year == month_dt.year) & (df["periodo_dt"].dt.month == month_dt.month)
     series = df.loc[mask, kpi.source_column]
-    return float(series.map(lambda x: _parse_numeric_like(x, kpi.value_parser)).sum())
+    parsed_values = [value for value in series.map(lambda x: _parse_numeric_like(x, kpi.value_parser)).tolist() if value is not None]
+    if kpi.aggregation == "count":
+        return float(len(parsed_values))
+    if kpi.aggregation == "avg":
+        return float(sum(parsed_values) / len(parsed_values)) if parsed_values else 0.0
+    return float(sum(parsed_values))
 
 
 def _trend_kind(delta: float | None, change_direction: str) -> str:
@@ -98,9 +103,9 @@ def build_monthly_comparison(df: pd.DataFrame, specs: list[AreaSpec]) -> pd.Data
         has_yoy = ((area_df["periodo_dt"].dt.year == yoy_dt.year) & (area_df["periodo_dt"].dt.month == yoy_dt.month)).any()
 
         for kpi in spec.kpis:
-            last_value = _sum_for_month(area_df, last_dt, kpi)
-            prev_value = _sum_for_month(area_df, prev_dt, kpi) if has_prev else None
-            yoy_value = _sum_for_month(area_df, yoy_dt, kpi) if has_yoy else None
+            last_value = _aggregate_for_month(area_df, last_dt, kpi)
+            prev_value = _aggregate_for_month(area_df, prev_dt, kpi) if has_prev else None
+            yoy_value = _aggregate_for_month(area_df, yoy_dt, kpi) if has_yoy else None
 
             diff_mom = None if prev_value is None else last_value - prev_value
             diff_yoy = None if yoy_value is None else last_value - yoy_value
@@ -143,8 +148,8 @@ def build_monthly_comparison_v2(df: pd.DataFrame, specs: list[AreaSpec]) -> pd.D
         has_prev = ((area_df["periodo_dt"].dt.year == prev_dt.year) & (area_df["periodo_dt"].dt.month == prev_dt.month)).any()
 
         for kpi in spec.kpis:
-            last_value = _sum_for_month(area_df, last_dt, kpi)
-            prev_value = _sum_for_month(area_df, prev_dt, kpi) if has_prev else None
+            last_value = _aggregate_for_month(area_df, last_dt, kpi)
+            prev_value = _aggregate_for_month(area_df, prev_dt, kpi) if has_prev else None
             diff = None if prev_value is None else last_value - prev_value
             pct = _safe_percentage(diff, prev_value)
             trend = _trend_kind(diff, kpi.change_direction)

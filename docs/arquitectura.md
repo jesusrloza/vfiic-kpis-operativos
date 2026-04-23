@@ -17,7 +17,7 @@ python scripts/build_monthly_comparison.py
 python scripts/build_monthly_comparison_v2.py
 ```
 
-Cada script acepta `--theme` con la ruta a un TOML de maquetación (por defecto `inputs/themes/excel_partitioned.toml`, `inputs/themes/excel_comparison.toml` y `inputs/themes/excel_comparison_v2.toml`). En una sola corrida, `run_all_reports.py` expone `--partitioned-theme`, `--comparison-theme` y flags opcionales de v2.
+Cada script acepta `--theme` con la ruta a un TOML de maquetación (por defecto `inputs/themes/excel_partitioned.toml`, `inputs/themes/excel_comparison.toml` y `inputs/themes/excel_comparison_v2.toml`). En una sola corrida, `run_all_reports.py` expone `--partitioned-theme` y `--comparison-theme`.
 
 Alternativa en una sola corrida:
 
@@ -95,12 +95,13 @@ change_direction = "up_is_good"
 
 ## Reglas de negocio implementadas
 
-- Periodo de entrada: base esperada `YYYY-MM-DD`; se acepta datetime de Excel.
+- Periodo de entrada: se acepta `datetime`, `Timestamp`, serial de Excel y texto parseable por `pandas.to_datetime` (incluye `YYYY-MM-DD`).
 - Particionado mensual: por clave `YYYY_mon` en espanol abreviado (`ene`, `feb`, `mar`, ...).
 - Orden de agentes: ascendente usando normalizacion de acentos y mayusculas.
 - Comparativo:
   - Siempre intenta ultimo mes vs mes anterior.
   - Solo agrega YoY cuando existe mismo mes del ano previo.
+- Agregación por KPI (`aggregation`): `sum`, `count` o `avg`.
 
 ## Diagrama de decision para comparativo
 

@@ -45,6 +45,39 @@ class TestMetricsV2(unittest.TestCase):
         self.assertEqual(trend_by_kpi["kpi_up_good"], "positive")
         self.assertEqual(trend_by_kpi["kpi_up_bad"], "negative")
 
+    def test_aggregation_modes(self) -> None:
+        data = pd.DataFrame(
+            [
+                {"area_id": "a1", "periodo_dt": pd.Timestamp("2026-03-01"), "metric": 2},
+                {"area_id": "a1", "periodo_dt": pd.Timestamp("2026-03-01"), "metric": 4},
+                {"area_id": "a1", "periodo_dt": pd.Timestamp("2026-04-01"), "metric": 1},
+                {"area_id": "a1", "periodo_dt": pd.Timestamp("2026-04-01"), "metric": 3},
+                {"area_id": "a1", "periodo_dt": pd.Timestamp("2026-04-01"), "metric": 5},
+            ]
+        )
+        specs = [
+            AreaSpec(
+                area_id="a1",
+                display_name="Area 1",
+                source_glob="*.xlsx",
+                sheet_name="Form responses",
+                date_column="Periodo Evaluado",
+                agent_columns=("Agente/Titular",),
+                agent_output_column="Agente/Titular",
+                kpis=(
+                    KpiSpec(name="kpi_sum", source_column="metric", aggregation="sum"),
+                    KpiSpec(name="kpi_count", source_column="metric", aggregation="count"),
+                    KpiSpec(name="kpi_avg", source_column="metric", aggregation="avg"),
+                ),
+            )
+        ]
+
+        result = build_monthly_comparison_v2(data, specs)
+        by_kpi = {row["indicador"]: row for _, row in result.iterrows()}
+        self.assertEqual(by_kpi["kpi_sum"]["valor_actual"], 9.0)
+        self.assertEqual(by_kpi["kpi_count"]["valor_actual"], 3.0)
+        self.assertEqual(by_kpi["kpi_avg"]["valor_actual"], 3.0)
+
 
 if __name__ == "__main__":
     unittest.main()

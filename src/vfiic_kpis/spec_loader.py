@@ -6,13 +6,14 @@ from typing import Literal
 import tomllib
 
 ChangeDirection = Literal["up_is_good", "down_is_good"]
+AggregationKind = Literal["sum", "count", "avg"]
 
 
 @dataclass(frozen=True)
 class KpiSpec:
     name: str
     source_column: str
-    aggregation: str = "sum"
+    aggregation: AggregationKind = "sum"
     value_parser: str = "numeric"
     change_direction: ChangeDirection = "up_is_good"
 
@@ -49,7 +50,15 @@ def load_area_spec(spec_path: Path) -> AreaSpec:
         for item in kpis_raw
     )
 
+    seen_names: set[str] = set()
     for kpi in kpis:
+        if kpi.name in seen_names:
+            raise ValueError(f"KPI duplicado en {spec_path}: {kpi.name!r}")
+        seen_names.add(kpi.name)
+        if kpi.aggregation not in ("sum", "count", "avg"):
+            raise ValueError(
+                f"aggregation invalido en {spec_path} para KPI {kpi.name}: {kpi.aggregation!r}"
+            )
         if kpi.change_direction not in ("up_is_good", "down_is_good"):
             raise ValueError(
                 f"change_direction invalido en {spec_path} para KPI {kpi.name}: {kpi.change_direction!r}"

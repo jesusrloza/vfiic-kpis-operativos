@@ -37,10 +37,19 @@ SPANISH_MONTH_FULL = {
 
 
 def parse_iso_date(value: object) -> datetime:
+    if isinstance(value, pd.Timestamp):
+        return value.to_pydatetime()
     if isinstance(value, datetime):
         return value
+    if isinstance(value, (int, float)) and not pd.isna(value):
+        # Excel serial date (epoch 1899-12-30, compatible with pandas).
+        return (pd.Timestamp("1899-12-30") + pd.to_timedelta(float(value), unit="D")).to_pydatetime()
     text = str(value).strip()
-    return datetime.strptime(text, "%Y-%m-%d")
+    parsed = pd.to_datetime(text, errors="coerce")
+    if pd.isna(parsed):
+        raise ValueError(f"Fecha invalida: {value!r}")
+    assert isinstance(parsed, pd.Timestamp)
+    return parsed.to_pydatetime()
 
 
 def month_key(dt: datetime) -> str:

@@ -17,6 +17,7 @@ agent_output_column = "Agente/Titular"
 name = "kpi_1"
 source_column = "Columna KPI 1"
 aggregation = "sum"
+# opciones: sum | count | avg
 value_parser = "numeric"
 change_direction = "up_is_good" # opciones: up_is_good | down_is_good
 
@@ -24,6 +25,7 @@ change_direction = "up_is_good" # opciones: up_is_good | down_is_good
 name = "kpi_2"
 source_column = "Columna KPI 2"
 aggregation = "sum"
+# opciones: sum | count | avg
 value_parser = "numeric"
 change_direction = "up_is_good" # opciones: up_is_good | down_is_good
 
