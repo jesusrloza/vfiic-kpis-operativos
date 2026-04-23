@@ -18,6 +18,9 @@ from vfiic_kpis.excel_theme import (
     header_fill_argb,
     header_font_argb,
     resolve_header_label,
+    semantic_color_argb,
+    title_fill_argb,
+    title_font_argb,
 )
 
 
@@ -98,14 +101,14 @@ def _apply_body_formats(
                     cell.alignment = Alignment(horizontal="left", vertical="center")
 
 
-def _paint_header_row(ws: Worksheet, theme: ExcelTheme, columns: list[str]) -> None:
+def _paint_header_row(ws: Worksheet, theme: ExcelTheme, columns: list[str], row_idx: int = 1) -> None:
     fill = PatternFill(fill_type="solid", fgColor=header_fill_argb(theme))
     font = Font(
         bold=theme.header.bold,
         color=header_font_argb(theme),
     )
     for col_idx, internal in enumerate(columns, start=1):
-        cell = ws.cell(row=1, column=col_idx)
+        cell = ws.cell(row=row_idx, column=col_idx)
         cell.value = resolve_header_label(internal, theme)
         cell.fill = fill
         cell.font = font
@@ -133,13 +136,13 @@ def _set_column_widths(ws: Worksheet, theme: ExcelTheme) -> None:
         ws.column_dimensions[letter].width = width
 
 
-def _apply_table(ws: Worksheet, workbook: Workbook, theme: ExcelTheme) -> None:
+def _apply_table(ws: Worksheet, workbook: Workbook, theme: ExcelTheme, header_row: int = 1) -> None:
     max_row = ws.max_row or 0
     max_col = ws.max_column or 0
-    if max_row < 2 or max_col < 1:
+    if max_row < header_row + 1 or max_col < 1:
         return
 
-    ref = f"A1:{get_column_letter(max_col)}{max_row}"
+    ref = f"A{header_row}:{get_column_letter(max_col)}{max_row}"
     display = _allocate_table_display_name(workbook, ws.title or "Tabla")
     table = Table(displayName=display, ref=ref)
     table.tableStyleInfo = TableStyleInfo(
@@ -188,3 +191,84 @@ def apply_sheet_theme(
 
     _apply_table(ws, workbook, theme)
     _paint_header_row(ws, theme, columns)
+
+
+def _apply_area_title_row(ws: Worksheet, title: str, theme: ExcelTheme, max_col: int) -> None:
+    if max_col < 1:
+        return
+    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=max_col)
+    cell = ws.cell(row=1, column=1)
+    cell.value = title
+    cell.fill = PatternFill(fill_type="solid", fgColor=title_fill_argb(theme))
+    cell.font = Font(
+        bold=theme.title.bold,
+        color=title_font_argb(theme),
+        size=12,
+    )
+    cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    ws.row_dimensions[1].height = 24
+
+
+def _paint_semantic_cells(
+    ws: Worksheet,
+    internal_columns: list[str],
+    theme: ExcelTheme,
+    data_row_start: int,
+) -> None:
+    max_row = ws.max_row or 0
+    if max_row < data_row_start:
+        return
+
+    tendencia_idx = None
+    difference_targets: set[int] = set()
+    for idx, internal in enumerate(internal_columns, start=1):
+        if internal == "tendencia":
+            tendencia_idx = idx
+        if internal in ("diferencia", "porcentaje"):
+            difference_targets.add(idx)
+
+    if tendencia_idx is None or not difference_targets:
+        return
+
+    for row_idx in range(data_row_start, max_row + 1):
+        trend_raw = ws.cell(row=row_idx, column=tendencia_idx).value
+        trend = "neutral" if trend_raw is None else str(trend_raw)
+        color = semantic_color_argb(theme, trend)
+        for col_idx in difference_targets:
+            cell = ws.cell(row=row_idx, column=col_idx)
+            cell.font = Font(
+                name=cell.font.name,
+                size=cell.font.size,
+                bold=cell.font.bold,
+                italic=cell.font.italic,
+                underline=cell.font.underline,
+                strike=cell.font.strike,
+                color=color,
+            )
+
+
+def apply_comparison_v2_sheet_theme(
+    ws: Worksheet,
+    workbook: Workbook,
+    internal_columns: list[str],
+    theme: ExcelTheme,
+    area_title: str,
+) -> None:
+    """Aplica maquetación V2 con título de área y color semántico por tendencia."""
+    if not internal_columns:
+        return
+    max_col_ws = ws.max_column or 0
+    if max_col_ws < 1:
+        return
+
+    columns = list(internal_columns)[:max_col_ws]
+    _apply_area_title_row(ws, area_title, theme, max_col_ws)
+    _paint_header_row(ws, theme, columns, row_idx=2)
+    _apply_body_formats(ws, columns, theme, data_row_start=3)
+    _paint_semantic_cells(ws, columns, theme, data_row_start=3)
+    _set_column_widths(ws, theme)
+
+    ws.sheet_view.showGridLines = theme.layout.show_grid_lines
+    ws.freeze_panes = "A3"
+    _apply_table(ws, workbook, theme, header_row=2)
+    _paint_header_row(ws, theme, columns, row_idx=2)

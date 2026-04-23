@@ -6,7 +6,7 @@ import re
 
 import pandas as pd
 
-from vfiic_kpis.normalize import month_label
+from vfiic_kpis.normalize import month_label, month_label_full
 from vfiic_kpis.spec_loader import AreaSpec, KpiSpec
 
 
@@ -25,6 +25,24 @@ class ComparisonResult:
     valor_mes_anio_previo: float | None
     diferencia_numero_yoy: float | None
     diferencia_porcentaje_yoy: float | None
+
+
+@dataclass(frozen=True)
+class ComparisonV2Result:
+    area_id: str
+    area_nombre: str
+    indicador: str
+    indicador_label: str
+    direccion_cambio: str
+    mes_actual: str
+    mes_actual_full: str
+    valor_actual: float
+    mes_base: str | None
+    mes_base_full: str | None
+    valor_base: float | None
+    diferencia: float | None
+    porcentaje: float | None
+    tendencia: str
 
 
 def _safe_percentage(delta: float | None, baseline: float | None) -> float | None:
@@ -50,6 +68,16 @@ def _sum_for_month(df: pd.DataFrame, month_dt: datetime, kpi: KpiSpec) -> float:
     mask = (df["periodo_dt"].dt.year == month_dt.year) & (df["periodo_dt"].dt.month == month_dt.month)
     series = df.loc[mask, kpi.source_column]
     return float(series.map(lambda x: _parse_numeric_like(x, kpi.value_parser)).sum())
+
+
+def _trend_kind(delta: float | None, change_direction: str) -> str:
+    if delta is None:
+        return "na"
+    if delta == 0:
+        return "neutral"
+    if change_direction == "up_is_good":
+        return "positive" if delta > 0 else "negative"
+    return "negative" if delta > 0 else "positive"
 
 
 def build_monthly_comparison(df: pd.DataFrame, specs: list[AreaSpec]) -> pd.DataFrame:
@@ -92,6 +120,51 @@ def build_monthly_comparison(df: pd.DataFrame, specs: list[AreaSpec]) -> pd.Data
                     valor_mes_anio_previo=yoy_value,
                     diferencia_numero_yoy=diff_yoy,
                     diferencia_porcentaje_yoy=_safe_percentage(diff_yoy, yoy_value),
+                )
+            )
+
+    return pd.DataFrame([result.__dict__ for result in results])
+
+
+def build_monthly_comparison_v2(df: pd.DataFrame, specs: list[AreaSpec]) -> pd.DataFrame:
+    """Comparativo V2 orientado a presentación por área con semáforo de tendencia."""
+    if df.empty:
+        return pd.DataFrame()
+
+    results: list[ComparisonV2Result] = []
+    for spec in specs:
+        area_df = df[df["area_id"] == spec.area_id].copy()
+        if area_df.empty:
+            continue
+
+        last_dt = area_df["periodo_dt"].max().to_pydatetime()
+        prev_dt = datetime(last_dt.year - 1, 12, 1) if last_dt.month == 1 else datetime(last_dt.year, last_dt.month - 1, 1)
+
+        has_prev = ((area_df["periodo_dt"].dt.year == prev_dt.year) & (area_df["periodo_dt"].dt.month == prev_dt.month)).any()
+
+        for kpi in spec.kpis:
+            last_value = _sum_for_month(area_df, last_dt, kpi)
+            prev_value = _sum_for_month(area_df, prev_dt, kpi) if has_prev else None
+            diff = None if prev_value is None else last_value - prev_value
+            pct = _safe_percentage(diff, prev_value)
+            trend = _trend_kind(diff, kpi.change_direction)
+
+            results.append(
+                ComparisonV2Result(
+                    area_id=spec.area_id,
+                    area_nombre=spec.display_name,
+                    indicador=kpi.name,
+                    indicador_label=kpi.source_column,
+                    direccion_cambio=kpi.change_direction,
+                    mes_actual=month_label(last_dt),
+                    mes_actual_full=month_label_full(last_dt),
+                    valor_actual=last_value,
+                    mes_base=month_label(prev_dt) if has_prev else None,
+                    mes_base_full=month_label_full(prev_dt) if has_prev else None,
+                    valor_base=prev_value,
+                    diferencia=diff,
+                    porcentaje=pct,
+                    tendencia=trend,
                 )
             )
 

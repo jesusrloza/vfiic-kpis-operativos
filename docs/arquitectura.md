@@ -5,6 +5,7 @@
 Procesar insumos heterogeneos por area y producir dos artefactos ejecutivos:
 1. Workbook particionado por periodo mensual.
 2. Workbook comparativo de variacion mensual y anual.
+3. Workbook comparativo v2 con presentacion por area y semaforo semantico.
 
 ## Ejecucion recomendada
 
@@ -13,9 +14,10 @@ Comandos cortos desde la raiz del proyecto:
 ```bash
 python scripts/build_partitioned_workbook.py
 python scripts/build_monthly_comparison.py
+python scripts/build_monthly_comparison_v2.py
 ```
 
-Cada script acepta `--theme` con la ruta a un TOML de maquetación (por defecto `inputs/themes/excel_partitioned.toml` y `inputs/themes/excel_comparison.toml`). En una sola corrida, `run_all_reports.py` expone `--partitioned-theme` y `--comparison-theme`.
+Cada script acepta `--theme` con la ruta a un TOML de maquetación (por defecto `inputs/themes/excel_partitioned.toml`, `inputs/themes/excel_comparison.toml` y `inputs/themes/excel_comparison_v2.toml`). En una sola corrida, `run_all_reports.py` expone `--partitioned-theme`, `--comparison-theme` y flags opcionales de v2.
 
 Alternativa en una sola corrida:
 
@@ -41,8 +43,10 @@ flowchart TD
   reader --> normalize["normalize.py periodo y agente"]
   normalize --> partitioned["build_partitioned_workbook.py"]
   normalize --> comparison["build_monthly_comparison.py"]
+  normalize --> comparisonv2["build_monthly_comparison_v2.py"]
   partitioned --> outPart["outputs/particionados/*.xlsx"]
   comparison --> outComp["outputs/comparativos/*.xlsx"]
+  comparisonv2 --> outCompV2["outputs/comparativos/comparativo_v2_kpis.xlsx"]
 ```
 
 ## Modulos principales
@@ -59,6 +63,7 @@ flowchart TD
 - `src/vfiic_kpis/metrics.py`
   - Calcula comparativo MoM y YoY por KPI.
   - Soporta parseo `numeric` y `sum_cantidad`.
+  - Incluye builder v2 con tendencia semantica por KPI (`up_is_good` / `down_is_good`).
 - `src/vfiic_kpis/excel_export.py`
   - Escribe salidas en formato XLSX y dispara la maquetación por tema.
 - `src/vfiic_kpis/excel_theme.py`
@@ -83,7 +88,10 @@ name = "dictamenes_trabajo_social"
 source_column = "Dictámenes Realizados"
 aggregation = "sum"
 value_parser = "numeric"
+change_direction = "up_is_good"
 ```
+
+`change_direction` determina si subir es favorable (`up_is_good`) o desfavorable (`down_is_good`) para colorear diferencia y porcentaje en el comparativo v2.
 
 ## Reglas de negocio implementadas
 

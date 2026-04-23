@@ -14,10 +14,12 @@ name = "dictamenes"
 source_column = "Dictámenes Realizados"
 aggregation = "sum"
 value_parser = "numeric"
+change_direction = "up_is_good" # opciones: up_is_good | down_is_good
 
 [[kpis]]
 name = "informes"
 source_column = "Informes"
 aggregation = "sum"
 value_parser = "numeric"
+change_direction = "up_is_good" # opciones: up_is_good | down_is_good
 

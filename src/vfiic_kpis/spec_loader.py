@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Literal
 import tomllib
+
+ChangeDirection = Literal["up_is_good", "down_is_good"]
 
 
 @dataclass(frozen=True)
@@ -11,6 +14,7 @@ class KpiSpec:
     source_column: str
     aggregation: str = "sum"
     value_parser: str = "numeric"
+    change_direction: ChangeDirection = "up_is_good"
 
 
 @dataclass(frozen=True)
@@ -40,9 +44,16 @@ def load_area_spec(spec_path: Path) -> AreaSpec:
             source_column=item["source_column"],
             aggregation=item.get("aggregation", "sum"),
             value_parser=item.get("value_parser", "numeric"),
+            change_direction=item.get("change_direction", "up_is_good"),
         )
         for item in kpis_raw
     )
+
+    for kpi in kpis:
+        if kpi.change_direction not in ("up_is_good", "down_is_good"):
+            raise ValueError(
+                f"change_direction invalido en {spec_path} para KPI {kpi.name}: {kpi.change_direction!r}"
+            )
 
     return AreaSpec(
         area_id=area_raw["id"],

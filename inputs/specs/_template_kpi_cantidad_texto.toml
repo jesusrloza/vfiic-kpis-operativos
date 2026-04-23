@@ -12,10 +12,12 @@ name = "kpi_numerico_directo"
 source_column = "Visita domiciliaria"
 aggregation = "sum"
 value_parser = "numeric"
+change_direction = "up_is_good" # opciones: up_is_good | down_is_good
 
 [[kpis]]
 name = "kpi_texto_con_cantidad"
 source_column = "Estudios Realizados por Dictamen"
 aggregation = "sum"
 value_parser = "sum_cantidad"
+change_direction = "up_is_good" # opciones: up_is_good | down_is_good
 

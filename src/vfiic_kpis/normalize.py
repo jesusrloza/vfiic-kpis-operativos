@@ -20,6 +20,21 @@ SPANISH_MONTH_ABBR = {
     12: "dic",
 }
 
+SPANISH_MONTH_FULL = {
+    1: "Enero",
+    2: "Febrero",
+    3: "Marzo",
+    4: "Abril",
+    5: "Mayo",
+    6: "Junio",
+    7: "Julio",
+    8: "Agosto",
+    9: "Septiembre",
+    10: "Octubre",
+    11: "Noviembre",
+    12: "Diciembre",
+}
+
 
 def parse_iso_date(value: object) -> datetime:
     if isinstance(value, datetime):
@@ -34,6 +49,10 @@ def month_key(dt: datetime) -> str:
 
 def month_label(dt: datetime) -> str:
     return f"{SPANISH_MONTH_ABBR[dt.month]} {dt.year}"
+
+
+def month_label_full(dt: datetime) -> str:
+    return f"{SPANISH_MONTH_FULL[dt.month]} {dt.year}"
 
 
 def normalize_sort_text(value: object) -> str:

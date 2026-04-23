@@ -1,0 +1,55 @@
+# Tema del workbook comparativo V2.
+# Mantiene header azul oscuro con texto blanco en negritas.
+
+[header]
+fill = "1F4E79"
+font_color = "FFFFFF"
+bold = true
+
+[title]
+fill = "1F4E79"
+font_color = "FFFFFF"
+bold = true
+
+[semantic_colors]
+positive = "1F4E79"
+negative = "C00000"
+neutral = "000000"
+
+[table]
+style = "TableStyleMedium2"
+show_row_stripes = true
+show_column_stripes = false
+
+[layout]
+freeze_panes = "A3"
+show_grid_lines = true
+
+[column_width]
+min = 12
+max = 52
+margin = 2
+
+[[column_formats]]
+match = "exact"
+pattern = "diferencia"
+number_format = "0"
+align = "right"
+
+[[column_formats]]
+match = "exact"
+pattern = "porcentaje"
+number_format = "0.00\"%\""
+align = "right"
+
+[[column_formats]]
+match = "exact"
+pattern = "indicador"
+number_format = "General"
+align = "left"
+
+[header_labels]
+indicador = "Indicador"
+diferencia = "Cambio"
+porcentaje = "Cambio porcentual"
+tendencia = "Tendencia"

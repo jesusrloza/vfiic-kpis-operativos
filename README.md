@@ -10,6 +10,7 @@ Proyecto Python para procesar insumos de KPIs por area (Jotform/Google Sheets ex
 - `src/vfiic_kpis/`: modulos compartidos de lectura, normalizacion, metricas y exportacion.
 - `outputs/particionados/`: Excel con hoja original + hojas por mes.
 - `outputs/comparativos/`: Excel con comparativo mensual.
+- `outputs/comparativos/`: Excel con comparativo mensual (v1) y comparativo v2.
 - `logs/`: bitacoras de ejecucion.
 
 ## Requisitos
@@ -51,6 +52,7 @@ Desde la raiz del proyecto:
 ```bash
 python scripts/build_partitioned_workbook.py
 python scripts/build_monthly_comparison.py
+python scripts/build_monthly_comparison_v2.py
 ```
 
 Opcional: ejecutar ambos reportes con un solo comando:
@@ -80,6 +82,17 @@ Genera un Excel con tabla comparativa por KPI:
 python scripts/build_monthly_comparison.py
 ```
 
+## Script 3: comparativo mensual v2
+
+Genera un Excel alternativo por area con:
+- titulo de area por hoja,
+- tabla con mejor legibilidad para indicadores largos,
+- color semantico en `Diferencia` y `Porcentaje` segun `change_direction` del KPI.
+
+```bash
+python scripts/build_monthly_comparison_v2.py
+```
+
 ## Uso avanzado (sobrescribir rutas)
 
 Si necesitas otra carpeta de entrada o otro archivo de salida:
@@ -105,7 +118,9 @@ python scripts/run_all_reports.py \
   --input-dir data \
   --specs-dir inputs/specs \
   --partitioned-output outputs/particionados/particionado_kpis.xlsx \
-  --comparison-output outputs/comparativos/comparativo_kpis.xlsx
+  --comparison-output outputs/comparativos/comparativo_kpis.xlsx \
+  --with-comparison-v2 \
+  --comparison-v2-output outputs/comparativos/comparativo_v2_kpis.xlsx
 ```
 
 ## Extender a nuevas areas
@@ -113,7 +128,8 @@ python scripts/run_all_reports.py \
 1. Agregar archivo fuente a `inputs/raw/` (o usar otro directorio de entrada via CLI).
 2. Crear un nuevo spec TOML en `inputs/specs/`.
 3. Definir mapeo de fecha, agente y KPIs.
-4. Ejecutar ambos scripts.
+4. En cada KPI, opcionalmente definir `change_direction = "up_is_good"` o `change_direction = "down_is_good"` para semaforo del comparativo v2.
+5. Ejecutar scripts requeridos (v1 y/o v2).
 
 ## Nota sobre carpeta de entrada
 

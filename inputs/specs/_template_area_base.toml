@@ -18,10 +18,12 @@ name = "kpi_1"
 source_column = "Columna KPI 1"
 aggregation = "sum"
 value_parser = "numeric"
+change_direction = "up_is_good" # opciones: up_is_good | down_is_good
 
 [[kpis]]
 name = "kpi_2"
 source_column = "Columna KPI 2"
 aggregation = "sum"
 value_parser = "numeric"
+change_direction = "up_is_good" # opciones: up_is_good | down_is_good
 
