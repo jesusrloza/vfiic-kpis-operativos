@@ -9,3 +9,5 @@ __pycache__/
 # Salidas generadas
 outputs/**/*.xlsx
 
+inputs/raw/**/*.xls
+inputs/raw/**/*.xlsx
