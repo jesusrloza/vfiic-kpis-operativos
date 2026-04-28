@@ -1,0 +1,364 @@
+Agencia de Investigación Criminal:
+  VFIIC KPIs Agencia de Investigación Criminal - Análisis Criminal:
+    - columna: presentaciones_delitos
+      descripcion: Presentaciones por delitos y acciones diversas
+      tipo: numerico
+      ejemplo: 310
+    - columna: solicitudes_informacion
+      descripcion: Atenciones a solicitudes de información
+      tipo: numerico
+      ejemplo: 77
+    - columna: estructuras_delincuenciales
+      descripcion: Estructuras delincuenciales
+      tipo: numerico
+      ejemplo: 32
+    - columna: organigramas
+      descripcion: Organigramas
+      tipo: numerico
+      ejemplo: 94
+
+  VFIIC KPIs Agencia de Investigación Criminal - DIE:
+    - columna: dictamenes_datos
+      descripcion: Dictámenes/informes de análisis de datos conservados
+      tipo: numerico
+      ejemplo: 131
+    - columna: fichas_personas_vehiculos
+      descripcion: Fichas de personas o vehículos
+      tipo: numerico
+      ejemplo: 63
+    - columna: presentaciones
+      descripcion: Presentaciones por delitos y acciones diversas
+      tipo: numerico
+      ejemplo: 59
+    - columna: apoyos_otras_areas
+      descripcion: Apoyos a otras áreas/comisiones
+      tipo: numerico
+      ejemplo: 29
+
+  VFIIC KPIs Agencia de Investigación Criminal - Extinción de Dominio:
+    - columna: identificacion_bien_inmueble
+      descripcion: Identificación de bien inmueble
+      tipo: numerico
+      ejemplo: 1
+    - columna: analisis_patrimoniales
+      descripcion: Análisis patrimoniales
+      tipo: numerico
+      ejemplo: 10
+    - columna: carpetas_iniciadas
+      descripcion: Carpetas de investigación fueron iniciadas
+      tipo: numerico
+      ejemplo: 22
+    - columna: carpetas_judicializadas
+      descripcion: Carpetas de investigación fueron judicializadas
+      tipo: numerico
+      ejemplo: 3
+
+  VFIIC KPIs Agencia de Investigación Criminal - Medios Cibernéticos:
+    - columna: denuncias_recibidas
+      descripcion: Denuncias fueron recibidas
+      tipo: numerico
+      ejemplo: 173
+    - columna: solicitudes_investigacion
+      descripcion: Solicitudes de investigación fueron enviadas
+      tipo: numerico
+      ejemplo: 467
+    - columna: carpetas_asignadas
+      descripcion: Carpetas de investigación fueron asignadas al área
+      tipo: numerico
+      ejemplo: 235
+    - columna: platicas_preventivas
+      descripcion: Pláticas preventivas
+      tipo: numerico
+      ejemplo: 20
+
+  VFIIC KPIs Agencia de Investigación Criminal - Policía Cibernética:
+    - columna: oficios_atendidos
+      descripcion: Oficios fueron atendidos
+      tipo: numerico
+      ejemplo: 482
+    - columna: monitoreos_redes
+      descripcion: Monitoreos en redes sociales
+      tipo: numerico
+      ejemplo: 1850
+    - columna: sitios_web_analizados
+      descripcion: Sitios web fueron analizados
+      tipo: numerico
+      ejemplo: 28
+    - columna: ciberpatrullajes
+      descripcion: Ciberpatrullajes fueron realizados
+      tipo: numerico
+      ejemplo: 1650
+    - columna: apoyos_otras_areas
+      descripcion: Apoyos a otras áreas
+      tipo: numerico
+      ejemplo: 161
+
+Coordinación de Servicios Periciales:
+  VFIIC KPIs Periciales - Acústica y Fonética Forense:
+    - columna: dictamenes_identificacion_voz
+      descripcion: Dictámenes de identificación biométrica por voz
+      tipo: numerico
+      ejemplo: 39
+    - columna: muestras_voz_controlada
+      descripcion: Tomas de muestra de voz controlada
+      tipo: numerico
+      ejemplo: 28
+    - columna: dictamenes_textualizacion
+      descripcion: Dictámenes de textualizaciones
+      tipo: numerico
+      ejemplo: 27
+    - columna: muestras_voz_foranea
+      descripcion: Toma de muestra de voz foránea
+      tipo: numerico
+      ejemplo: 1
+
+  VFIIC KPIs Periciales - Evidencia Digital:
+    - columna: analisis_video
+      descripcion: Análisis de video
+      tipo: numerico
+      ejemplo: 17
+    - columna: extracciones_celulares
+      descripcion: Extracciones de información a celulares
+      tipo: numerico
+      ejemplo: 2
+    - columna: fijaciones_rostros
+      descripcion: Fijaciones y descripciones con rostros
+      tipo: numerico
+      ejemplo: 50
+    - columna: identificaciones_vehiculos
+      descripcion: Identificaciones de vehículos
+      tipo: numerico
+      ejemplo: 9
+
+  VFIIC KPIs Periciales - Arquitectura:
+    - columna: valuaciones_inmuebles
+      descripcion: Valuaciones de bienes inmuebles
+      tipo: numerico
+      ejemplo: 13
+    - columna: planimetrias
+      descripcion: Planimetrías
+      tipo: numerico
+      ejemplo: 12
+    - columna: levantamientos_topograficos
+      descripcion: Levantamientos topográficos
+      tipo: numerico
+      ejemplo: 10
+    - columna: inspecciones_inmuebles
+      descripcion: Inspecciones técnicas periciales a inmuebles
+      tipo: numerico
+      ejemplo: 8
+
+  VFIIC KPIs Periciales - Balística:
+    - columna: armas_fuego
+      descripcion: Identificaciones de arma de fuego
+      tipo: numerico
+      ejemplo: 3
+    - columna: cartuchos
+      descripcion: Identificaciones de cartuchos
+      tipo: numerico
+      ejemplo: 3
+    - columna: casquillos
+      descripcion: Identificaciones de casquillos
+      tipo: numerico
+      ejemplo: 5
+    - columna: proyectiles
+      descripcion: Identificaciones de proyectiles
+      tipo: numerico
+      ejemplo: 2
+
+  VFIIC KPIs Periciales - Contabilidad:
+    - columna: dano_patrimonial
+      descripcion: Diligencias contables para determinar daño patrimonial
+      tipo: numerico
+      ejemplo: 57
+    - columna: arqueos
+      descripcion: Arqueos contables de dinero a la vista
+      tipo: numerico
+      ejemplo: 4
+    - columna: pension_alimenticia
+      descripcion: Diligencias contables para determinar pensión alimenticia
+      tipo: numerico
+      ejemplo: 57
+
+  VFIIC KPIs Periciales - Forestales:
+    - columna: derribo_arbolado
+      descripcion: Cuantificaciones de derribo de arbolado
+      tipo: numerico
+      ejemplo: 14
+    - columna: cambio_uso_suelo
+      descripcion: Determinaciones de área afectada
+      tipo: numerico
+      ejemplo: 4
+    - columna: inspecciones_predios
+      descripcion: Inspecciones de predios forestales
+      tipo: numerico
+      ejemplo: 4
+
+  VFIIC KPIs Periciales - Grafoscopía:
+    - columna: dictamenes_grafoscopia
+      descripcion: Dictámenes de grafoscopía
+      tipo: numerico
+      ejemplo: 15
+    - columna: dictamenes_documentoscopia
+      descripcion: Dictámenes de documentoscopía
+      tipo: numerico
+      ejemplo: 6
+
+  VFIIC KPIs Periciales - Hechos de Tránsito:
+    - columna: inspecciones
+      descripcion: Inspecciones en hechos de tránsito
+      tipo: numerico
+      ejemplo: 29
+    - columna: dictamenes_causalidad
+      descripcion: Dictámenes de causalidad
+      tipo: numerico
+      ejemplo: 98
+
+  VFIIC KPIs Periciales - Identificación Vehicular:
+    - columna: identificaciones
+      descripcion: Identificaciones de vehículos
+      tipo: numerico
+      ejemplo: 407
+
+  VFIIC KPIs Periciales - Lofoscopía:
+    - columna: fichas_decadactilares
+      descripcion: Tomas de fichas decadactilares
+      tipo: numerico
+      ejemplo: 68
+    - columna: fichas_cadaveres
+      descripcion: Tomas a cadáveres
+      tipo: numerico
+      ejemplo: 21
+    - columna: recolecciones
+      descripcion: Recolección de material lofoscópico
+      tipo: numerico
+      ejemplo: 3
+    - columna: ingresos_afis
+      descripcion: Ingresos a AFIS
+      tipo: numerico
+      ejemplo: 180
+
+  VFIIC KPIs Periciales - Psicología:
+    - columna: dictamenes_psicologicos
+      descripcion: Dictámenes psicológicos
+      tipo: numerico
+      ejemplo: 1141
+    - columna: autopsias_psicologicas
+      descripcion: Autopsias psicológicas
+      tipo: numerico
+      ejemplo: 3
+    - columna: estado_mental
+      descripcion: Dictámenes de estado mental
+      tipo: numerico
+      ejemplo: 5
+    - columna: aptitud
+      descripcion: Estudios psicológicos de aptitud
+      tipo: numerico
+      ejemplo: 27
+
+  VFIIC KPIs Periciales - Medicina Forense:
+    - columna: certificados_lesiones
+      descripcion: Certificados definitivos de lesiones
+      tipo: numerico
+      ejemplo: 189
+    - columna: necropsias
+      descripcion: Dictámenes de necropsia
+      tipo: numerico
+      ejemplo: 317
+    - columna: integridad_corporal
+      descripcion: Dictámenes de integridad corporal
+      tipo: numerico
+      ejemplo: 828
+    - columna: certificados_defuncion
+      descripcion: Certificados médicos de defunción
+      tipo: numerico
+      ejemplo: 247
+    - columna: estudios_osteologicos
+      descripcion: Estudios osteológicos
+      tipo: numerico
+      ejemplo: 5
+
+Coordinación de Policía de Investigación:
+  VFIIC KPIs Coordinación General - KÉRI:
+    - columna: apoyos
+      descripcion: Apoyos
+      tipo: numerico
+      ejemplo: 55
+    - columna: apoyos_terrestres
+      descripcion: Apoyos terrestres
+      tipo: numerico
+      ejemplo: 54
+    - columna: apoyos_aereos
+      descripcion: Apoyo aéreo
+      tipo: numerico
+      ejemplo: 1
+
+  VFIIC KPIs Coordinación General - Unidad K9:
+    - columna: operativos
+      descripcion: Operativos
+      tipo: numerico
+      ejemplo: 37
+    - columna: positivos_enervantes
+      descripcion: Resultados positivos a enervantes
+      tipo: numerico
+      ejemplo: 9
+    - columna: positivos_restos_humanos
+      descripcion: Resultados positivos a restos humanos
+      tipo: numerico
+      ejemplo: 4
+
+  VFIIC KPIs Coordinación General - Mandamientos:
+    - columna: aprehensiones
+      descripcion: Aprehensiones
+      tipo: numerico
+      ejemplo: 93
+    - columna: comparecencias
+      descripcion: Comparecencias
+      tipo: numerico
+      ejemplo: 35
+    - columna: reaprehensiones
+      descripcion: Reaprehensiones
+      tipo: numerico
+      ejemplo: 2
+
+Dirección de Control y Registro de Bienes Asegurados:
+  VFIIC KPIs - Bienes Asegurados:
+    - columna: registros_inmuebles
+      descripcion: Registros de bienes inmuebles
+      tipo: numerico
+      ejemplo: 3
+    - columna: ordenes_destruccion
+      descripcion: Órdenes de destrucción
+      tipo: numerico
+      ejemplo: 1
+    - columna: cambios_resguardo
+      descripcion: Cambios de resguardo
+      tipo: numerico
+      ejemplo: 1
+    - columna: devoluciones
+      descripcion: Bienes devueltos
+      tipo: numerico
+      ejemplo: 2
+    - columna: verificaciones
+      descripcion: Verificaciones físicas
+      tipo: numerico
+      ejemplo: 26
+
+Dirección de Trámites y Servicios:
+  VFIIC KPIs - Dirección de Trámites y Servicios:
+    - columna: documentos_alterados
+      descripcion: Casos con documentos alterados
+      tipo: numerico
+      ejemplo: 4
+    - columna: alteracion_identificacion
+      descripcion: Alteración en medios de identificación
+      tipo: numerico
+      ejemplo: 2
+    - columna: certificados_vehiculares
+      descripcion: Certificados vehiculares
+      tipo: numerico
+      ejemplo: 177
+    - columna: cartas_no_antecedentes
+      descripcion: Cartas de no antecedentes penales
+      tipo: numerico
+      ejemplo: 3511
