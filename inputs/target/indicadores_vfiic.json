@@ -1,0 +1,983 @@
+{
+  "VFIIC": {
+    "AGENCIA DE INVESTIGACIÓN CRIMINAL": {
+      "Dirección de Análisis Criminal": [
+        {
+          "concepto": "presentaciones por delitos y acciones diversas",
+          "cantidad": 310.0,
+          "cantidad_raw": "310"
+        },
+        {
+          "concepto": "atenciones a solicitudes de información",
+          "cantidad": 77.0,
+          "cantidad_raw": "77"
+        },
+        {
+          "concepto": "estructuras delincuenciales",
+          "cantidad": 32.0,
+          "cantidad_raw": "32"
+        },
+        {
+          "concepto": "organigramas",
+          "cantidad": 94.0,
+          "cantidad_raw": "94"
+        }
+      ],
+      "Dirección de Investigación Estratégica": [
+        {
+          "concepto": "dictámenes/informes de análisis de datos conservados",
+          "cantidad": 131.0,
+          "cantidad_raw": "131"
+        },
+        {
+          "concepto": "fichas de personas o vehículos",
+          "cantidad": 63.0,
+          "cantidad_raw": "63"
+        },
+        {
+          "concepto": "presentaciones por delitos y acciones diversas",
+          "cantidad": 59.0,
+          "cantidad_raw": "59"
+        },
+        {
+          "concepto": "apoyos a otras áreas/comisiones",
+          "cantidad": 29.0,
+          "cantidad_raw": "29"
+        }
+      ],
+      "Unidad de Extinción de Dominio": [
+        {
+          "concepto": "identificación de bien inmueble",
+          "cantidad": 1.0,
+          "cantidad_raw": "1"
+        },
+        {
+          "concepto": "análisis patrimoniales",
+          "cantidad": 10.0,
+          "cantidad_raw": "10"
+        },
+        {
+          "concepto": "carpetas de investigación fueron iniciadas",
+          "cantidad": 22.0,
+          "cantidad_raw": "22"
+        },
+        {
+          "concepto": "carpetas de investigación fueron judicializadas",
+          "cantidad": 3.0,
+          "cantidad_raw": "3"
+        }
+      ],
+      "Unidad de Investigación y Persecución de Delitos Cometidos a través de Medios Cibernéticos": [
+        {
+          "concepto": "denuncias fueron recibidas",
+          "cantidad": 173.0,
+          "cantidad_raw": "173"
+        },
+        {
+          "concepto": "solicitudes de investigación fueron enviadas",
+          "cantidad": 467.0,
+          "cantidad_raw": "467"
+        },
+        {
+          "concepto": "carpetas de investigación fueron asignadas al área",
+          "cantidad": 235.0,
+          "cantidad_raw": "235"
+        },
+        {
+          "concepto": "pláticas preventivas, con asistencia de aproximadamente 1694 personas",
+          "cantidad": 20.0,
+          "cantidad_raw": "20"
+        }
+      ],
+      "Dirección de Policía Cibernética": [
+        {
+          "concepto": "oficios fueron atendidos",
+          "cantidad": 482.0,
+          "cantidad_raw": "482"
+        },
+        {
+          "concepto": "monitoreos en redes sociales",
+          "cantidad": 1850.0,
+          "cantidad_raw": "1850"
+        },
+        {
+          "concepto": "sitios web fueron analizados",
+          "cantidad": 28.0,
+          "cantidad_raw": "28"
+        },
+        {
+          "concepto": "ciberpatrullajes fueron realizados",
+          "cantidad": 1650.0,
+          "cantidad_raw": "1650"
+        },
+        {
+          "concepto": "apoyos a otras áreas",
+          "cantidad": 161.0,
+          "cantidad_raw": "161"
+        }
+      ]
+    },
+    "COORDINACIÓN DE SERVICIOS PERICIALES": {
+      "Acústica y Fonética Forense": [
+        {
+          "concepto": "dictámenes de identificación biométrica por voz",
+          "cantidad": 39.0,
+          "cantidad_raw": "39"
+        },
+        {
+          "concepto": "tomas de muestra de voz controlada",
+          "cantidad": 28.0,
+          "cantidad_raw": "28"
+        },
+        {
+          "concepto": "dictámenes de textualizaciones",
+          "cantidad": 27.0,
+          "cantidad_raw": "27"
+        },
+        {
+          "concepto": "toma de muestra de voz foránea",
+          "cantidad": 1.0,
+          "cantidad_raw": "1"
+        }
+      ],
+      "Evidencia Digital": [
+        {
+          "concepto": "análisis de video",
+          "cantidad": 17.0,
+          "cantidad_raw": "17"
+        },
+        {
+          "concepto": "extracciones de información a celulares",
+          "cantidad": 2.0,
+          "cantidad_raw": "2"
+        },
+        {
+          "concepto": "fijaciones, descripciones cronológicas y acercamiento a rostros",
+          "cantidad": 50.0,
+          "cantidad_raw": "50"
+        },
+        {
+          "concepto": "fijaciones, descripciones cronológicas e identificaciones de vehículos",
+          "cantidad": 9.0,
+          "cantidad_raw": "9"
+        }
+      ],
+      "Arquitectura": [
+        {
+          "concepto": "valuaciones de bienes inmuebles",
+          "cantidad": 13.0,
+          "cantidad_raw": "13"
+        },
+        {
+          "concepto": "planimetrías",
+          "cantidad": 12.0,
+          "cantidad_raw": "12"
+        },
+        {
+          "concepto": "levantamientos topográficos",
+          "cantidad": 10.0,
+          "cantidad_raw": "10"
+        },
+        {
+          "concepto": "inspecciones técnicas periciales a inmuebles",
+          "cantidad": 8.0,
+          "cantidad_raw": "8"
+        }
+      ],
+      "Balística Forense": [
+        {
+          "concepto": "identificaciones y descripciones de arma de fuego",
+          "cantidad": 3.0,
+          "cantidad_raw": "3"
+        },
+        {
+          "concepto": "identificaciones y descripciones de cartuchos para arma de fuego",
+          "cantidad": 3.0,
+          "cantidad_raw": "3"
+        },
+        {
+          "concepto": "identificaciones y descripciones de casquillos",
+          "cantidad": 5.0,
+          "cantidad_raw": "5"
+        },
+        {
+          "concepto": "identificaciones y descripciones de balas, perdigones, postas o proyectiles",
+          "cantidad": 2.0,
+          "cantidad_raw": "2"
+        }
+      ],
+      "Contabilidad": [
+        {
+          "concepto": "diligencias contables para determinar daño patrimonial",
+          "cantidad": 57.0,
+          "cantidad_raw": "57"
+        },
+        {
+          "concepto": "arqueos contables de dinero a la vista",
+          "cantidad": 4.0,
+          "cantidad_raw": "4"
+        },
+        {
+          "concepto": "diligencias contables para determinar pensión alimenticia",
+          "cantidad": 57.0,
+          "cantidad_raw": "57"
+        }
+      ],
+      "Forestales": [
+        {
+          "concepto": "cuantificaciones de derribo de arbolado",
+          "cantidad": 14.0,
+          "cantidad_raw": "14"
+        },
+        {
+          "concepto": "determinaciones de área afectada por cambio de uso de suelo",
+          "cantidad": 4.0,
+          "cantidad_raw": "4"
+        },
+        {
+          "concepto": "inspecciones de predios forestales",
+          "cantidad": 4.0,
+          "cantidad_raw": "4"
+        }
+      ],
+      "Grafoscopía y Documentos Cuestionados": [
+        {
+          "concepto": "dictámenes de grafoscopía",
+          "cantidad": 15.0,
+          "cantidad_raw": "15"
+        },
+        {
+          "concepto": "dictámenes de documentoscopía",
+          "cantidad": 6.0,
+          "cantidad_raw": "6"
+        }
+      ],
+      "Hechos de Tránsito Terrestre": [
+        {
+          "concepto": "inspecciones en hechos de tránsito terrestre",
+          "cantidad": 29.0,
+          "cantidad_raw": "29"
+        },
+        {
+          "concepto": "dictámenes de causalidad en hechos de tránsito terrestre",
+          "cantidad": 98.0,
+          "cantidad_raw": "98"
+        }
+      ],
+      "Identificación Vehicular": [
+        {
+          "concepto": "identificaciones de vehículos",
+          "cantidad": 407.0,
+          "cantidad_raw": "407"
+        }
+      ],
+      "Incendios y Explosivos": [
+        {
+          "concepto": "inspecciones para identificar causas de incendio y/o explosión",
+          "cantidad": 2.0,
+          "cantidad_raw": "2"
+        }
+      ],
+      "Lofoscopía": [
+        {
+          "concepto": "tomas de fichas decadactilares y palmares.",
+          "cantidad": 68.0,
+          "cantidad_raw": "68"
+        },
+        {
+          "concepto": "tomas de fichas decadactilares a cadáveres.",
+          "cantidad": 21.0,
+          "cantidad_raw": "21"
+        },
+        {
+          "concepto": "Búsquedas y recolecciones de material lofoscópico.",
+          "cantidad": 3.0,
+          "cantidad_raw": "3"
+        },
+        {
+          "concepto": "ingresos a AFIS",
+          "cantidad": 180.0,
+          "cantidad_raw": "180"
+        }
+      ],
+      "Retrato Hablado": [
+        {
+          "concepto": "dictámenes de retrato hablado.",
+          "cantidad": 37.0,
+          "cantidad_raw": "37"
+        },
+        {
+          "concepto": "comparativos de imágenes de personas, de la ficha AFIS y retrato hablado.",
+          "cantidad": 4.0,
+          "cantidad_raw": "4"
+        }
+      ],
+      "Traducción": [
+        {
+          "concepto": "traducciones de documentos.",
+          "cantidad": 4.0,
+          "cantidad_raw": "4"
+        },
+        {
+          "concepto": "apoyos a juzgados.",
+          "cantidad": 3.0,
+          "cantidad_raw": "3"
+        }
+      ],
+      "Unidad de Criminalística y Escena del Crimen": [
+        {
+          "concepto": "procesamientos de lugares de intervención donde existieron cuerpos o restos humanos.",
+          "cantidad": 66.0,
+          "cantidad_raw": "66"
+        },
+        {
+          "concepto": "intervenciones en lugares relacionados (cateos, inspecciones vehiculares, etc.",
+          "cantidad": 719.0,
+          "cantidad_raw": "719"
+        },
+        {
+          "concepto": "dictámenes periciales.",
+          "cantidad": 213.0,
+          "cantidad_raw": "213"
+        }
+      ],
+      "Valuación": [
+        {
+          "concepto": "valuaciones de bienes muebles a la vista.",
+          "cantidad": 39.0,
+          "cantidad_raw": "39"
+        },
+        {
+          "concepto": "valuaciones de daños en bienes muebles a la vista.",
+          "cantidad": 319.0,
+          "cantidad_raw": "319"
+        },
+        {
+          "concepto": "valuaciones de bienes muebles en base a datos de prueba.",
+          "cantidad": 152.0,
+          "cantidad_raw": "152"
+        },
+        {
+          "concepto": "valuaciones de daños en bienes muebles en base a datos de prueba",
+          "cantidad": 77.0,
+          "cantidad_raw": "77"
+        }
+      ],
+      "Genética Forense": [
+        {
+          "concepto": "dictámenes de confronta de información genética en base de datos.",
+          "cantidad": 58.0,
+          "cantidad_raw": "58"
+        },
+        {
+          "concepto": "dictámenes de identificación humana mediante ADN.",
+          "cantidad": 78.0,
+          "cantidad_raw": "78"
+        },
+        {
+          "concepto": "informes diversos.",
+          "cantidad": 36.0,
+          "cantidad_raw": "36"
+        },
+        {
+          "concepto": "determinaciones de perfil genético autosómico y/o haplotipo de muestras de referencia de personas vivas, cadáveres y/o restos óseos e indicios.",
+          "cantidad": 186.0,
+          "cantidad_raw": "186"
+        }
+      ],
+      "Identificación Humana": [
+        {
+          "concepto": "actuaciones periciales en la toma de fotografía de la sabana de evidencia y fotografía de filiación de cadáveres no identificados.",
+          "cantidad": 49.0,
+          "cantidad_raw": "49"
+        },
+        {
+          "concepto": "traslados de cadáveres no identificados al Centro de Resguardo Forense de las 10 regiones.",
+          "cantidad": 25.0,
+          "cantidad_raw": "25"
+        },
+        {
+          "concepto": "dictámenes",
+          "cantidad": 290.0,
+          "cantidad_raw": "290"
+        }
+      ],
+      "Odontología Forense": [
+        {
+          "concepto": "fichas de identificación odontológica o identoestomatograma.",
+          "cantidad": 34.0,
+          "cantidad_raw": "34"
+        },
+        {
+          "concepto": "dictámenes de lesiones odontológicas.",
+          "cantidad": 3.0,
+          "cantidad_raw": "3"
+        },
+        {
+          "concepto": "dictamen de valoración de huellas de mordeduras.",
+          "cantidad": 1.0,
+          "cantidad_raw": "1"
+        },
+        {
+          "concepto": "búsquedas de personas desaparecidas.",
+          "cantidad": 19.0,
+          "cantidad_raw": "19"
+        }
+      ],
+      "Psicología Forense": [
+        {
+          "concepto": "dictámenes psicológicos para determinar o descartar daño psicológico.",
+          "cantidad": 1141.0,
+          "cantidad_raw": "1141"
+        },
+        {
+          "concepto": "dictámenes de autopsia psicológica.",
+          "cantidad": 3.0,
+          "cantidad_raw": "3"
+        },
+        {
+          "concepto": "dictámenes de estado mental.",
+          "cantidad": 5.0,
+          "cantidad_raw": "5"
+        },
+        {
+          "concepto": "dictámenes de estudio psicológico de aptitud.",
+          "cantidad": 27.0,
+          "cantidad_raw": "27"
+        }
+      ],
+      "Química Forense": [
+        {
+          "concepto": "dictámenes/informes en identificación de drogas.",
+          "cantidad": 43.0,
+          "cantidad_raw": "43"
+        },
+        {
+          "concepto": "dictámenes/informes en identificación de material botánico.",
+          "cantidad": 17.0,
+          "cantidad_raw": "17"
+        },
+        {
+          "concepto": "dictámenes/informes en identificación de componentes del semen.",
+          "cantidad": 13.0,
+          "cantidad_raw": "13"
+        },
+        {
+          "concepto": "dictámenes/informes en identificación de sangre de origen humano.",
+          "cantidad": 24.0,
+          "cantidad_raw": "24"
+        }
+      ],
+      "Trabajo Social": [
+        {
+          "concepto": "dictámenes en trabajo social.",
+          "cantidad": 98.0,
+          "cantidad_raw": "98"
+        },
+        {
+          "concepto": "peritajes sociales.",
+          "cantidad": 94.0,
+          "cantidad_raw": "94"
+        },
+        {
+          "concepto": "informes de trabajo social.",
+          "cantidad": 57.0,
+          "cantidad_raw": "57"
+        },
+        {
+          "concepto": "visitas domiciliarias.",
+          "cantidad": 15.0,
+          "cantidad_raw": "15"
+        }
+      ],
+      "Medicina Forense": [
+        {
+          "concepto": "certificados definitivos de lesiones.",
+          "cantidad": 189.0,
+          "cantidad_raw": "189"
+        },
+        {
+          "concepto": "dictámenes de necropsia.",
+          "cantidad": 317.0,
+          "cantidad_raw": "317"
+        },
+        {
+          "concepto": "dictámenes médicos de integridad corporal.",
+          "cantidad": 828.0,
+          "cantidad_raw": "828"
+        },
+        {
+          "concepto": "certificados médicos de defunción.",
+          "cantidad": 247.0,
+          "cantidad_raw": "247"
+        },
+        {
+          "concepto": "estudios osteológicos.",
+          "cantidad": 5.0,
+          "cantidad_raw": "5"
+        }
+      ],
+      "Unidad técnica de preservación": [
+        {
+          "concepto": "recepciones y resguardos de indicios y/o evidencias.",
+          "cantidad": 6771.0,
+          "cantidad_raw": "6771"
+        },
+        {
+          "concepto": "préstamos de indicios y/o evidencias.",
+          "cantidad": 2958.0,
+          "cantidad_raw": "2958"
+        },
+        {
+          "concepto": "registros de cadena de custodia generados.",
+          "cantidad": 1259.0,
+          "cantidad_raw": "1259"
+        },
+        {
+          "concepto": "fijaciones fotográficas de indicios y/o evidencias para control interno del área.",
+          "cantidad": 4810.0,
+          "cantidad_raw": "4810"
+        }
+      ],
+      "Veterinaria": [
+        {
+          "concepto": "dictamen médico-veterinario por ataque de animal.",
+          "cantidad": 1.0,
+          "cantidad_raw": "1"
+        },
+        {
+          "concepto": "dictámenes de búsqueda de indicios de maltrato animal.",
+          "cantidad": 19.0,
+          "cantidad_raw": "19"
+        },
+        {
+          "concepto": "dictámenes médico-veterinario de estado actual de salud.",
+          "cantidad": 4.0,
+          "cantidad_raw": "4"
+        },
+        {
+          "concepto": "dictámenes médico-veterinario de necropsia.",
+          "cantidad": 11.0,
+          "cantidad_raw": "11"
+        },
+        {
+          "concepto": "informes de opinión médico-veterinaria.",
+          "cantidad": 3.0,
+          "cantidad_raw": "3"
+        }
+      ]
+    },
+    "COORDINACIÓN  DE POLICÍA DE INVESTIGACIÓN": {
+      "Dirección de Reacción y Operaciones Estratégicas (KÉRI)": [
+        {
+          "concepto": "apoyos",
+          "cantidad": 55.0,
+          "cantidad_raw": "55"
+        },
+        {
+          "concepto": "correspondieron a apoyos terrestres",
+          "cantidad": 54.0,
+          "cantidad_raw": "54"
+        },
+        {
+          "concepto": "apoyo fue de carácter aéreo",
+          "cantidad": 1.0,
+          "cantidad_raw": "1"
+        }
+      ],
+      "Unidad Canina Especializada": [
+        {
+          "concepto": "operativos",
+          "cantidad": 37.0,
+          "cantidad_raw": "37"
+        },
+        {
+          "concepto": "operativos realizados en favor de la Unidad de Investigación y Persecución al Narcomenudeo (UIPN),",
+          "cantidad": 13.0,
+          "cantidad_raw": "13"
+        },
+        {
+          "concepto": "operativos efectuados en coordinación con el área de Personas Fallecidas de la Comisión de Búsqueda de Personas Desaparecidas",
+          "cantidad": 20.0,
+          "cantidad_raw": "20"
+        },
+        {
+          "concepto": "resultaron positivos a enervantes",
+          "cantidad": 9.0,
+          "cantidad_raw": "9"
+        },
+        {
+          "concepto": "resultados positivos a restos humanos",
+          "cantidad": 4.0,
+          "cantidad_raw": "4"
+        },
+        {
+          "concepto": "positivo a restos óseos",
+          "cantidad": 1.0,
+          "cantidad_raw": "1"
+        },
+        {
+          "concepto": "operativos en apoyo al Despacho del Fiscal",
+          "cantidad": 3.0,
+          "cantidad_raw": "3"
+        },
+        {
+          "concepto": "operativo en apoyo al área de Asuntos Especiales",
+          "cantidad": 1.0,
+          "cantidad_raw": "1"
+        }
+      ],
+      "Dirección de Mandamientos Judiciales": [
+        {
+          "concepto": "aprehensiones",
+          "cantidad": 93.0,
+          "cantidad_raw": "93"
+        },
+        {
+          "concepto": "comparecencias",
+          "cantidad": 35.0,
+          "cantidad_raw": "35"
+        },
+        {
+          "concepto": "reaprehensiones",
+          "cantidad": 2.0,
+          "cantidad_raw": "2"
+        }
+      ],
+      "Unidad de Control de Internamiento": [
+        {
+          "concepto": "ingreso de personas",
+          "cantidad": 146.0,
+          "cantidad_raw": "146"
+        },
+        {
+          "concepto": "sexo masculino",
+          "cantidad": 122.0,
+          "cantidad_raw": "122"
+        },
+        {
+          "concepto": "sexo femenino",
+          "cantidad": 24.0,
+          "cantidad_raw": "24"
+        },
+        {
+          "concepto": "personas son de nacionalidad mexicana",
+          "cantidad": 142.0,
+          "cantidad_raw": "142"
+        },
+        {
+          "concepto": "nacionalidad estadounidense",
+          "cantidad": 1.0,
+          "cantidad_raw": "1"
+        },
+        {
+          "concepto": "nacionalidad colombiana.",
+          "cantidad": 1.0,
+          "cantidad_raw": "1"
+        },
+        {
+          "concepto": "persona fue recibida mediante colaboración interinstitucional.",
+          "cantidad": 1.0,
+          "cantidad_raw": "1"
+        },
+        {
+          "concepto": "personas fueron liberadas",
+          "cantidad": 50.0,
+          "cantidad_raw": "50"
+        },
+        {
+          "concepto": "personas fueron trasladadas",
+          "cantidad": 90.0,
+          "cantidad_raw": "90"
+        },
+        {
+          "concepto": "menores de edad",
+          "cantidad": 7.0,
+          "cantidad_raw": "7"
+        },
+        {
+          "concepto": "protocolos ejecutaron",
+          "cantidad": 142.0,
+          "cantidad_raw": "142"
+        }
+      ],
+      "Unidad de Asistencia Jurídica Internacional y Extradiciones": [
+        {
+          "concepto": "colaboraciones recibidas",
+          "cantidad": 24.0,
+          "cantidad_raw": "24"
+        },
+        {
+          "concepto": "colaboraciones enviadas",
+          "cantidad": 37.0,
+          "cantidad_raw": "37"
+        },
+        {
+          "concepto": "asistencia jurídica internacional",
+          "cantidad": 1.0,
+          "cantidad_raw": "1"
+        },
+        {
+          "concepto": "avisos dirigidos a distintas embajadas",
+          "cantidad": 4.0,
+          "cantidad_raw": "4"
+        },
+        {
+          "concepto": "notificaciones rojas de fugitivos",
+          "cantidad": 3.0,
+          "cantidad_raw": "3"
+        },
+        {
+          "concepto": "ICE/ERO remitió solicitudes",
+          "cantidad": 9.0,
+          "cantidad_raw": "9"
+        },
+        {
+          "concepto": "requerimientos de verificación de antecedentes criminales",
+          "cantidad": 265.0,
+          "cantidad_raw": "265"
+        },
+        {
+          "concepto": "deportación controlada",
+          "cantidad": 1.0,
+          "cantidad_raw": "1"
+        },
+        {
+          "concepto": "extradición solicitada",
+          "cantidad": 1.0,
+          "cantidad_raw": "1"
+        }
+      ],
+      "SUBCOORDINACION POLICIAL DE LAS FISCALIAS REGIONALES Y ESPECIALIZADAS": [
+        {
+          "concepto": "CATEOS",
+          "cantidad": 33.0,
+          "cantidad_raw": "33"
+        },
+        {
+          "concepto": "APREHENSIONES",
+          "cantidad": 51.0,
+          "cantidad_raw": "51"
+        },
+        {
+          "concepto": "CARPETAS DE INVESTIGACIÓN POR HOMICIDIO DOLOSO INICIADAS",
+          "cantidad": 70.0,
+          "cantidad_raw": "70"
+        },
+        {
+          "concepto": "CARPETAS DE INVESTIGACIÓN POR HOMICIDIO DOLOSO CUMPLIDAS",
+          "cantidad": 20.0,
+          "cantidad_raw": "20"
+        },
+        {
+          "concepto": "CARPETAS DE INVESTIGACIÓN POR HOMICIDIO DOLOSO TRABAJANDO",
+          "cantidad": 51.0,
+          "cantidad_raw": "51"
+        },
+        {
+          "concepto": "PUESTA A DISPOCISIÓN",
+          "cantidad": 38.0,
+          "cantidad_raw": "38"
+        },
+        {
+          "concepto": "COMPARECENCIAS",
+          "cantidad": 23.0,
+          "cantidad_raw": "23"
+        },
+        {
+          "concepto": "APREHENSIONES",
+          "cantidad": 50.0,
+          "cantidad_raw": "50"
+        },
+        {
+          "concepto": "DETENIDO EN FLAGRANCIA",
+          "cantidad": 12.0,
+          "cantidad_raw": "12"
+        },
+        {
+          "concepto": "INVESTIGACIONES CUMP.",
+          "cantidad": 3138.0,
+          "cantidad_raw": "3138"
+        },
+        {
+          "concepto": "INVESTIGACIONES INF.",
+          "cantidad": 1529.0,
+          "cantidad_raw": "1529"
+        },
+        {
+          "concepto": "ACTOS URGENTES / VISITAS DOMICILIARIAS",
+          "cantidad": 939.0,
+          "cantidad_raw": "939"
+        },
+        {
+          "concepto": "ENTREVISTAS / INDIVIDUALIZACIONES",
+          "cantidad": 3153.0,
+          "cantidad_raw": "3153"
+        },
+        {
+          "concepto": "SOLICITUDES DE INTERVENCIÓN PERICIAL / INSPECCIONES",
+          "cantidad": 477.0,
+          "cantidad_raw": "477"
+        },
+        {
+          "concepto": "TRASLA-DOS",
+          "cantidad": 80.0,
+          "cantidad_raw": "80"
+        },
+        {
+          "concepto": "OPERATIVOS",
+          "cantidad": 185.0,
+          "cantidad_raw": "185"
+        },
+        {
+          "concepto": "APOYOS",
+          "cantidad": 696.0,
+          "cantidad_raw": "696"
+        },
+        {
+          "concepto": "VEHICULOS",
+          "cantidad": 52.0,
+          "cantidad_raw": "52"
+        },
+        {
+          "concepto": "MOTOCICLETAS",
+          "cantidad": 28.0,
+          "cantidad_raw": "28"
+        },
+        {
+          "concepto": "A  R  M  A  S CORTAS",
+          "cantidad": 3.0,
+          "cantidad_raw": "3"
+        },
+        {
+          "concepto": "A  R  M  A  S LARGAS",
+          "cantidad": 0.0,
+          "cantidad_raw": "0"
+        },
+        {
+          "concepto": "CARTUCHOS",
+          "cantidad": 0.0,
+          "cantidad_raw": "0"
+        },
+        {
+          "concepto": "E F E C T I V O M. N.",
+          "cantidad": 0.0,
+          "cantidad_raw": "0"
+        },
+        {
+          "concepto": "E F E C T I V O M. EXT",
+          "cantidad": 0.0,
+          "cantidad_raw": "0"
+        },
+        {
+          "concepto": "MARIHUANA",
+          "cantidad": 255.8,
+          "cantidad_raw": "255.8gr"
+        },
+        {
+          "concepto": "SEMILLA",
+          "cantidad": 0.0,
+          "cantidad_raw": "0.0kg"
+        },
+        {
+          "concepto": "COCAINA",
+          "cantidad": 3.5,
+          "cantidad_raw": "3.5 gr"
+        },
+        {
+          "concepto": "OPIO",
+          "cantidad": 0.0,
+          "cantidad_raw": "0gr"
+        },
+        {
+          "concepto": "HEROÍNA",
+          "cantidad": 0.0,
+          "cantidad_raw": "0gr"
+        },
+        {
+          "concepto": "AMAPOLA",
+          "cantidad": 0.0,
+          "cantidad_raw": "0.0kg"
+        },
+        {
+          "concepto": "PLANTAS AMAP.",
+          "cantidad": 0.0,
+          "cantidad_raw": "0"
+        },
+        {
+          "concepto": "PLANTAS MAR",
+          "cantidad": 0.0,
+          "cantidad_raw": "0"
+        },
+        {
+          "concepto": "CRISTAL",
+          "cantidad": 37.82,
+          "cantidad_raw": "37.82 gr"
+        },
+        {
+          "concepto": "CRACK",
+          "cantidad": 0.0,
+          "cantidad_raw": "0.0gr"
+        },
+        {
+          "concepto": "PSICOTROPICOS",
+          "cantidad": 0.0,
+          "cantidad_raw": "0"
+        }
+      ]
+    },
+    "DIRECCIÓN DE CONTROL Y REGISTRO DE BIENES ASEGURADOS": {
+      "DIRECCIÓN DE CONTROL Y REGISTRO DE BIENES ASEGURADOS": [
+        {
+          "concepto": "registros de bienes inmuebles.",
+          "cantidad": 3.0,
+          "cantidad_raw": "3"
+        },
+        {
+          "concepto": "orden de destrucción de bienes por otra autoridad.",
+          "cantidad": 1.0,
+          "cantidad_raw": "1"
+        },
+        {
+          "concepto": "cambio de resguardo por incompetencia.",
+          "cantidad": 1.0,
+          "cantidad_raw": "1"
+        },
+        {
+          "concepto": "bienes inmuebles devueltos a propietarios.",
+          "cantidad": 2.0,
+          "cantidad_raw": "2"
+        },
+        {
+          "concepto": "verificaciones físicas de inmuebles.",
+          "cantidad": 26.0,
+          "cantidad_raw": "26"
+        }
+      ]
+    },
+    "DIRECCIÓN DE TRÁMITES Y SERVICIOS": {
+      "DIRECCIÓN DE TRÁMITES Y SERVICIOS": [
+        {
+          "concepto": "con documentos alterados",
+          "cantidad": 4.0,
+          "cantidad_raw": "4"
+        },
+        {
+          "concepto": "por tener alteración en sus medios de identificación",
+          "cantidad": 2.0,
+          "cantidad_raw": "2"
+        },
+        {
+          "concepto": "certificados vehiculares",
+          "cantidad": 177.0,
+          "cantidad_raw": "177"
+        },
+        {
+          "concepto": "cartas de no antecedentes penales",
+          "cantidad": 3511.0,
+          "cantidad_raw": "3511"
+        }
+      ]
+    }
+  }
+}
