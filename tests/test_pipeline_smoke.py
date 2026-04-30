@@ -12,69 +12,79 @@ SRC = PROJECT_ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from vfiic_kpis.excel_export import write_comparison_v2_workbook, write_partitioned_workbook
-from vfiic_kpis.io import read_all_inputs
-from vfiic_kpis.metrics import build_monthly_comparison_v2
-from vfiic_kpis.spec_loader import load_all_specs
+from vfiic_kpis.excel_export import (
+    write_partitioned_workbook_for_form,
+    write_stacked_comparativo_workbook,
+)
+from vfiic_kpis.io import read_form
+from vfiic_kpis.manifest import reconcile
+from vfiic_kpis.metrics import build_form_comparison
+from vfiic_kpis.yaml_loader import load_forms_from_yaml
+
+
+SCHEMA_BODY = """
+Coordinacion Periciales:
+
+  VFIIC KPIs Periciales - Demo:
+    ingesta:
+      archivo: "VFIIC KPIs Periciales - Demo.xlsx"
+      hoja: "Form responses"
+      columna_fecha: ["Periodo Evaluado", "Periodo a Evaluar"]
+      columnas_persona: ["Auxiliar"]
+    kpis:
+      - columna_origen: "Visitas"
+        descripcion: "Visitas realizadas"
+      - columna_origen: "Dictamenes"
+        descripcion: "Dictamenes realizados"
+"""
 
 
 class TestPipelineSmoke(unittest.TestCase):
-    def test_end_to_end_minimal_pipeline(self) -> None:
-        with tempfile.TemporaryDirectory() as tmp_dir:
-            root = Path(tmp_dir)
-            inputs = root / "inputs"
-            specs_dir = inputs / "specs"
-            raw_dir = inputs / "raw"
-            output_dir = root / "outputs"
-            specs_dir.mkdir(parents=True)
-            raw_dir.mkdir(parents=True)
-            output_dir.mkdir(parents=True)
+    def test_yaml_to_workbooks_minimal_pipeline(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            schema_path = root / "schema.yaml"
+            schema_path.write_text(SCHEMA_BODY, encoding="utf-8")
 
-            spec_path = specs_dir / "area_test.toml"
-            spec_path.write_text(
-                """
-[area]
-id = "area_test"
-display_name = "Area Test"
-source_glob = "input.xlsx"
-sheet_name = "Form responses"
-date_column = "Periodo Evaluado"
-agent_column = "Agente/Titular"
-agent_output_column = "Agente/Titular"
-
-[[kpis]]
-name = "kpi_total"
-source_column = "KPI"
-aggregation = "sum"
-value_parser = "numeric"
-change_direction = "up_is_good"
-""".strip(),
-                encoding="utf-8",
-            )
-
+            input_dir = root / "raw"
+            input_dir.mkdir()
             df = pd.DataFrame(
                 [
-                    {"Periodo Evaluado": "2026-03-01", "Agente/Titular": "A", "KPI": 5},
-                    {"Periodo Evaluado": "2026-04-01", "Agente/Titular": "A", "KPI": 8},
+                    {"Periodo a Evaluar": "2026-03-01", "Auxiliar": "A", "Visitas": 2, "Dictamenes": 1},
+                    {"Periodo a Evaluar": "2026-04-01", "Auxiliar": "A", "Visitas": 5, "Dictamenes": 3},
+                    {"Periodo a Evaluar": "2026-04-01", "Auxiliar": "B", "Visitas": 1, "Dictamenes": 0},
                 ]
             )
-            input_path = raw_dir / "input.xlsx"
-            df.to_excel(input_path, index=False, sheet_name="Form responses")
+            df.to_excel(
+                input_dir / "VFIIC KPIs Periciales - Demo.xlsx",
+                index=False,
+                sheet_name="Form responses",
+            )
 
-            specs = load_all_specs(specs_dir)
-            data = read_all_inputs(raw_dir, specs)
+            forms = load_forms_from_yaml(schema_path)
+            report = reconcile(forms, input_dir)
+            self.assertEqual(len(report.matched), 1)
+
+            resolution = report.matched[0]
+            data = read_form(resolution)
             self.assertFalse(data.empty)
 
-            comparison = build_monthly_comparison_v2(data, specs)
-            self.assertFalse(comparison.empty)
+            comparison = build_form_comparison(data, resolution)
+            self.assertIsNotNone(comparison)
+            assert comparison is not None
 
-            partitioned_output = output_dir / "partitioned.xlsx"
-            comparison_output = output_dir / "comparison_v2.xlsx"
-            write_partitioned_workbook(data=data, output_path=partitioned_output)
-            write_comparison_v2_workbook(comparison=comparison, output_path=comparison_output)
+            stacked_out = root / "comparativo.xlsx"
+            partitioned_out = root / "particionado.xlsx"
 
-            self.assertTrue(partitioned_output.exists())
-            self.assertTrue(comparison_output.exists())
+            write_stacked_comparativo_workbook(results=[comparison], output_path=stacked_out)
+            write_partitioned_workbook_for_form(
+                data=data,
+                form_id=resolution.spec.area_id,
+                output_path=partitioned_out,
+            )
+
+            self.assertTrue(stacked_out.exists())
+            self.assertTrue(partitioned_out.exists())
 
 
 if __name__ == "__main__":

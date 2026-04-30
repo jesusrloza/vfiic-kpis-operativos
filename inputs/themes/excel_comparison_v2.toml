@@ -1,5 +1,5 @@
-# Tema del workbook comparativo V2.
-# Mantiene header azul oscuro con texto blanco en negritas.
+# Tema del workbook comparativo apilado.
+# Encabezado azul oscuro con texto blanco en negritas para todos los bloques.
 
 [header]
 fill = "1F4E79"
@@ -26,21 +26,9 @@ freeze_panes = "A3"
 show_grid_lines = true
 
 [column_width]
-min = 12
-max = 52
+min = 14
+max = 56
 margin = 2
-
-[[column_formats]]
-match = "exact"
-pattern = "diferencia"
-number_format = "0"
-align = "right"
-
-[[column_formats]]
-match = "exact"
-pattern = "porcentaje"
-number_format = "0.00\"%\""
-align = "right"
 
 [[column_formats]]
 match = "exact"
@@ -48,8 +36,42 @@ pattern = "indicador"
 number_format = "General"
 align = "left"
 
+[[column_formats]]
+match = "prefix"
+pattern = "valor_"
+number_format = "0"
+align = "right"
+
+[[column_formats]]
+match = "exact"
+pattern = "diferencia_mom"
+number_format = "0"
+align = "right"
+
+[[column_formats]]
+match = "exact"
+pattern = "diferencia_yoy"
+number_format = "0"
+align = "right"
+
+[[column_formats]]
+match = "exact"
+pattern = "porcentaje_mom"
+number_format = "0.00\"%\""
+align = "right"
+
+[[column_formats]]
+match = "exact"
+pattern = "porcentaje_yoy"
+number_format = "0.00\"%\""
+align = "right"
+
 [header_labels]
 indicador = "Indicador"
-diferencia = "Diferencia (mes anterior)"
-porcentaje = "Variación % (mes anterior)"
-tendencia = "Tendencia"
+diferencia_mom = "Diferencia (mes anterior)"
+porcentaje_mom = "Variación % (mes anterior)"
+diferencia_yoy = "Diferencia (año anterior)"
+porcentaje_yoy = "Variación % (año anterior)"
+valor_actual = "Mes actual"
+valor_mes_anterior = "Mes anterior"
+valor_anio_anterior = "Mismo mes año anterior"

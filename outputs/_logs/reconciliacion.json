@@ -1,0 +1,1601 @@
+{
+  "procesables": [
+    {
+      "area_id": "vfiic_kpis_agencia_de_investigacion_criminal_analisis_criminal",
+      "display_name": "VFIIC KPIs Agencia de Investigación Criminal - Análisis Criminal",
+      "direccion": "Agencia de Investigación Criminal",
+      "archivo_yaml": "VFIIC KPIs Agencia de Investigación Criminal - Análisis Criminal.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Agencia de Investigación Criminal - Análisis Criminal.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Presentaciones Realizadas",
+        "Solicitudes de Información Atendidas",
+        "Estructuras Criminales Realizadas",
+        "Organigramas Realizados"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_agencia_de_investigacion_criminal_die",
+      "display_name": "VFIIC KPIs Agencia de Investigación Criminal - DIE",
+      "direccion": "Agencia de Investigación Criminal",
+      "archivo_yaml": "VFIIC KPIs Agencia de Investigación Criminal - DIE.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Agencia de Investigación Criminal - DIE.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Contestación de Análisis de Datos Conservados",
+        "Fichas Realizadas",
+        "Presentaciones Realizadas",
+        "Apoyos a Otras Áreas / Comisiones"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_agencia_de_investigacion_criminal_extincion_de_dominio",
+      "display_name": "VFIIC KPIs Agencia de Investigación Criminal - Extinción de Dominio",
+      "direccion": "Agencia de Investigación Criminal",
+      "archivo_yaml": "VFIIC KPIs Agencia de Investigación Criminal - Extinción de Dominio.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Agencia de Investigación Criminal - Extinción de Dominio.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Bienes Inmuebles Identificados",
+        "Análisis Patrimoniales Realizados",
+        "Total de Carpetas de Investigación Iniciadas",
+        "Carpetas de Investigación Judicializadas por MP"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_agencia_de_investigacion_criminal_medios_ciberneticos",
+      "display_name": "VFIIC KPIs Agencia de Investigación Criminal - Medios Cibernéticos",
+      "direccion": "Agencia de Investigación Criminal",
+      "archivo_yaml": "VFIIC KPIs Agencia de Investigación Criminal - Medios Cibernéticos.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Agencia de Investigación Criminal - Medios Cibernéticos.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Denuncias Recibidas",
+        "Solicitudes de Investigación Enviadas",
+        "Total de Carpetas de Investigación Asignadas al Área",
+        "Pláticas o Foros de Prevención"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_agencia_de_investigacion_criminal_policia_cibernetica",
+      "display_name": "VFIIC KPIs Agencia de Investigación Criminal - Policía Cibernética",
+      "direccion": "Agencia de Investigación Criminal",
+      "archivo_yaml": "VFIIC KPIs Agencia de Investigación Criminal - Policía Cibernética.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Agencia de Investigación Criminal - Policía Cibernética.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Submission Date",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Oficios Atendidos",
+        "Monitoreos en Redes Sociales",
+        "Sitios Web Analizados",
+        "Ciberpatrullajes Realizados",
+        "Apoyos a Otras Áreas"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_enlaces_administrativos",
+      "display_name": "VFIIC KPIs - Enlaces Administrativos",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs - Enlaces Administrativos.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs - Enlaces Administrativos.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Respuesta a solicitudes de información",
+        "Elaboración y envío de novedades",
+        "Envío de estado de fuerza",
+        "Envío de estado de armamento"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_coordinacion_general_asistencia_juridica",
+      "display_name": "VFIIC KPIs Coordinación General - Asistencia Jurídica",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Coordinación General - Asistencia Jurídica.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Coordinación General - Asistencia Jurídica.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Total de Colaboraciones Enviadas",
+        "Total de Colaboraciones Recibidas",
+        "Avisos a Embajadas",
+        "Notificaciones Rojas Solicitadas (Fugitivos)",
+        "Notificaciones Amarillas Solicitadas (Desaparecidos)"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_coordinacion_general_control_interno",
+      "display_name": "VFIIC KPIs Coordinación General - Control Interno",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Coordinación General - Control Interno.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Coordinación General - Control Interno.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Número de Personas Ingresadas",
+        "Detenidos en Resguardo por Colaboración",
+        "Protocolos Realizados",
+        "Menores en Resguardo"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_coordinacion_general_coordinacion_pdi",
+      "display_name": "VFIIC KPIs Coordinación General - Coordinación PDI",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Coordinación General - Coordinación PDI.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Coordinación General - Coordinación PDI.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Detección de Drones",
+        "Apoyos de Drone",
+        "Apoyos Institucionales",
+        "Apoyos Institucionales",
+        "Colaboraciones de Instancias Externas (Juzgados)"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_coordinacion_general_enlace_administrativo",
+      "display_name": "VFIIC KPIs Coordinación General - Enlace Administrativo",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Coordinación General - Enlace Administrativo.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Coordinación General - Enlace Administrativo.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Gestión de Recursos Financieros (Viáticos, Gastos Derivados de Comisiones)",
+        "Gestión de Oficios de Vacaciones",
+        "Gestión de Entrega de Uniformes y Equipo Táctico",
+        "Administración Sobre Incapacidades"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_coordinacion_general_keri",
+      "display_name": "VFIIC KPIs Coordinación General - KÉRI",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Coordinación General - KÉRI.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Coordinación General - KÉRI.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Apoyos Realizados",
+        "Revisión Médica",
+        "Entrenamiento / Acondicionamiento Físico",
+        "Colaboraciones Nacionales"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_coordinacion_general_mandamientos",
+      "display_name": "VFIIC KPIs Coordinación General - Mandamientos",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Coordinación General - Mandamientos.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Coordinación General - Mandamientos.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Mandamientos Recibidos",
+        "Mandamientos Cumplimentados",
+        "Colaboraciones Nacionales",
+        "Solicitudes de Fiscalías Especializadas, Regionales y/o Externas"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_coordinacion_general_personas_intervinientes",
+      "display_name": "VFIIC KPIs Coordinación General - Personas Intervinientes",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Coordinación General - Personas Intervinientes.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Coordinación General - Personas Intervinientes.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Protecciones (Víctimas, testigos, funcionarios públicos y las autorizadas por el titular de la FGE)",
+        "Control y monitoreo del personal policial",
+        "Sectores Protegidos"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_coordinacion_general_plataforma_mexico",
+      "display_name": "VFIIC KPIs Coordinación General - Plataforma México",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Coordinación General - Plataforma México.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Coordinación General - Plataforma México.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Consultas Realizadas (PM/SUIC/ACCEIUS/SIMAJ/LICENCIAS/PADRÓN VEHICULAR/OCRA)",
+        "IPH's Registrados",
+        "Solicitudes de Información Interna Atendidas",
+        "Solicitudes Externas Atendidas"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_coordinacion_general_seguridad_institucional",
+      "display_name": "VFIIC KPIs Coordinación General - Seguridad Institucional",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Coordinación General - Seguridad Institucional.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Coordinación General - Seguridad Institucional.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Cámaras Activas",
+        "Total de Visitantes que Ingresan a FGE",
+        "Altercados, Disturbios o Manifestaciones",
+        "Coberturas y/o Apoyos Institucionales"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_coordinacion_general_unidad_k9",
+      "display_name": "VFIIC KPIs Coordinación General - Unidad K9",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Coordinación General - Unidad K9.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Coordinación General - Unidad K9.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Total de Caninos Activos",
+        "Operativos Realizados",
+        "Sesiones de Adiestramiento",
+        "Revisiones Médicas Realizadas"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_fiscalias_especializadas_asuntos_especiales",
+      "display_name": "VFIIC KPIs Fiscalías Especializadas - Asuntos Especiales",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Fiscalías Especializadas - Asuntos Especiales.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Fiscalías Especializadas - Asuntos Especiales.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Personas Puestas a Disposición",
+        "Vehículos Puestos a Disposición",
+        "Armas Aseguradas",
+        "Cateos",
+        "Apoyos Realizados"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_fiscalias_especializadas_asuntos_internos",
+      "display_name": "VFIIC KPIs Fiscalías Especializadas - Asuntos Internos",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Fiscalías Especializadas - Asuntos Internos.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Fiscalías Especializadas - Asuntos Internos.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Informe policial general de investigación",
+        "Entrevistas a testigos",
+        "Solicitudes a plataforma México",
+        "Individualizaciones",
+        "Aprehensiones cumplidas"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_fiscalias_especializadas_cjim",
+      "display_name": "VFIIC KPIs Fiscalías Especializadas - CJIM",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Fiscalías Especializadas - CJIM.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Fiscalías Especializadas - CJIM.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Informes de Investigación",
+        "Entrevistas a Víctimas y Testigos",
+        "Notificación y Seguimiento de Medidas de Protección",
+        "Individualizaciones"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_fiscalias_especializadas_corrupcion",
+      "display_name": "VFIIC KPIs Fiscalías Especializadas - Corrupción",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Fiscalías Especializadas - Corrupción.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Fiscalías Especializadas - Corrupción.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Ordenes de aprehensión cumplimentadas",
+        "Informes realizados",
+        "Reconocimiento e Identificación de Imputados",
+        "Inspecciones",
+        "Entrevistas"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_fiscalias_especializadas_derechos_humanos",
+      "display_name": "VFIIC KPIs Fiscalías Especializadas - Derechos Humanos",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Fiscalías Especializadas - Derechos Humanos.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Fiscalías Especializadas - Derechos Humanos.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Apoyos Realizados",
+        "Informes",
+        "Entrevistas",
+        "Reportes Atendidos"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_fiscalias_especializadas_desaparecidos",
+      "display_name": "VFIIC KPIs Fiscalías Especializadas - Desaparecidos",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Fiscalías Especializadas - Desaparecidos.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Fiscalías Especializadas - Desaparecidos.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Informes Parciales",
+        "Localizaciones en Apoyo a otras fiscalías regionales",
+        "Presentación de personas",
+        "Operativos en Comisiones Foráneas"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_fiscalias_especializadas_especializadas_en_general",
+      "display_name": "VFIIC KPIs Fiscalías Especializadas - Especializadas en General",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Fiscalías Especializadas - Especializadas en General.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Fiscalías Especializadas - Especializadas en General.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Operativos realizados",
+        "Personas puestas a disposición del Ministerio Público",
+        "Personas puestas a disposición de Barandilla",
+        "Órdenes de aprehensión cumplimentadas"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_fiscalias_especializadas_fecse",
+      "display_name": "VFIIC KPIs Fiscalías Especializadas - FECSE",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Fiscalías Especializadas - FECSE.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Fiscalías Especializadas - FECSE.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Inspecciones al Lugar de la Privación",
+        "Liberación de Víctimas",
+        "Operativos de Recuperación de Víctimas por Secuestro Virtual",
+        "Inmuebles Asegurados"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_fiscalias_especializadas_feminicidios",
+      "display_name": "VFIIC KPIs Fiscalías Especializadas - Feminicidios",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Fiscalías Especializadas - Feminicidios.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Fiscalías Especializadas - Feminicidios.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Vehículos Puestos a Disposición",
+        "Apoyos Realizados",
+        "Operativos Realizados",
+        "Personas Puestas a Disposición",
+        "Inmuebles Asegurados"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_fiscalias_especializadas_homicidios",
+      "display_name": "VFIIC KPIs Fiscalías Especializadas - Homicidios",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Fiscalías Especializadas - Homicidios.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Fiscalías Especializadas - Homicidios.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Cateos",
+        "Inmuebles Asegurados",
+        "Vehículos Asegurados",
+        "Puestas a Disposición de Personas",
+        "Apoyos Realizados"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_fiscalias_especializadas_medio_ambiente",
+      "display_name": "VFIIC KPIs Fiscalías Especializadas - Medio Ambiente",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Fiscalías Especializadas - Medio Ambiente.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Fiscalías Especializadas - Medio Ambiente.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Levantamiento de Ejemplares",
+        "Inmuebles Asegurados",
+        "Cateos",
+        "Aseguramiento de Ejemplares Caninos, Felinos, Etc."
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_fiscalias_especializadas_narcomenudeo",
+      "display_name": "VFIIC KPIs Fiscalías Especializadas - Narcomenudeo",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Fiscalías Especializadas - Narcomenudeo.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Fiscalías Especializadas - Narcomenudeo.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Operativos",
+        "Dinero Asegurado",
+        "Vehículos Puestos a Disposición",
+        "Personas Puestas a Disposición"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_fiscalias_especializadas_robo_de_vehiculos",
+      "display_name": "VFIIC KPIs Fiscalías Especializadas - Robo de Vehículos",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Fiscalías Especializadas - Robo de Vehículos.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Fiscalías Especializadas - Robo de Vehículos.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Vehículos Puestos a Disposición (Asegurados y Recuperados)",
+        "Inmuebles Asegurados",
+        "Operativos Realizados",
+        "Personas Puestas a Disposición"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_fiscalias_especializadas_tortura",
+      "display_name": "VFIIC KPIs Fiscalías Especializadas - Tortura",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Fiscalías Especializadas - Tortura.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Fiscalías Especializadas - Tortura.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Apoyos Realizados",
+        "Investigaciones Iniciadas",
+        "Investigaciones Concluidas",
+        "Visitas a los Centros Penitenciarios"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_fiscalias_especializadas_violencia_familiar",
+      "display_name": "VFIIC KPIs Fiscalías Especializadas - Violencia Familiar",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Fiscalías Especializadas - Violencia Familiar.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Fiscalías Especializadas - Violencia Familiar.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Entrevistas",
+        "Individualizaciones",
+        "Investigaciones Iniciadas",
+        "Investigaciones Concluidas"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_fiscalias_regionales",
+      "display_name": "VFIIC KPIs Fiscalías Regionales",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs Fiscalías Regionales.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Fiscalías Regionales.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Operativos Interinstitucionales",
+        "Personas Puestas a Disposición (MP)",
+        "Apoyos Realizados",
+        "Vehículos Puestos a Disposición"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_pdi_boi_uruapan_zamora",
+      "display_name": "VFIIC KPIs PDI - BOI Uruapan - Zamora",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs PDI - BOI Uruapan - Zamora.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs PDI - BOI Uruapan - Zamora.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Cateos",
+        "Operativos Interinstitucionales",
+        "Puesta a disposición de vehículo",
+        "Puesta a disposición de persona"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_pdi_directores_encargados",
+      "display_name": "VFIIC KPIs PDI - Directores - Encargados",
+      "direccion": "Coordinación de Policía de Investigación",
+      "archivo_yaml": "VFIIC KPIs PDI - Directores - Encargados.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs PDI - Directores - Encargados.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Director / Encargado - Nombre(s)",
+        "Director / Encargado - Apellido Paterno",
+        "Director / Encargado - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Atención y cumplimiento de requerimientos del Ministerio Público",
+        "Supervisión y seguimiento de actos de investigación",
+        "Supervisión de operativos y despliegues en campo",
+        "Coordinación de investigación y cumplimiento de órdenes de aprehensión"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_acustica_y_fonetica_forense",
+      "display_name": "VFIIC KPIs Periciales - Acústica y Fonética Forense",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Acústica y Fonética Forense.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Acústica y Fonética Forense.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Dictamen de ruedas de reconocimiento vocal",
+        "Dictamen de identificación biométrica por voz",
+        "Informes de toma de muestra de voz controlada (imputados, victimas)",
+        "Colaboraciones con otros estados"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_administrativo_criminalistica",
+      "display_name": "VFIIC KPIs Periciales - Administrativo Criminalística",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Administrativo Criminalística.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Administrativo Criminalística.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Auxiliar - Nombre(s)",
+        "Auxiliar - Apellido Paterno",
+        "Auxiliar - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Atención de oficios",
+        "Notificación de peritos",
+        "Registro del Sistema POA",
+        "Atención telefónica/ correo institucional"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_antropologia",
+      "display_name": "VFIIC KPIs Periciales - Antropología",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Antropología.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Antropología.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Ficha de identificación somatológica",
+        "Dictamen Antropológico",
+        "Colaboración Protocolo de búsqueda de cadáveres inhumados indebidamente",
+        "Colaboración en Protocolo de búsqueda de personas desaparecidas"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_analisis_de_contexto_desaparecidos",
+      "display_name": "VFIIC KPIs Periciales - Análisis de Contexto - Desaparecidos",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Análisis de Contexto - Desaparecidos.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Análisis de Contexto - Desaparecidos.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Registros de información de hechos y datos sobre desaparición forzada de personas y desaparición cometida por particulares",
+        "Elaboración de mapeos y georreferencias",
+        "Informes de Análisis de Contexto",
+        "Análisis de información relativa a Carpetas de investigación"
+      ],
+      "kpis_sin_columna": [
+        "Sistematización y análisis de indicadores especializados para búsqueda de patrones"
+      ],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_analisis_de_contexto_homicidios",
+      "display_name": "VFIIC KPIs Periciales - Análisis de Contexto - Homicidios",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Análisis de Contexto - Homicidios.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Análisis de Contexto - Homicidios.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Realizar perfiles criminales para la investigación de delitos en casos específicos",
+        "Recolectar, sistematizar y analizar la información contenida en las carpetas de investigación del delito de homicidio doloso",
+        "Dictámenes realizados",
+        "Colaborar en la elaboración de mapeos y georreferenciaciones vinculados al delito de homicidio doloso"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_arquitectura",
+      "display_name": "VFIIC KPIs Periciales - Arquitectura",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Arquitectura.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Arquitectura.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Planimetrías, Rutas y/o Seguimientos",
+        "Dictámenes Relacionados al Área",
+        "Inspección Técnica Pericial y/o salida al lugar"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_auxiliar_k9",
+      "display_name": "VFIIC KPIs Periciales - Auxiliar K9",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Auxiliar K9.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Auxiliar K9.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Aplicación de vacunas",
+        "Monitoreo de agentes caninos",
+        "Aplicación de medicamentos",
+        "Participación en cateos / búsquedas"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_balistica",
+      "display_name": "VFIIC KPIs Periciales - Balística",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Balística.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Balística.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Inspección Técnica Pericial y/o salida al lugar",
+        "Dictamen Relacionado a Elementos Balísticos",
+        "Prueba de disparo de arma de fuego para obtener elementos balisticos indubitados",
+        "Estudio micro comparativo de casquillos, balas y fragmentos disparados por armas de fuego"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_contabilidad",
+      "display_name": "VFIIC KPIs Periciales - Contabilidad",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Contabilidad.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Contabilidad.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Dictamen Pericial Contable",
+        "Informe Pericial Contable",
+        "Estudios Totales Realizados"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_enlace_administrativo",
+      "display_name": "VFIIC KPIs Periciales - Enlace Administrativo",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Enlace Administrativo.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Enlace Administrativo.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Personal Administrativo - Nombre(s)",
+        "Personal Administrativo - Apellido Paterno",
+        "Personal Administrativo - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Elaboración de oficios para diversas áreas de la fiscalía",
+        "Recepción, entrega y seguimiento de oficios",
+        "Requisición y recepción de material",
+        "Gestión de listas de asistencia"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_forestales",
+      "display_name": "VFIIC KPIs Periciales - Forestales",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Forestales.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Forestales.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Inspección Técnica Pericial y/o salida al lugar",
+        "Dictamen en Materia Forestal y/o Agronomía",
+        "Informe en Materia Forestal y/o Agronomía",
+        "Opinión técnica sobre el impacto ambiental"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_genetica_forense",
+      "display_name": "VFIIC KPIs Periciales - Genética Forense",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Genética Forense.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Genética Forense.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Dictámenes Realizados",
+        "Determinación de perfil genético autosómico y/o haplotipo de muestras de referencia de personas vivas, cadáveres y/o restos óseos e indicios",
+        "Ingreso y cotejo en la base de datos de perfiles genéticos recibidos vía colaboración",
+        "Colaboraciones interinstucionales",
+        "Determinación y reporte de perfiles genéticos de muestras de referencia a la Comisión Estatal de Búsqueda de Personas Desaparecidas"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_gerente_de_calidad",
+      "display_name": "VFIIC KPIs Periciales - Gerente de Calidad",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Gerente de Calidad.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Gerente de Calidad.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Titular - Nombre(s)",
+        "Titular - Apellido Paterno",
+        "Titular - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Análisis de evaluaciones de proveedores, quejas, apelaciones, oportunidades de mejora",
+        "Elaboración de proyectos",
+        "Elaboración de Oficios, Informes y Documentos del Sistema de Gestión de Calidad",
+        "Revisión e interpretación de resultados complejos"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_grafoscopia",
+      "display_name": "VFIIC KPIs Periciales - Grafoscopía",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Grafoscopía.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Grafoscopía.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Dictámenes del Área",
+        "Informes del Área",
+        "Muestra de escritura",
+        "Estudios Totales Realizados"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_hechos_de_transito",
+      "display_name": "VFIIC KPIs Periciales - Hechos de Tránsito",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Hechos de Tránsito.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Hechos de Tránsito.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Inspección Técnica Pericial y/o salida al lugar",
+        "Dictamen Relacionado a Hechos de Tránsito Terrestre",
+        "Informe Relacionado a Hechos de Tránsito Terrestre",
+        "Estudios Totales Realizados"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_identificacion_humana",
+      "display_name": "VFIIC KPIs Periciales - Identificación Humana",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Identificación Humana.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Identificación Humana.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Actuación pericial en la toma de fotografía de la sabana de evidencia y fotografía de filiación de cadáveres no identificados",
+        "Atención a usuarios, colectivos de búsqueda, insituciones y organizaciones de la sociedad civil, para la busqueda forense de personas",
+        "Traslado de cadaveres no identificados al Centro de Resguardo Forense de las 10 regiones",
+        "Dictámenes realizados"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_identificacion_vehicular",
+      "display_name": "VFIIC KPIs Periciales - Identificación Vehicular",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Identificación Vehicular.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Identificación Vehicular.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Inspección Técnica Pericial y/o salida al lugar",
+        "Dictamen de Identificación Vehicular",
+        "Informe de Identificación Vehicular",
+        "Estudios Totales Realizados"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_incendios_y_explosivos",
+      "display_name": "VFIIC KPIs Periciales - Incendios y Explosivos",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Incendios y Explosivos.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Incendios y Explosivos.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Inspección Técnica Pericial y/o salida al lugar",
+        "Dictamen de Causas de Incendio y/o Explosión",
+        "Informe de Causas de Incendio y/o Explosión",
+        "Dictamen de Descripción e Identificación de Artefactos Incendiarios y/o Explosivos"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_lofoscopia",
+      "display_name": "VFIIC KPIs Periciales - Lofoscopía",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Lofoscopía.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Lofoscopía.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Inspección Técnica Pericial y/o salida al lugar",
+        "Informes Realizados",
+        "Toma de fichas decadactilares y palmares",
+        "Búsqueda y recolección de material lofoscópico"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_odontologia",
+      "display_name": "VFIIC KPIs Periciales - Odontología",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Odontología.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Odontología.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Ficha de identificación odontológica o identoestomatograma",
+        "Dictámenes realizados",
+        "Toma de modelos dentales y odontograma",
+        "Búsqueda de personas desaparecidas"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_personal_subcoordinacion",
+      "display_name": "VFIIC KPIs Periciales - Personal Subcoordinación",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Personal Subcoordinación.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Personal Subcoordinación.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Traslado de Cadáveres, Osamentas y Restos Óseos de las Regiones a Centro de Resguardo Forense",
+        "Recepción y Entrega de Oficios",
+        "Recepción y Entrega de Dictámenes",
+        "Traslado de Muestras de las Regiones a Laboratorios Forenses"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_prosectores",
+      "display_name": "VFIIC KPIs Periciales - Prosectores",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Prosectores.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Prosectores.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Intervenciones en Protocolos de Necropsia",
+        "Recepción de cadáveres, restos humanos, restos oseos u osamentas",
+        "Entrega de cadáveres, restos humanos, restos oseos u osamentas",
+        "Traslado de cadáveres, restos humanos, restos oseos u osamentas al Centro de Resguardo"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_psicologia",
+      "display_name": "VFIIC KPIs Periciales - Psicología",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Psicología.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Psicología.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Dictámenes Realizados",
+        "Acompañamiento y/o asistencia en declaración",
+        "Contención emocional e intervención en crisis.",
+        "Preparación y seguimiento psicológico para audiencia"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_quimica_forense",
+      "display_name": "VFIIC KPIs Periciales - Química Forense",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Química Forense.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Química Forense.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Dictámenes Realizados",
+        "Informes Realizados",
+        "Verificación de equipos",
+        "Apoyo a otras áreas (preparación de material y otros)"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_retrato_hablado",
+      "display_name": "VFIIC KPIs Periciales - Retrato Hablado",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Retrato Hablado.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Retrato Hablado.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Dictamen de Comparativos y Cronologia Facial",
+        "Informe de Comparativos y Cronologia facial",
+        "Dictamen de Retrato Hablado",
+        "Estudios Totales Realizados"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_titulares_de_areas",
+      "display_name": "VFIIC KPIs Periciales - Titulares de Áreas",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Titulares de Áreas.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Titulares de Áreas.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Titular - Nombre(s)",
+        "Titular - Apellido Paterno",
+        "Titular - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Actividades de mejora",
+        "Intervenciones Periciales en cada una de las disciplinas",
+        "Apoyo al personal en la Práctica Pericial",
+        "Coordinación en escenas del crimen"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_trabajo_social",
+      "display_name": "VFIIC KPIs Periciales - Trabajo Social",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Trabajo Social.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Trabajo Social.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Dictámenes Realizados",
+        "Visita domiciliaria",
+        "Trámites de inhumación de cadáveres no identificados y/o no reclamados enviados a fosa común",
+        "Traslado de menores"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_traduccion",
+      "display_name": "VFIIC KPIs Periciales - Traducción",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Traducción.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Traducción.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Informe de Traducción de Documentos (Inglés-Español y Español-Inglés)",
+        "Intervención en Interpretación (Inglés-Español)",
+        "Dictamen de Traducción de Documentos (Inglés-Español y Español-Inglés)",
+        "Estudios Totales Realizados"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_unidad_criminalistica_morelia",
+      "display_name": "VFIIC KPIs Periciales - Unidad Criminalística Morelia",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Unidad Criminalística Morelia.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Unidad Criminalística Morelia.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Procesamiento de Lugares de Intervención Donde Existan Cuerpos o Restos Humanos (especificar región)",
+        "Procesamiento e inspección de lugares de intervención (especificar región)",
+        "Dictámenes Periciales",
+        "Informes Periciales"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_unidad_tecnica_de_preservacion_y_manejo_de_evidencias",
+      "display_name": "VFIIC KPIs Periciales - Unidad Técnica de Preservación y Manejo de Evidencias",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Unidad Técnica de Preservación y Manejo de Evidencias.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Unidad Técnica de Preservación y Manejo de Evidencias.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Recepción y resguardo de indicios y/o evidencias",
+        "Bajas por concepto de devolución y depuración de indicios y/o evidencias por resolución ministerial",
+        "Registros de cadena de custodia generados",
+        "Fijación fotográfica de indicios y/o evidencias para control interno del área"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_unidad_de_criminalistica_regionales",
+      "display_name": "VFIIC KPIs Periciales - Unidad de Criminalística Regionales",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Unidad de Criminalística Regionales.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Unidad de Criminalística Regionales.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Dictámenes Periciales Elaborados",
+        "Registros de Cadena de Custodia Realizados",
+        "Entregas de Evidencia a Laboratorios",
+        "Reconstrucciones o Mecánicas de Hechos Realizadas"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_unidad_de_medicina_forense",
+      "display_name": "VFIIC KPIs Periciales - Unidad de Medicina Forense",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Unidad de Medicina Forense.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Unidad de Medicina Forense.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Dictámenes Realizados",
+        "Certificados Definitivos de Lesiones",
+        "Certificados Médicos Elaborados (Provisional, De Ampliación o en Base a Datos de Prueba)",
+        "Certificado de Integridad Corporal y Toxicomanía",
+        "Análisis/recolección de muestras biológicas"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_valuacion",
+      "display_name": "VFIIC KPIs Periciales - Valuación",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Valuación.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Valuación.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Inspección Técnica Pericial y/o salida al lugar",
+        "Dictamen Valuación de Bienes Muebles",
+        "Dictamen de Valuación de Daños",
+        "Estudios totales realizados"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_periciales_veterinaria",
+      "display_name": "VFIIC KPIs Periciales - Veterinaria",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs Periciales - Veterinaria.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs Periciales - Veterinaria.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Perito - Nombre(s)",
+        "Perito - Apellido Paterno",
+        "Perito - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Dictámenes Realizados",
+        "Informe de opinión médico veterinaria",
+        "Informe de apoyo médico veterinario durante cateos y aseguramientos",
+        "Necropsias"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_bienes_asegurados",
+      "display_name": "VFIIC KPIs - Bienes Asegurados",
+      "direccion": "Dirección de Control y Registro de Bienes Asegurados",
+      "archivo_yaml": "VFIIC KPIs - Bienes Asegurados.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs - Bienes Asegurados.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Total de Bienes Asegurados Registrados",
+        "Vehículos Asegurados Registrados",
+        "Bienes Inmuebles Devueltos a Propietarios",
+        "Bienes Recibidos en Resguardo"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_direccion_de_tramites_y_servicios",
+      "display_name": "VFIIC KPIs - Dirección de Trámites y Servicios",
+      "direccion": "Dirección de Trámites y Servicios",
+      "archivo_yaml": "VFIIC KPIs - Dirección de Trámites y Servicios.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs - Dirección de Trámites y Servicios.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Cartas de no antecedentes penales expedidas",
+        "Vehículos puestos a disposición por alteraciones en documentos",
+        "Vehículos puestos a disposición por alteraciones en sus medios de identificación",
+        "Total de vehículos revisados y atendidos"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    },
+    {
+      "area_id": "vfiic_kpis_direccion_operativa_de_inteligencia_e_investigacion_criminal",
+      "display_name": "VFIIC KPIs - Dirección Operativa de Inteligencia e Investigación Criminal",
+      "direccion": "Dirección Operativa de Inteligencia e Investigación Criminal",
+      "archivo_yaml": "VFIIC KPIs - Dirección Operativa de Inteligencia e Investigación Criminal.xlsx",
+      "archivo_resuelto": "inputs\\raw\\VFIIC KPIs - Dirección Operativa de Inteligencia e Investigación Criminal.xlsx",
+      "hoja_resuelta": "Form responses",
+      "columna_fecha_resuelta": "Periodo Evaluado",
+      "columnas_persona_resueltas": [
+        "Agente - Nombre(s)",
+        "Agente - Apellido Paterno",
+        "Agente - Apellido Materno"
+      ],
+      "kpis_disponibles": [
+        "Reuniones operativas",
+        "Reportes operativos",
+        "Análisis de nuevas herramientas tecnológicas",
+        "Análisis de nuevas herramientas tecnológicas",
+        "Supervisión de archivos de trabajo"
+      ],
+      "kpis_sin_columna": [],
+      "motivo_omision": null
+    }
+  ],
+  "sin_archivo": [
+    {
+      "area_id": "vfiic_kpis_analisis_de_video_y_telefonia_celular",
+      "display_name": "VFIIC KPIs - Análisis de Video y Telefonía Celular",
+      "direccion": "Coordinación de Servicios Periciales",
+      "archivo_yaml": "VFIIC KPIs - Análisis de Video y Telefonía Celular.xlsx",
+      "archivo_resuelto": null,
+      "hoja_resuelta": null,
+      "columna_fecha_resuelta": null,
+      "columnas_persona_resueltas": [],
+      "kpis_disponibles": [],
+      "kpis_sin_columna": [],
+      "motivo_omision": "archivo no encontrado en inputs/raw"
+    }
+  ],
+  "sin_ingesta": [],
+  "problemas_columnas": [],
+  "archivos_sin_schema": [],
+  "totales": {
+    "procesables": 71,
+    "sin_archivo": 1,
+    "sin_ingesta": 0,
+    "problemas_columnas": 0,
+    "archivos_sin_schema": 0
+  }
+}

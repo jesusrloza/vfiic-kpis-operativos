@@ -8,8 +8,8 @@ SRC_DIR = PROJECT_ROOT / "src"
 if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
-from vfiic_kpis.cli import main_comparison_v2
+from vfiic_kpis.cli import main_comparativo
 
 
 if __name__ == "__main__":
-    main_comparison_v2()
+    main_comparativo()

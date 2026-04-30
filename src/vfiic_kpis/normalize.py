@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import date, datetime
 import unicodedata
 
 import pandas as pd
@@ -78,4 +78,27 @@ def prepare_common_columns(df: pd.DataFrame, date_column: str, agent_column: str
     out["periodo_mes_label"] = out["periodo_dt"].map(month_label)
     out["_agent_sort"] = out[agent_column].map(normalize_sort_text)
     return out
+
+
+def drop_future_period_rows(
+    df: pd.DataFrame,
+    *,
+    as_of: date | None = None,
+) -> tuple[pd.DataFrame, int]:
+    """Excluye filas cuyo `periodo_dt` (día civil) es estrictamente posterior a `as_of`.
+
+    Por defecto `as_of` es la fecha local del proceso (`date.today()`).
+    Filas con `periodo_dt` nulo no se cuentan como futuras.
+    """
+    if df.empty or "periodo_dt" not in df.columns:
+        return df, 0
+    ref = as_of or date.today()
+    ts_ref = pd.Timestamp(ref).normalize()
+    series = pd.to_datetime(df["periodo_dt"], errors="coerce")
+    future_mask = series.notna() & (series.dt.normalize() > ts_ref)
+    n_drop = int(future_mask.sum())
+    if n_drop == 0:
+        return df, 0
+    kept = df.loc[~future_mask].reset_index(drop=True)
+    return kept, n_drop
 

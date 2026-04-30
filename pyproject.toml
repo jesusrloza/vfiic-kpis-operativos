@@ -11,12 +11,12 @@ requires-python = ">=3.11"
 dependencies = [
   "pandas>=2.2.0",
   "openpyxl>=3.1.0",
+  "PyYAML>=6.0",
 ]
 
 [project.scripts]
 vfiic-partitioned = "vfiic_kpis.cli:main_partitioned"
-vfiic-comparison = "vfiic_kpis.cli:main_comparison"
-vfiic-comparison-v2 = "vfiic_kpis.cli:main_comparison_v2"
+vfiic-comparativo = "vfiic_kpis.cli:main_comparativo"
 vfiic-run-all = "vfiic_kpis.cli:main_run_all"
 
 [tool.setuptools]

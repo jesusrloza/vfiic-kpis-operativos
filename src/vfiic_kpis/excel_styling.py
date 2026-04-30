@@ -74,16 +74,17 @@ def _apply_body_formats(
     internal_columns: list[str],
     theme: ExcelTheme,
     data_row_start: int,
+    data_row_end: int | None = None,
+    column_offset: int = 0,
 ) -> None:
-    max_row = ws.max_row or 0
-    max_col = ws.max_column or 0
-    if max_row < data_row_start or max_col < 1:
+    last_row = data_row_end if data_row_end is not None else (ws.max_row or 0)
+    if last_row < data_row_start or not internal_columns:
         return
 
-    for col_idx in range(1, max_col + 1):
-        internal = internal_columns[col_idx - 1] if col_idx - 1 < len(internal_columns) else ""
+    for slot, internal in enumerate(internal_columns):
+        col_idx = column_offset + slot + 1
         rule = first_matching_rule(internal, theme.column_formats) if internal else None
-        for row_idx in range(data_row_start, max_row + 1):
+        for row_idx in range(data_row_start, last_row + 1):
             cell = ws.cell(row=row_idx, column=col_idx)
             if rule is not None:
                 _maybe_coerce_large_number(cell, rule)
@@ -101,15 +102,23 @@ def _apply_body_formats(
                     cell.alignment = Alignment(horizontal="left", vertical="center")
 
 
-def _paint_header_row(ws: Worksheet, theme: ExcelTheme, columns: list[str], row_idx: int = 1) -> None:
+def _paint_header_row(
+    ws: Worksheet,
+    theme: ExcelTheme,
+    columns: list[str],
+    row_idx: int = 1,
+    column_offset: int = 0,
+    explicit_labels: list[str] | None = None,
+) -> None:
     fill = PatternFill(fill_type="solid", fgColor=header_fill_argb(theme))
-    font = Font(
-        bold=theme.header.bold,
-        color=header_font_argb(theme),
-    )
-    for col_idx, internal in enumerate(columns, start=1):
+    font = Font(bold=theme.header.bold, color=header_font_argb(theme))
+    for slot, internal in enumerate(columns):
+        col_idx = column_offset + slot + 1
         cell = ws.cell(row=row_idx, column=col_idx)
-        cell.value = resolve_header_label(internal, theme)
+        if explicit_labels is not None and slot < len(explicit_labels) and explicit_labels[slot]:
+            cell.value = explicit_labels[slot]
+        else:
+            cell.value = resolve_header_label(internal, theme)
         cell.fill = fill
         cell.font = font
         cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
@@ -181,8 +190,6 @@ def apply_sheet_theme(
 
     max_row = ws.max_row or 0
     max_col = ws.max_column or 0
-    # Una Tabla (ListObject) ya escribe <autoFilter> en tableN.xml. Un segundo
-    # autoFilter en la hoja (worksheet) con el mismo ref provoca reparación en Excel.
     will_add_table = max_row >= 2 and max_col >= 1
     if will_add_table:
         ws.auto_filter = AutoFilter()
@@ -193,48 +200,76 @@ def apply_sheet_theme(
     _paint_header_row(ws, theme, columns)
 
 
-def _apply_area_title_row(ws: Worksheet, title: str, theme: ExcelTheme, max_col: int) -> None:
-    if max_col < 1:
+def paint_title_band(
+    ws: Worksheet,
+    title: str,
+    theme: ExcelTheme,
+    row_idx: int,
+    column_count: int,
+) -> None:
+    """Pinta una franja de título (merge horizontal) en la fila indicada."""
+    if column_count < 1:
         return
-    ws.merge_cells(start_row=1, start_column=1, end_row=1, end_column=max_col)
-    cell = ws.cell(row=1, column=1)
+    ws.merge_cells(start_row=row_idx, start_column=1, end_row=row_idx, end_column=column_count)
+    cell = ws.cell(row=row_idx, column=1)
     cell.value = title
     cell.fill = PatternFill(fill_type="solid", fgColor=title_fill_argb(theme))
-    cell.font = Font(
-        bold=theme.title.bold,
-        color=title_font_argb(theme),
-        size=12,
-    )
+    cell.font = Font(bold=theme.title.bold, color=title_font_argb(theme), size=12)
     cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
-    ws.row_dimensions[1].height = 24
+    ws.row_dimensions[row_idx].height = 24
 
 
-def _paint_semantic_cells(
+def paint_block_header(
     ws: Worksheet,
+    theme: ExcelTheme,
     internal_columns: list[str],
+    explicit_labels: list[str],
+    row_idx: int,
+) -> None:
+    """Pinta encabezados con etiquetas explícitas (admite labels dinámicos por mes)."""
+    _paint_header_row(
+        ws,
+        theme,
+        internal_columns,
+        row_idx=row_idx,
+        explicit_labels=explicit_labels,
+    )
+
+
+def paint_block_body(
+    ws: Worksheet,
+    theme: ExcelTheme,
+    internal_columns: list[str],
+    data_row_start: int,
+    data_row_end: int,
+) -> None:
+    _apply_body_formats(
+        ws,
+        internal_columns,
+        theme,
+        data_row_start=data_row_start,
+        data_row_end=data_row_end,
+    )
+
+
+def paint_semantic_pairs(
+    ws: Worksheet,
+    *,
+    column_pairs: list[tuple[int, str]],
+    trends: list[str],
     theme: ExcelTheme,
     data_row_start: int,
 ) -> None:
-    max_row = ws.max_row or 0
-    if max_row < data_row_start:
-        return
+    """Aplica color semántico a un conjunto de celdas según la tendencia por fila.
 
-    tendencia_idx = None
-    difference_targets: set[int] = set()
-    for idx, internal in enumerate(internal_columns, start=1):
-        if internal == "tendencia":
-            tendencia_idx = idx
-        if internal in ("diferencia", "porcentaje"):
-            difference_targets.add(idx)
-
-    if tendencia_idx is None or not difference_targets:
-        return
-
-    for row_idx in range(data_row_start, max_row + 1):
-        trend_raw = ws.cell(row=row_idx, column=tendencia_idx).value
-        trend = "neutral" if trend_raw is None else str(trend_raw)
-        color = semantic_color_argb(theme, trend)
-        for col_idx in difference_targets:
+    `column_pairs` lleva tuplas `(col_idx, kind)` donde `kind` se ignora hoy
+    pero permite extender el comportamiento más adelante. `trends` es una lista
+    paralela a las filas (índice 0 = `data_row_start`).
+    """
+    for offset, trend in enumerate(trends):
+        row_idx = data_row_start + offset
+        color = semantic_color_argb(theme, trend or "neutral")
+        for col_idx, _kind in column_pairs:
             cell = ws.cell(row=row_idx, column=col_idx)
             cell.font = Font(
                 name=cell.font.name,
@@ -247,28 +282,6 @@ def _paint_semantic_cells(
             )
 
 
-def apply_comparison_v2_sheet_theme(
-    ws: Worksheet,
-    workbook: Workbook,
-    internal_columns: list[str],
-    theme: ExcelTheme,
-    area_title: str,
-) -> None:
-    """Aplica maquetación V2 con título de área y color semántico por tendencia."""
-    if not internal_columns:
-        return
-    max_col_ws = ws.max_column or 0
-    if max_col_ws < 1:
-        return
-
-    columns = list(internal_columns)[:max_col_ws]
-    _apply_area_title_row(ws, area_title, theme, max_col_ws)
-    _paint_header_row(ws, theme, columns, row_idx=2)
-    _apply_body_formats(ws, columns, theme, data_row_start=3)
-    _paint_semantic_cells(ws, columns, theme, data_row_start=3)
+def finalize_uniform_widths(ws: Worksheet, theme: ExcelTheme) -> None:
+    """Calcula anchos uniformes considerando el contenido completo de la hoja."""
     _set_column_widths(ws, theme)
-
-    ws.sheet_view.showGridLines = theme.layout.show_grid_lines
-    ws.freeze_panes = "A3"
-    _apply_table(ws, workbook, theme, header_row=2)
-    _paint_header_row(ws, theme, columns, row_idx=2)

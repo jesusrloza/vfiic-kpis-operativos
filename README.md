@@ -1,24 +1,29 @@
 # VFIIC KPIs - ETL y reportes Excel
 
-Proyecto Python para procesar insumos de KPIs por area (Jotform/Google Sheets exportados), con estructura escalable para 60+ formatos mediante especificaciones TOML.
+Procesador de insumos de KPIs (Jotform/Google Sheets exportados) que genera, a partir de un único schema YAML por dirección/formulario, dos artefactos ejecutivos:
+
+1. **Comparativo apilado** (un solo workbook, un solo sheet) con MoM y YoY condicionales por formulario.
+2. **Particionado por mes**, un workbook por formulario, con hoja `original` y hojas mensuales.
+
+Cada corrida emite además un **resumen de reconciliación** en consola y `outputs/_logs/reconciliacion.json` indicando qué formularios fueron procesados, cuáles aún no tienen `ingesta` definida, cuáles no encontraron archivo en `inputs/raw/` y qué archivos de `inputs/raw/` no están en el YAML.
 
 ## Estructura del proyecto
 
-- `inputs/raw/`: archivos fuente de entrada.
-- `inputs/specs/`: archivo `*.toml` por area/formato.
-- `inputs/themes/`: temas TOML por tipo de reporte de salida.
+- `inputs/raw/`: archivos `.xlsx` exportados por formulario (gitignored).
+- `inputs/themes/`: temas de presentación Excel (`excel_partitioned.toml`, `excel_comparison_v2.toml`).
+- `schemas/indicadores_vfiic_v5.yaml`: catálogo único de formularios y KPIs.
 - `scripts/`: puntos de entrada CLI.
-- `src/vfiic_kpis/`: modulos compartidos de lectura, normalizacion, metricas y exportacion.
-- `outputs/particionados/`: Excel con hoja original + hojas por mes.
-- `outputs/comparativos/`: Excel con comparativo mensual.
-- `outputs/comparativos/`: Excel con comparativo mensual (v1) y comparativo v2.
-- `logs/`: bitacoras de ejecucion.
+- `src/vfiic_kpis/`: pipeline de carga, métricas y exportación.
+- `outputs/particionados/`: un Excel por formulario con la hoja `original` y una por mes.
+- `outputs/comparativos/`: workbook comparativo apilado.
+- `outputs/_logs/`: bitácoras de ejecución (JSON).
 
 ## Requisitos
 
 - Python 3.11+
+- `pandas`, `openpyxl`, `PyYAML` (instalados con el paquete).
 
-## Setup local con venv
+## Setup local
 
 ```bash
 python -m venv .venv
@@ -27,122 +32,103 @@ python -m pip install --upgrade pip
 pip install -e .
 ```
 
-## Configuracion por area (specs)
+## Configuración por formulario (YAML)
 
-Cada area tiene un archivo TOML en `inputs/specs/`.
+El YAML mantiene una estructura jerárquica `Dirección -> Formulario -> definición`. Cada formulario admite dos formas:
 
-Ejemplo inicial: `inputs/specs/trabajo_social.toml`, donde se define:
-- identificador y nombre de area,
-- patron de archivo de entrada (`source_glob`),
-- hoja Excel (`sheet_name`),
-- columna de fecha (`YYYY-MM-DD` esperado en negocio; se soporta valor tipo fecha Excel),
-- columnas para componer `Agente/Titular`,
-- KPIs a reportar y su parser (`numeric` o `sum_cantidad`).
-- agregación por KPI (`sum`, `count`, `avg`).
+### Forma legacy (sólo KPIs)
 
-Plantillas incluidas para acelerar altas de nuevas areas:
-- `inputs/specs/_template_area_base.toml`
-- `inputs/specs/_template_agente_columna_unica.toml`
-- `inputs/specs/_template_kpi_cantidad_texto.toml`
+```yaml
+Dirección X:
 
-Sugerencia: copiar una plantilla y renombrarla como `nombre_area.toml`, luego ajustar columnas/KPIs.
-
-## Uso rapido (recomendado)
-
-Desde la raiz del proyecto:
-
-```bash
-python scripts/build_partitioned_workbook.py
-python scripts/build_monthly_comparison.py
-python scripts/build_monthly_comparison_v2.py
+  VFIIC KPIs Dirección X:
+    - columna_origen: "Reportes operativos"
+      descripcion: "Reportes operativos"
 ```
 
-Alternativa vía entry points del paquete:
+Sin `ingesta`, el formulario aparece en el resumen como pendiente de configuración y no se procesa.
 
-```bash
-vfiic-partitioned
-vfiic-comparison
-vfiic-comparison-v2
-vfiic-run-all
+### Forma completa (con ingesta)
+
+```yaml
+Coordinación de Servicios Periciales:
+
+  VFIIC KPIs Periciales - Trabajo Social:
+    ingesta:
+      archivo: "VFIIC KPIs Periciales - Trabajo Social.xlsx"
+      hoja: "Form responses"
+      columna_fecha: ["Periodo Evaluado", "Periodo a Evaluar"]
+      columnas_persona:
+        - "Perito - Nombre(s)"
+        - "Perito - Apellido Paterno"
+        - "Perito - Apellido Materno"
+    kpis:
+      - columna_origen: "Dictámenes Realizados"
+        descripcion: "Dictámenes realizados"
 ```
 
-Opcional: ejecutar ambos reportes con un solo comando:
+Notas:
+
+- `archivo`: nombre exacto del archivo en `inputs/raw/`. Si se omite, se intenta `<display_name>.xlsx`.
+- `hoja`: nombre de la hoja Excel; por defecto `"Form responses"`.
+- `columna_fecha`: string o lista de alias; se resuelve la primera coincidencia tolerando acentos y mayúsculas.
+- `columnas_persona`: una o varias columnas; si son varias se concatenan en `Agente/Titular`.
+- KPI: `columna_origen` (texto exacto en el archivo) y `descripcion` (etiqueta visible en el reporte). Opcional: `aggregation` (`sum` | `count` | `avg`, por defecto `sum`) y `value_parser` (`numeric` | `sum_cantidad`).
+- Si no se declara `id` en `ingesta`, se deriva automáticamente del `display_name`.
+
+## Uso
 
 ```bash
 python scripts/run_all_reports.py
 ```
 
-## Script 1: workbook particionado por mes
-
-Genera un solo Excel con:
-- hoja `original` (datos completos normalizados),
-- hojas por periodo `YYYY_mon` (ej: `2026_mar`, `2026_abr`),
-- orden alfabetico ascendente por `Agente/Titular` con normalizacion de acentos/mayusculas.
+Equivalente vía entry points:
 
 ```bash
-python scripts/build_partitioned_workbook.py
+vfiic-run-all
+vfiic-partitioned
+vfiic-comparativo
 ```
 
-## Script 2: comparativo mensual
+Por defecto:
 
-Genera un Excel con tabla comparativa por KPI:
-- ultimo mes disponible vs mes anterior (diferencia numero y porcentaje),
-- opcionalmente ultimo mes vs mismo mes del ano previo (si existe).
+- Schema: `schemas/indicadores_vfiic_v5.yaml`
+- Insumos: `inputs/raw/`
+- Particionados: `outputs/particionados/<area_id>.xlsx`
+- Comparativo: `outputs/comparativos/comparativo_kpis.xlsx`
+- Bitácora: `outputs/_logs/reconciliacion.json`
 
-```bash
-python scripts/build_monthly_comparison.py
-```
-
-## Script 3: comparativo mensual v2
-
-Genera un Excel alternativo por area con:
-- titulo de area por hoja,
-- tabla con mejor legibilidad para indicadores largos,
-- color semantico en `Diferencia` y `Porcentaje` segun `change_direction` del KPI.
-
-```bash
-python scripts/build_monthly_comparison_v2.py
-```
-
-## Uso avanzado (sobrescribir rutas)
-
-Si necesitas otra carpeta de entrada o otro archivo de salida:
-
-```bash
-python scripts/build_partitioned_workbook.py \
-  --input-dir data \
-  --specs-dir inputs/specs \
-  --output outputs/particionados/particionado_kpis.xlsx
-```
-
-```bash
-python scripts/build_monthly_comparison.py \
-  --input-dir data \
-  --specs-dir inputs/specs \
-  --output outputs/comparativos/comparativo_kpis.xlsx
-```
-
-Para el comando unificado:
+Sobreescribir rutas:
 
 ```bash
 python scripts/run_all_reports.py \
-  --input-dir data \
-  --specs-dir inputs/specs \
-  --partitioned-output outputs/particionados/particionado_kpis.xlsx \
-  --comparison-output outputs/comparativos/comparativo_v2_kpis.xlsx
+  --schema schemas/indicadores_vfiic_v5.yaml \
+  --input-dir inputs/raw \
+  --partitioned-dir outputs/particionados \
+  --comparison-output outputs/comparativos/comparativo_kpis.xlsx \
+  --reconciliation-log outputs/_logs/reconciliacion.json
 ```
 
-## Extender a nuevas areas
+## Reglas de reporte
 
-1. Agregar archivo fuente a `inputs/raw/` (o usar otro directorio de entrada via CLI).
-2. Crear un nuevo spec TOML en `inputs/specs/`.
-3. Definir mapeo de fecha, agente y KPIs.
-4. En cada KPI, opcionalmente definir `change_direction = "up_is_good"` o `change_direction = "down_is_good"` para semaforo del comparativo v2.
-5. Definir `aggregation = "sum" | "count" | "avg"` según cada KPI.
-6. Ejecutar scripts requeridos (v1 y/o v2).
+- **Particionado**: se genera siempre que el formulario tenga al menos un periodo parseable.
+- **Comparativo**:
+  - Cada formulario aporta un bloque (título + encabezado + filas + 2 filas vacías).
+  - El último mes con datos define el encabezado dinámico del valor actual.
+  - Si existe mes anterior, se llenan `Diferencia (mes anterior)` y `Variación % (mes anterior)`.
+  - Si existe mismo mes del año previo, se llenan `Diferencia (año anterior)` y `Variación % (año anterior)`.
+  - En cualquier caso las columnas se mantienen visibles; las celdas vacías indican que aún no hay historia suficiente.
+- Las filas con multiple registros en un mismo mes se **suman** automáticamente (`aggregation = "sum"`).
+- La convención semántica es siempre **subir es bueno**.
 
-## Nota sobre carpeta de entrada
+## Reconciliación
 
-Para mantener compatibilidad con tu estado actual, los scripts aceptan `--input-dir data`.
-La recomendacion operativa es migrar gradualmente a `inputs/raw/` para separar insumos de codigo.
+El resumen agrupa los formularios en cuatro categorías y lista los archivos de `inputs/raw/` que no están en el YAML:
 
+- `procesables`
+- `sin archivo en inputs/raw`
+- `sin ingesta definida en el YAML`
+- `con problemas de columnas`
+- `archivos en inputs/raw sin entrada en el YAML`
+
+El JSON sidecar contiene el detalle por formulario: archivo resuelto, hoja, columna de fecha resuelta, columnas de persona, KPIs disponibles y KPIs sin columna.

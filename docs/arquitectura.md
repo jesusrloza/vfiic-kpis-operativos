@@ -2,125 +2,93 @@
 
 ## Objetivo
 
-Procesar insumos heterogeneos por area y producir dos artefactos ejecutivos:
-1. Workbook particionado por periodo mensual.
-2. Workbook comparativo de variacion mensual y anual.
-3. Workbook comparativo v2 con presentacion por area y semaforo semantico.
+Procesar exportaciones de formularios Jotform (un `.xlsx` por formulario en `inputs/raw/`) y producir, a partir de un único schema YAML como fuente de verdad, dos artefactos ejecutivos:
 
-## Ejecucion recomendada
+1. **Comparativo apilado**: un workbook con un solo sheet `Comparativo` donde cada formulario forma un bloque (título + encabezado + filas) separado del siguiente por dos filas vacías. Los anchos de columna se aplican al final, considerando todo el contenido.
+2. **Particionado por mes**: un workbook por formulario con la hoja `original` y una hoja por cada `YYYY_mon` con datos.
 
-Comandos cortos desde la raiz del proyecto:
+Ambos artefactos respetan las reglas:
 
-```bash
-python scripts/build_partitioned_workbook.py
-python scripts/build_monthly_comparison.py
-python scripts/build_monthly_comparison_v2.py
-```
-
-Cada script acepta `--theme` con la ruta a un TOML de maquetación (por defecto `inputs/themes/excel_partitioned.toml`, `inputs/themes/excel_comparison.toml` y `inputs/themes/excel_comparison_v2.toml`). En una sola corrida, `run_all_reports.py` expone `--partitioned-theme` y `--comparison-theme`.
-
-Alternativa en una sola corrida:
-
-```bash
-python scripts/run_all_reports.py
-```
-
-## Temas de presentación Excel
-
-Los estilos (encabezado azul oscuro, tabla con bandas, formatos de porcentaje, anchos, filtros y congelado de paneles) viven en TOML versionables:
-
-- `inputs/themes/excel_partitioned.toml` — hojas `original` y mensuales del particionado.
-- `inputs/themes/excel_comparison.toml` — hoja `comparativo`.
-
-El código los carga con `excel_theme.load_excel_theme` y los aplica tras `pandas.to_excel` mediante `excel_styling.apply_sheet_theme`, sin cambiar los nombres de columnas en los `DataFrame` de negocio.
+- El último mes con datos define las etiquetas dinámicas.
+- MoM se llena cuando existe mes anterior.
+- YoY se llena cuando existe el mismo mes del año previo.
+- Las columnas se mantienen siempre visibles; las celdas vacías indican falta de historia.
+- Múltiples registros del mismo mes se **suman** por KPI.
 
 ## Flujo general
 
 ```mermaid
-flowchart TD
-  rawInputs["inputs/raw o directorio de entrada"] --> specs["inputs/specs/*.toml"]
-  specs --> reader["io.py lectura por spec"]
-  reader --> normalize["normalize.py periodo y agente"]
-  normalize --> partitioned["build_partitioned_workbook.py"]
-  normalize --> comparison["build_monthly_comparison.py"]
-  normalize --> comparisonv2["build_monthly_comparison_v2.py"]
-  partitioned --> outPart["outputs/particionados/*.xlsx"]
-  comparison --> outComp["outputs/comparativos/*.xlsx"]
-  comparisonv2 --> outCompV2["outputs/comparativos/comparativo_v2_kpis.xlsx"]
+flowchart LR
+  yaml["schemas/indicadores_vfiic_v5.yaml"] --> loader["yaml_loader.py FormSpec"]
+  rawDir["inputs/raw/*.xlsx"] --> manifest["manifest.py reconcile"]
+  loader --> manifest
+  manifest --> reader["io.py read_form"]
+  reader --> normalize["normalize.py prepare_common_columns"]
+  normalize --> metrics["metrics.py build_form_comparison"]
+  normalize --> partWriter["excel_export.write_partitioned_workbook_for_form"]
+  metrics --> stackWriter["excel_export.write_stacked_comparativo_workbook"]
+  manifest --> logs["log_report.py reconciliacion"]
 ```
 
-## Modulos principales
+## Módulos principales
 
-- `src/vfiic_kpis/spec_loader.py`
-  - Carga los TOML y los transforma en objetos tipados (`AreaSpec`, `KpiSpec`).
+- `src/vfiic_kpis/yaml_loader.py`
+  - Carga el YAML y devuelve `list[FormSpec]`. Acepta tanto la forma legacy (lista de KPIs) como la forma completa con `ingesta` y `kpis`.
+  - Deriva `area_id` por slug de `display_name` (override con `ingesta.id`).
+- `src/vfiic_kpis/manifest.py`
+  - Reconcilia los `FormSpec` con `inputs/raw/`.
+  - Resuelve archivos por nombre exacto o equivalencia tras `fold` (sin acentos, casefold). Si el formulario no declara `archivo`, se intenta `<display_name>.xlsx`.
+  - Resuelve hoja, columna de fecha (alias) y columnas de persona/KPI con `text_match.find_matching_column`.
+- `src/vfiic_kpis/log_report.py`
+  - Imprime el resumen humano y persiste un JSON sidecar con el detalle de cada formulario.
 - `src/vfiic_kpis/io.py`
-  - Lee Excel por area en funcion de `source_glob`.
-  - Compone `Agente/Titular` desde 1 o N columnas.
+  - Lee un formulario ya resuelto. Compone `Agente/Titular` desde una o varias columnas, agrega `source_file`, `area_id`, `area_nombre` y delega normalización temporal a `prepare_common_columns`.
 - `src/vfiic_kpis/normalize.py`
-  - Estandariza periodo a datetime.
-  - Deriva `periodo_mes_key` (`YYYY_mon`) y etiqueta de mes.
-  - Crea llave de orden alfabetico normalizada (sin acentos, case-insensitive).
+  - Convierte `periodo` a `datetime`, calcula `periodo_mes_key`, `periodo_mes_label` y la llave de orden alfabético sin acentos.
 - `src/vfiic_kpis/metrics.py`
-  - Calcula comparativo MoM y YoY por KPI.
-  - Soporta parseo `numeric` y `sum_cantidad`.
-  - Incluye builder v2 con tendencia semantica por KPI (`up_is_good` / `down_is_good`).
+  - `build_form_comparison(df, resolution)` produce un `FormComparisonResult` con una fila por KPI: `valor_actual`, `valor_mes_anterior`, `valor_anio_anterior`, `diferencia_mom`, `porcentaje_mom`, `tendencia_mom`, `diferencia_yoy`, `porcentaje_yoy`, `tendencia_yoy`, junto con etiquetas legibles del mes actual, mes anterior y mismo mes año anterior.
+  - La tendencia siempre asume `subir es bueno`.
 - `src/vfiic_kpis/excel_export.py`
-  - Escribe salidas en formato XLSX y dispara la maquetación por tema.
-- `src/vfiic_kpis/excel_theme.py`
-  - Parsea TOML de tema (colores, estilo de tabla, reglas de formato y etiquetas de encabezado).
+  - `write_partitioned_workbook_for_form` (un workbook por formulario).
+  - `write_stacked_comparativo_workbook` (un workbook con un sheet apilado).
 - `src/vfiic_kpis/excel_styling.py`
-  - Post-proceso openpyxl: etiquetas legibles, formatos numéricos, tabla de Excel, autofiltro y anchos.
+  - Helpers reutilizables para pintar título, encabezado, formatos numéricos y color semántico en bloques con offset arbitrario.
+- `src/vfiic_kpis/excel_theme.py`
+  - Carga TOML de tema (colores, formatos, etiquetas de encabezado).
+- `src/vfiic_kpis/text_match.py`
+  - `fold`, `slugify`, `find_matching_column` para tolerar variaciones de mayúsculas y acentos en nombres de archivos y columnas.
 
-## Contrato del spec TOML
-
-```toml
-[area]
-id = "trabajo_social"
-display_name = "Trabajo Social"
-source_glob = "*.xlsx"
-sheet_name = "Form responses"
-date_column = "Periodo Evaluado"
-agent_columns = ["Perito - Nombre(s)", "Perito - Apellido Paterno", "Perito - Apellido Materno"]
-agent_output_column = "Agente/Titular"
-
-[[kpis]]
-name = "dictamenes_trabajo_social"
-source_column = "Dictámenes Realizados"
-aggregation = "sum"
-value_parser = "numeric"
-change_direction = "up_is_good"
-```
-
-`change_direction` determina si subir es favorable (`up_is_good`) o desfavorable (`down_is_good`) para colorear diferencia y porcentaje en el comparativo v2.
-
-## Reglas de negocio implementadas
-
-- Periodo de entrada: se acepta `datetime`, `Timestamp`, serial de Excel y texto parseable por `pandas.to_datetime` (incluye `YYYY-MM-DD`).
-- Particionado mensual: por clave `YYYY_mon` en espanol abreviado (`ene`, `feb`, `mar`, ...).
-- Orden de agentes: ascendente usando normalizacion de acentos y mayusculas.
-- Comparativo:
-  - Siempre intenta ultimo mes vs mes anterior.
-  - Solo agrega YoY cuando existe mismo mes del ano previo.
-- Agregación por KPI (`aggregation`): `sum`, `count` o `avg`.
-
-## Diagrama de decision para comparativo
+## Decisiones del comparativo
 
 ```mermaid
 flowchart TD
-  startNode["Tomar ultimo mes con datos"] --> hasPrev{"Existe mes anterior?"}
-  hasPrev -->|"Si"| calcMom["Calcular delta numero y delta % MoM"]
-  hasPrev -->|"No"| noMom["Dejar columnas MoM vacias"]
-  calcMom --> hasYoy{"Existe mismo mes del ano previo?"}
+  startNode["Tomar último mes con datos"] --> hasPrev{"¿Existe mes anterior?"}
+  hasPrev -->|"Sí"| calcMom["Calcular delta y % MoM"]
+  hasPrev -->|"No"| noMom["Dejar columnas MoM vacías"]
+  calcMom --> hasYoy{"¿Existe mismo mes del año previo?"}
   noMom --> hasYoy
-  hasYoy -->|"Si"| calcYoy["Calcular delta numero y delta % YoY"]
-  hasYoy -->|"No"| noYoy["Dejar columnas YoY vacias"]
-  calcYoy --> exportNode["Exportar workbook comparativo"]
+  hasYoy -->|"Sí"| calcYoy["Calcular delta y % YoY"]
+  hasYoy -->|"No"| noYoy["Dejar columnas YoY vacías"]
+  calcYoy --> exportNode["Apilar bloque + 2 filas vacías"]
   noYoy --> exportNode
 ```
 
-## Escalabilidad para 60+ areas
+## Reconciliación schema vs raw
 
-- Un spec por area evita hardcodear columnas en codigo.
-- Los scripts reutilizan pipeline comun y solo cambian las especificaciones.
-- Nuevos parseadores de KPI se agregan en `metrics.py` sin modificar los scripts CLI.
+El reporte de reconciliación se imprime al final de cada corrida y se persiste en `outputs/_logs/reconciliacion.json` con cinco categorías:
 
+- `procesables`: formulario con `ingesta` y archivo, al menos un KPI mapea.
+- `sin_archivo`: formulario con `ingesta` pero sin archivo en `inputs/raw`.
+- `sin_ingesta`: formulario en YAML aún sin `ingesta` (no se procesa).
+- `problemas_columnas`: archivo localizado pero columna de fecha o KPIs no coinciden.
+- `archivos_sin_schema`: `.xlsx` en `inputs/raw/` que no aparecen en el YAML (ni por `archivo` ni por `display_name`).
+
+## Temas de presentación
+
+- `inputs/themes/excel_partitioned.toml`: hoja `original` y mensuales del particionado.
+- `inputs/themes/excel_comparison_v2.toml`: bloques del comparativo apilado, con etiquetas parentéticas (`Diferencia (mes anterior)`, `Variación % (año anterior)`, etc.) y formatos numéricos por columna.
+
+## Escalabilidad
+
+- Para sumar un nuevo formulario al pipeline basta con agregar `ingesta` (archivo, hoja, fecha, persona) en el YAML. La sección `kpis` ya existe en la mayoría de las entradas; cualquier columna nueva se reportará si está en el archivo, o aparecerá como "sin columna" en la bitácora si falta.
+- El YAML mantiene legibilidad para usuarios no técnicos: agrupación por dirección, indentación, listas de KPIs con `columna_origen` + `descripcion`.

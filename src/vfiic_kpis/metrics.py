@@ -6,43 +6,26 @@ import re
 
 import pandas as pd
 
-from vfiic_kpis.normalize import month_label, month_label_full
-from vfiic_kpis.spec_loader import AreaSpec, KpiSpec
+from vfiic_kpis.manifest import FormResolution
+from vfiic_kpis.normalize import month_label_full
+from vfiic_kpis.text_match import find_matching_column
+from vfiic_kpis.yaml_loader import FormSpec, KpiSpec
 
 
 @dataclass(frozen=True)
-class ComparisonResult:
-    area_id: str
-    area_nombre: str
-    indicador: str
-    ultimo_mes: str
-    valor_ultimo_mes: float
-    mes_anterior: str | None
-    valor_mes_anterior: float | None
-    diferencia_numero_mom: float | None
-    diferencia_porcentaje_mom: float | None
-    mes_anio_previo: str | None
-    valor_mes_anio_previo: float | None
-    diferencia_numero_yoy: float | None
-    diferencia_porcentaje_yoy: float | None
+class FormComparisonResult:
+    """Resultado tabular de un formulario para el reporte stacked.
 
+    `df` lleva una fila por KPI con MoM y YoY nullable. Las etiquetas de
+    encabezados dependientes del mes (último mes, mes anterior, mismo mes
+    año anterior) se exponen como atributos para que el writer las pinte.
+    """
 
-@dataclass(frozen=True)
-class ComparisonV2Result:
-    area_id: str
-    area_nombre: str
-    indicador: str
-    indicador_label: str
-    direccion_cambio: str
-    mes_actual: str
-    mes_actual_full: str
-    valor_actual: float
-    mes_base: str | None
-    mes_base_full: str | None
-    valor_base: float | None
-    diferencia: float | None
-    porcentaje: float | None
-    tendencia: str
+    spec: FormSpec
+    df: pd.DataFrame
+    mes_actual_label: str
+    mes_anterior_label: str
+    mes_anio_anterior_label: str
 
 
 def _safe_percentage(delta: float | None, baseline: float | None) -> float | None:
@@ -55,123 +38,132 @@ def _parse_numeric_like(value: object, parser: str) -> float | None:
     if parser == "numeric":
         parsed = pd.to_numeric(pd.Series([value]), errors="coerce").iloc[0]
         return None if pd.isna(parsed) else float(parsed)
-
     if parser == "sum_cantidad":
         text = "" if value is None else str(value)
         values = re.findall(r"Cantidad:\s*([0-9]+(?:\.[0-9]+)?)", text)
         return float(sum(float(item) for item in values))
-
     raise ValueError(f"value_parser no soportado: {parser}")
 
 
-def _aggregate_for_month(df: pd.DataFrame, month_dt: datetime, kpi: KpiSpec) -> float:
+def _aggregate_for_month(
+    df: pd.DataFrame,
+    month_dt: datetime,
+    column: str,
+    aggregation: str,
+    value_parser: str,
+) -> float:
     mask = (df["periodo_dt"].dt.year == month_dt.year) & (df["periodo_dt"].dt.month == month_dt.month)
-    series = df.loc[mask, kpi.source_column]
-    parsed_values = [value for value in series.map(lambda x: _parse_numeric_like(x, kpi.value_parser)).tolist() if value is not None]
-    if kpi.aggregation == "count":
-        return float(len(parsed_values))
-    if kpi.aggregation == "avg":
-        return float(sum(parsed_values) / len(parsed_values)) if parsed_values else 0.0
-    return float(sum(parsed_values))
+    series = df.loc[mask, column]
+    parsed = [
+        value
+        for value in series.map(lambda x: _parse_numeric_like(x, value_parser)).tolist()
+        if value is not None
+    ]
+    if aggregation == "count":
+        return float(len(parsed))
+    if aggregation == "avg":
+        return float(sum(parsed) / len(parsed)) if parsed else 0.0
+    return float(sum(parsed))
 
 
-def _trend_kind(delta: float | None, change_direction: str) -> str:
+def _trend_kind(delta: float | None) -> str:
+    """Tendencia siempre con la convención 'subir es bueno'."""
     if delta is None:
         return "na"
     if delta == 0:
         return "neutral"
-    if change_direction == "up_is_good":
-        return "positive" if delta > 0 else "negative"
-    return "negative" if delta > 0 else "positive"
+    return "positive" if delta > 0 else "negative"
 
 
-def build_monthly_comparison(df: pd.DataFrame, specs: list[AreaSpec]) -> pd.DataFrame:
-    if df.empty:
-        return pd.DataFrame()
+def _previous_month(dt: datetime) -> datetime:
+    if dt.month == 1:
+        return datetime(dt.year - 1, 12, 1)
+    return datetime(dt.year, dt.month - 1, 1)
 
-    results: list[ComparisonResult] = []
-    for spec in specs:
-        area_df = df[df["area_id"] == spec.area_id].copy()
-        if area_df.empty:
+
+def _year_ago(dt: datetime) -> datetime:
+    return datetime(dt.year - 1, dt.month, 1)
+
+
+def build_form_comparison(df: pd.DataFrame, resolution: FormResolution) -> FormComparisonResult | None:
+    """Construye el comparativo MoM + YoY para un formulario.
+
+    - El último mes con datos define las etiquetas dinámicas.
+    - Si no existe mes anterior, las columnas MoM se dejan en `None`.
+    - Si no existe mismo mes del año previo, las columnas YoY se dejan en `None`.
+    - Cada KPI suma todas las filas del mes (multi-row por mes).
+    Devuelve `None` si no hay un solo periodo parseable.
+    """
+    if df.empty or "periodo_dt" not in df.columns:
+        return None
+    periods = df["periodo_dt"].dropna()
+    if periods.empty:
+        return None
+
+    last_dt: datetime = periods.max().to_pydatetime()
+    prev_dt = _previous_month(last_dt)
+    yoy_dt = _year_ago(last_dt)
+
+    has_prev = ((df["periodo_dt"].dt.year == prev_dt.year) & (df["periodo_dt"].dt.month == prev_dt.month)).any()
+    has_yoy = ((df["periodo_dt"].dt.year == yoy_dt.year) & (df["periodo_dt"].dt.month == yoy_dt.month)).any()
+
+    available_columns = list(df.columns)
+    rows: list[dict] = []
+    for kpi in resolution.spec.kpis:
+        actual_column = find_matching_column(kpi.columna_origen, available_columns)
+        if actual_column is None:
             continue
 
-        last_dt = area_df["periodo_dt"].max().to_pydatetime()
-        prev_dt = datetime(last_dt.year - 1, 12, 1) if last_dt.month == 1 else datetime(last_dt.year, last_dt.month - 1, 1)
-        yoy_dt = datetime(last_dt.year - 1, last_dt.month, 1)
+        last_value = _aggregate_for_month(df, last_dt, actual_column, kpi.aggregation, kpi.value_parser)
+        prev_value = (
+            _aggregate_for_month(df, prev_dt, actual_column, kpi.aggregation, kpi.value_parser)
+            if has_prev
+            else None
+        )
+        yoy_value = (
+            _aggregate_for_month(df, yoy_dt, actual_column, kpi.aggregation, kpi.value_parser)
+            if has_yoy
+            else None
+        )
 
-        has_prev = ((area_df["periodo_dt"].dt.year == prev_dt.year) & (area_df["periodo_dt"].dt.month == prev_dt.month)).any()
-        has_yoy = ((area_df["periodo_dt"].dt.year == yoy_dt.year) & (area_df["periodo_dt"].dt.month == yoy_dt.month)).any()
+        diff_mom = None if prev_value is None else last_value - prev_value
+        diff_yoy = None if yoy_value is None else last_value - yoy_value
 
-        for kpi in spec.kpis:
-            last_value = _aggregate_for_month(area_df, last_dt, kpi)
-            prev_value = _aggregate_for_month(area_df, prev_dt, kpi) if has_prev else None
-            yoy_value = _aggregate_for_month(area_df, yoy_dt, kpi) if has_yoy else None
+        rows.append(
+            {
+                "indicador": kpi.descripcion,
+                "valor_actual": last_value,
+                "valor_mes_anterior": prev_value,
+                "diferencia_mom": diff_mom,
+                "porcentaje_mom": _safe_percentage(diff_mom, prev_value),
+                "tendencia_mom": _trend_kind(diff_mom),
+                "valor_anio_anterior": yoy_value,
+                "diferencia_yoy": diff_yoy,
+                "porcentaje_yoy": _safe_percentage(diff_yoy, yoy_value),
+                "tendencia_yoy": _trend_kind(diff_yoy),
+            }
+        )
 
-            diff_mom = None if prev_value is None else last_value - prev_value
-            diff_yoy = None if yoy_value is None else last_value - yoy_value
+    if not rows:
+        return None
 
-            results.append(
-                ComparisonResult(
-                    area_id=spec.area_id,
-                    area_nombre=spec.display_name,
-                    indicador=kpi.name,
-                    ultimo_mes=month_label(last_dt),
-                    valor_ultimo_mes=last_value,
-                    mes_anterior=month_label(prev_dt) if has_prev else None,
-                    valor_mes_anterior=prev_value,
-                    diferencia_numero_mom=diff_mom,
-                    diferencia_porcentaje_mom=_safe_percentage(diff_mom, prev_value),
-                    mes_anio_previo=month_label(yoy_dt) if has_yoy else None,
-                    valor_mes_anio_previo=yoy_value,
-                    diferencia_numero_yoy=diff_yoy,
-                    diferencia_porcentaje_yoy=_safe_percentage(diff_yoy, yoy_value),
-                )
-            )
-
-    return pd.DataFrame([result.__dict__ for result in results])
+    return FormComparisonResult(
+        spec=resolution.spec,
+        df=pd.DataFrame(rows),
+        mes_actual_label=month_label_full(last_dt),
+        mes_anterior_label=month_label_full(prev_dt),
+        mes_anio_anterior_label=month_label_full(yoy_dt),
+    )
 
 
-def build_monthly_comparison_v2(df: pd.DataFrame, specs: list[AreaSpec]) -> pd.DataFrame:
-    """Comparativo V2 orientado a presentación por área con semáforo de tendencia."""
-    if df.empty:
-        return pd.DataFrame()
+# Compat helpers ---------------------------------------------------------------
+# Mantienen import path estable para tests que aún consultan utilidades.
 
-    results: list[ComparisonV2Result] = []
-    for spec in specs:
-        area_df = df[df["area_id"] == spec.area_id].copy()
-        if area_df.empty:
-            continue
-
-        last_dt = area_df["periodo_dt"].max().to_pydatetime()
-        prev_dt = datetime(last_dt.year - 1, 12, 1) if last_dt.month == 1 else datetime(last_dt.year, last_dt.month - 1, 1)
-
-        has_prev = ((area_df["periodo_dt"].dt.year == prev_dt.year) & (area_df["periodo_dt"].dt.month == prev_dt.month)).any()
-
-        for kpi in spec.kpis:
-            last_value = _aggregate_for_month(area_df, last_dt, kpi)
-            prev_value = _aggregate_for_month(area_df, prev_dt, kpi) if has_prev else None
-            diff = None if prev_value is None else last_value - prev_value
-            pct = _safe_percentage(diff, prev_value)
-            trend = _trend_kind(diff, kpi.change_direction)
-
-            results.append(
-                ComparisonV2Result(
-                    area_id=spec.area_id,
-                    area_nombre=spec.display_name,
-                    indicador=kpi.name,
-                    indicador_label=kpi.source_column,
-                    direccion_cambio=kpi.change_direction,
-                    mes_actual=month_label(last_dt),
-                    mes_actual_full=month_label_full(last_dt),
-                    valor_actual=last_value,
-                    mes_base=month_label(prev_dt) if has_prev else None,
-                    mes_base_full=month_label_full(prev_dt) if has_prev else None,
-                    valor_base=prev_value,
-                    diferencia=diff,
-                    porcentaje=pct,
-                    tendencia=trend,
-                )
-            )
-
-    return pd.DataFrame([result.__dict__ for result in results])
-
+__all__ = [
+    "FormComparisonResult",
+    "build_form_comparison",
+    "_aggregate_for_month",
+    "_parse_numeric_like",
+    "_safe_percentage",
+    "_trend_kind",
+]
