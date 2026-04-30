@@ -18,6 +18,7 @@ from vfiic_kpis.excel_theme import (
     header_fill_argb,
     header_font_argb,
     resolve_header_label,
+    row_stripe_fill_argb,
     semantic_color_argb,
     title_fill_argb,
     title_font_argb,
@@ -252,6 +253,25 @@ def paint_block_body(
     )
 
 
+def paint_block_data_row_stripes(
+    ws: Worksheet,
+    theme: ExcelTheme,
+    *,
+    data_row_start: int,
+    data_row_end: int,
+    column_count: int,
+) -> None:
+    """Alterna fondo blanco / azul claro en las filas de datos de un bloque del comparativo."""
+    if not theme.row_stripes.enabled or column_count < 1:
+        return
+    if data_row_end < data_row_start:
+        return
+    for offset, row_idx in enumerate(range(data_row_start, data_row_end + 1)):
+        fill = PatternFill(fill_type="solid", fgColor=row_stripe_fill_argb(theme, offset))
+        for col_idx in range(1, column_count + 1):
+            ws.cell(row=row_idx, column=col_idx).fill = fill
+
+
 def paint_semantic_pairs(
     ws: Worksheet,
     *,
@@ -269,12 +289,13 @@ def paint_semantic_pairs(
     for offset, trend in enumerate(trends):
         row_idx = data_row_start + offset
         color = semantic_color_argb(theme, trend or "neutral")
-        for col_idx, _kind in column_pairs:
+        for col_idx, kind in column_pairs:
             cell = ws.cell(row=row_idx, column=col_idx)
+            bold = kind == "porcentaje"
             cell.font = Font(
                 name=cell.font.name,
                 size=cell.font.size,
-                bold=cell.font.bold,
+                bold=bold,
                 italic=cell.font.italic,
                 underline=cell.font.underline,
                 strike=cell.font.strike,

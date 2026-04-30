@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Literal
 
@@ -52,6 +52,19 @@ class SemanticColorsTheme:
 
 
 @dataclass(frozen=True)
+class RowStripesTheme:
+    """Rayado alterno en cuerpo de datos del comparativo apilado.
+
+    `even_rgb` aplica a la primera fila de cada bloque (offset 0, 2, …);
+    `odd_rgb` a offset 1, 3, … (coincide con screenshot: blanco, azul claro, …).
+    """
+
+    enabled: bool
+    even_rgb: str
+    odd_rgb: str
+
+
+@dataclass(frozen=True)
 class ColumnFormatRule:
     match: MatchKind
     pattern: str
@@ -73,6 +86,7 @@ class ExcelTheme:
     layout: LayoutTheme
     column_width: ColumnWidthTheme
     semantic_colors: SemanticColorsTheme
+    row_stripes: RowStripesTheme
     column_formats: tuple[ColumnFormatRule, ...]
     header_labels: dict[str, str]
     friendly_header_fallback: bool
@@ -118,6 +132,7 @@ def load_excel_theme(path: Path) -> ExcelTheme:
     layout_raw = data.get("layout", {}) or {}
     width_raw = data.get("column_width", {}) or {}
     semantic_raw = data.get("semantic_colors", {}) or {}
+    row_stripes_raw = data.get("row_stripes", {}) or {}
     labels_raw = data.get("header_labels", {}) or {}
     if not isinstance(labels_raw, dict):
         raise ValueError("header_labels debe ser una tabla clave-valor.")
@@ -172,6 +187,18 @@ def load_excel_theme(path: Path) -> ExcelTheme:
         negative_rgb=_normalize_rgb(str(semantic_raw.get("negative", "C00000"))),
         neutral_rgb=_normalize_rgb(str(semantic_raw.get("neutral", "000000"))),
     )
+    if row_stripes_raw:
+        row_stripes = RowStripesTheme(
+            enabled=bool(row_stripes_raw.get("enabled", False)),
+            even_rgb=_normalize_rgb(str(row_stripes_raw.get("even", "FFFFFF"))),
+            odd_rgb=_normalize_rgb(str(row_stripes_raw.get("odd", "D9E2F3"))),
+        )
+    else:
+        row_stripes = RowStripesTheme(
+            enabled=False,
+            even_rgb="FFFFFF",
+            odd_rgb="D9E2F3",
+        )
 
     header_labels = {str(k): str(v) for k, v in labels_raw.items()}
     friendly = bool(data.get("friendly_header_fallback", True))
@@ -183,6 +210,7 @@ def load_excel_theme(path: Path) -> ExcelTheme:
         layout=layout,
         column_width=column_width,
         semantic_colors=semantic_colors,
+        row_stripes=row_stripes,
         column_formats=tuple(rules),
         header_labels=header_labels,
         friendly_header_fallback=friendly,
@@ -220,6 +248,12 @@ def title_fill_argb(theme: ExcelTheme) -> str:
 
 def title_font_argb(theme: ExcelTheme) -> str:
     return _rgb_to_argb(theme.title.font_color_rgb)
+
+
+def row_stripe_fill_argb(theme: ExcelTheme, row_offset: int) -> str:
+    """Color de relleno para la fila de datos `row_offset` (0 = primera fila del bloque)."""
+    rgb = theme.row_stripes.even_rgb if row_offset % 2 == 0 else theme.row_stripes.odd_rgb
+    return _rgb_to_argb(rgb)
 
 
 def semantic_color_argb(theme: ExcelTheme, kind: str) -> str:

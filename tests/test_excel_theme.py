@@ -31,6 +31,9 @@ class TestExcelTheme(unittest.TestCase):
         self.assertTrue(theme.header.bold)
         self.assertIn("diferencia_mom", theme.header_labels)
         self.assertIn("porcentaje_yoy", theme.header_labels)
+        self.assertTrue(theme.row_stripes.enabled)
+        self.assertEqual(theme.row_stripes.even_rgb, "FFFFFF")
+        self.assertEqual(theme.row_stripes.odd_rgb, "D9E2F3")
 
     def test_load_default_partitioned_theme(self) -> None:
         theme = load_excel_theme(DEFAULT_PARTITIONED_THEME)

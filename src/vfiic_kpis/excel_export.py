@@ -11,6 +11,7 @@ from vfiic_kpis.excel_styling import (
     apply_sheet_theme,
     finalize_uniform_widths,
     paint_block_body,
+    paint_block_data_row_stripes,
     paint_block_header,
     paint_semantic_pairs,
     paint_title_band,
@@ -217,6 +218,13 @@ def write_stacked_comparativo_workbook(
         data_row_end = data_row_start + rows_written - 1
 
         paint_block_body(ws, theme, column_list, data_row_start=data_row_start, data_row_end=data_row_end)
+        paint_block_data_row_stripes(
+            ws,
+            theme,
+            data_row_start=data_row_start,
+            data_row_end=data_row_end,
+            column_count=column_count,
+        )
         paint_semantic_pairs(
             ws,
             column_pairs=[(diff_pct_mom_idx, "diferencia"), (pct_mom_idx, "porcentaje")],

@@ -91,6 +91,7 @@ class TestPipelineSmoke(unittest.TestCase):
             ws = wb.active
             # Bloque: fila 1 título, fila 2 encabezado, fila 3 primera fila de KPIs.
             first_kpi_row = 3
+            second_kpi_row = 4
             d_mom = ws.cell(row=first_kpi_row, column=4)
             e_mom = ws.cell(row=first_kpi_row, column=5)
             h_yoy = ws.cell(row=first_kpi_row, column=8)
@@ -102,6 +103,13 @@ class TestPipelineSmoke(unittest.TestCase):
                 self.assertIn("ISNUMBER", formula)
             self.assertIn("C{0}".format(first_kpi_row), str(e_mom.value))
             self.assertIn("F{0}".format(first_kpi_row), str(h_yoy.value))
+
+            self.assertTrue(e_mom.font.bold)
+            self.assertTrue(ws.cell(row=first_kpi_row, column=8).font.bold)
+            b_row3 = ws.cell(row=first_kpi_row, column=2)
+            b_row4 = ws.cell(row=second_kpi_row, column=2)
+            self.assertEqual(b_row3.fill.fgColor.rgb, "FFFFFFFF")
+            self.assertEqual(b_row4.fill.fgColor.rgb, "FFD9E2F3")
 
 
 if __name__ == "__main__":

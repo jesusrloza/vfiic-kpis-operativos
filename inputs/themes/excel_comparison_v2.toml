@@ -16,6 +16,11 @@ positive = "1F4E79"
 negative = "C00000"
 neutral = "000000"
 
+[row_stripes]
+enabled = true
+even = "FFFFFF"
+odd = "D9E2F3"
+
 [table]
 style = "TableStyleMedium2"
 show_row_stripes = true
