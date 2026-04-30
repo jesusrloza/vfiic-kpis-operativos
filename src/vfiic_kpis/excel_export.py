@@ -32,6 +32,26 @@ STACKED_COLUMNS: tuple[str, ...] = (
 
 BLOCK_GAP_ROWS = 2
 
+# Columnas derivadas en el comparativo apilado: fórmulas Excel (B/C/F editables por el usuario).
+_FORMULA_COLUMN_NAMES: frozenset[str] = frozenset(
+    {"diferencia_mom", "porcentaje_mom", "diferencia_yoy", "porcentaje_yoy"}
+)
+
+
+def _comparativo_derived_formulas(row_idx: int) -> dict[str, str]:
+    """Fórmulas alineadas con `metrics._safe_percentage` (*100) y sin #DIV/0! / #VALUE!."""
+    r = row_idx
+    return {
+        "diferencia_mom": f'=IF(OR(NOT(ISNUMBER(B{r})),NOT(ISNUMBER(C{r}))),"",B{r}-C{r})',
+        "porcentaje_mom": (
+            f'=IF(OR(NOT(ISNUMBER(B{r})),NOT(ISNUMBER(C{r}))),"",IF(C{r}=0,"",(B{r}-C{r})/C{r}*100))'
+        ),
+        "diferencia_yoy": f'=IF(OR(NOT(ISNUMBER(B{r})),NOT(ISNUMBER(F{r}))),"",B{r}-F{r})',
+        "porcentaje_yoy": (
+            f'=IF(OR(NOT(ISNUMBER(B{r})),NOT(ISNUMBER(F{r}))),"",IF(F{r}=0,"",(B{r}-F{r})/F{r}*100))'
+        ),
+    }
+
 
 def write_partitioned_workbook_for_form(
     *,
@@ -131,7 +151,8 @@ def write_stacked_comparativo_workbook(
     Cada bloque consta de:
       - Título (merge horizontal con el `display_name` del formulario).
       - Encabezados con etiquetas dinámicas de mes y rótulos parentéticos.
-      - Filas (una por KPI) con MoM y YoY nullable.
+      - Filas (una por KPI): valores base (actual, mes anterior, año anterior) y
+        fórmulas Excel para diferencias y variaciones % (MoM y YoY).
       - Dos filas vacías como separador entre bloques.
     Al final se aplican anchos uniformes considerando todo el contenido.
     """
@@ -177,8 +198,13 @@ def write_stacked_comparativo_workbook(
         trends_yoy: list[str] = []
         for offset, (_, kpi_row) in enumerate(result.df.iterrows()):
             row_idx = data_row_start + offset
-            for slot, value in enumerate(_build_block_row(kpi_row), start=1):
-                cell = ws.cell(row=row_idx, column=slot, value=value)
+            block_values = _build_block_row(kpi_row)
+            derived = _comparativo_derived_formulas(row_idx)
+            for slot, internal in enumerate(STACKED_COLUMNS, start=1):
+                if internal in _FORMULA_COLUMN_NAMES:
+                    cell = ws.cell(row=row_idx, column=slot, value=derived[internal])
+                else:
+                    cell = ws.cell(row=row_idx, column=slot, value=block_values[slot - 1])
                 cell.alignment = Alignment(horizontal="left" if slot == 1 else "right", vertical="center")
             trends_mom.append(str(kpi_row.get("tendencia_mom", "neutral")))
             trends_yoy.append(str(kpi_row.get("tendencia_yoy", "neutral")))

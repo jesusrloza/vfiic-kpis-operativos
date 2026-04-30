@@ -50,7 +50,7 @@ flowchart LR
   - La tendencia siempre asume `subir es bueno`.
 - `src/vfiic_kpis/excel_export.py`
   - `write_partitioned_workbook_for_form` (un workbook por formulario).
-  - `write_stacked_comparativo_workbook` (un workbook con un sheet apilado).
+  - `write_stacked_comparativo_workbook` (un workbook con un sheet apilado); las columnas derivadas de diferencia y % se emiten como fórmulas Excel.
 - `src/vfiic_kpis/excel_styling.py`
   - Helpers reutilizables para pintar título, encabezado, formatos numéricos y color semántico en bloques con offset arbitrario.
 - `src/vfiic_kpis/excel_theme.py`
@@ -72,6 +72,8 @@ flowchart TD
   calcYoy --> exportNode["Apilar bloque + 2 filas vacías"]
   noYoy --> exportNode
 ```
+
+En el Excel generado, las columnas de **diferencia y variación** (D, E, G y H en cada bloque: MoM y YoY) se escriben como **fórmulas** que referencian los valores base (mes actual, mes anterior, mismo mes año anterior). Así, quien edite o complete a mano esas celdas base en Excel verá actualizarse los cálculos sin `#DIV/0!` ni `#VALUE!` cuando falten datos o el denominador sea cero. El pipeline sigue rellenando los agregados y las tendencias en código para la exportación; el **color de fuente** en diferencias y porcentajes (`paint_semantic_pairs`) refleja la corrida de generación, no se recalcula automáticamente si el usuario cambia números después (un formato condicional en Excel podría hacerlo en el futuro).
 
 ## Reconciliación schema vs raw
 

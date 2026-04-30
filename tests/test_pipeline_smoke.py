@@ -6,6 +6,7 @@ import unittest
 from pathlib import Path
 
 import pandas as pd
+from openpyxl import load_workbook
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SRC = PROJECT_ROOT / "src"
@@ -85,6 +86,22 @@ class TestPipelineSmoke(unittest.TestCase):
 
             self.assertTrue(stacked_out.exists())
             self.assertTrue(partitioned_out.exists())
+
+            wb = load_workbook(stacked_out, data_only=False)
+            ws = wb.active
+            # Bloque: fila 1 título, fila 2 encabezado, fila 3 primera fila de KPIs.
+            first_kpi_row = 3
+            d_mom = ws.cell(row=first_kpi_row, column=4)
+            e_mom = ws.cell(row=first_kpi_row, column=5)
+            h_yoy = ws.cell(row=first_kpi_row, column=8)
+            self.assertEqual(d_mom.data_type, "f")
+            self.assertEqual(e_mom.data_type, "f")
+            self.assertEqual(h_yoy.data_type, "f")
+            for cell in (d_mom, e_mom, h_yoy):
+                formula = str(cell.value)
+                self.assertIn("ISNUMBER", formula)
+            self.assertIn("C{0}".format(first_kpi_row), str(e_mom.value))
+            self.assertIn("F{0}".format(first_kpi_row), str(h_yoy.value))
 
 
 if __name__ == "__main__":
