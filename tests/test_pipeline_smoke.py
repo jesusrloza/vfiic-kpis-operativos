@@ -40,15 +40,44 @@ Coordinacion Periciales:
 """
 
 
-class TestPipelineSmoke(unittest.TestCase):
-    def test_yaml_to_workbooks_minimal_pipeline(self) -> None:
+def _count_conditional_format_entries(ws) -> int:
+    """Cuenta el total de reglas registradas (sumando todas las reglas de todos los rangos).
+
+    Tras cargar el workbook con `load_workbook`, cada rango (sqref) puede tener
+    una o varias reglas; aquí sumamos las longitudes de las listas de reglas
+    para verificar que las tres reglas semánticas (>0, <0, =0) están presentes.
+    """
+    return sum(len(rules) for _, rules in ws.conditional_formatting._cf_rules.items())
+
+
+def _build_pipeline(root: Path, df: pd.DataFrame):
+    schema_path = root / "schema.yaml"
+    schema_path.write_text(SCHEMA_BODY, encoding="utf-8")
+
+    input_dir = root / "raw"
+    input_dir.mkdir()
+    df.to_excel(
+        input_dir / "VFIIC KPIs Periciales - Demo.xlsx",
+        index=False,
+        sheet_name="Form responses",
+    )
+
+    forms = load_forms_from_yaml(schema_path)
+    report = reconcile(forms, input_dir)
+    assert len(report.matched) == 1
+    resolution = report.matched[0]
+    data = read_form(resolution)
+    comparison = build_form_comparison(data, resolution)
+    assert comparison is not None
+    return resolution, data, comparison
+
+
+class TestPipelineSmokeNoYoy(unittest.TestCase):
+    """Datos sólo con MoM: las columnas YoY se omiten globalmente."""
+
+    def test_workbook_omits_yoy_columns_and_uses_conditional_format(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            schema_path = root / "schema.yaml"
-            schema_path.write_text(SCHEMA_BODY, encoding="utf-8")
-
-            input_dir = root / "raw"
-            input_dir.mkdir()
             df = pd.DataFrame(
                 [
                     {"Periodo a Evaluar": "2026-03-01", "Auxiliar": "A", "Visitas": 2, "Dictamenes": 1},
@@ -56,23 +85,7 @@ class TestPipelineSmoke(unittest.TestCase):
                     {"Periodo a Evaluar": "2026-04-01", "Auxiliar": "B", "Visitas": 1, "Dictamenes": 0},
                 ]
             )
-            df.to_excel(
-                input_dir / "VFIIC KPIs Periciales - Demo.xlsx",
-                index=False,
-                sheet_name="Form responses",
-            )
-
-            forms = load_forms_from_yaml(schema_path)
-            report = reconcile(forms, input_dir)
-            self.assertEqual(len(report.matched), 1)
-
-            resolution = report.matched[0]
-            data = read_form(resolution)
-            self.assertFalse(data.empty)
-
-            comparison = build_form_comparison(data, resolution)
-            self.assertIsNotNone(comparison)
-            assert comparison is not None
+            resolution, data, comparison = _build_pipeline(root, df)
 
             stacked_out = root / "comparativo.xlsx"
             partitioned_out = root / "particionado.xlsx"
@@ -89,27 +102,79 @@ class TestPipelineSmoke(unittest.TestCase):
 
             wb = load_workbook(stacked_out, data_only=False)
             ws = wb.active
-            # Bloque: fila 1 título, fila 2 encabezado, fila 3 primera fila de KPIs.
+
+            self.assertEqual(ws.max_column, 5)
+            for header_col in range(6, 9):
+                self.assertIsNone(ws.cell(row=2, column=header_col).value)
+
             first_kpi_row = 3
             second_kpi_row = 4
             d_mom = ws.cell(row=first_kpi_row, column=4)
             e_mom = ws.cell(row=first_kpi_row, column=5)
-            h_yoy = ws.cell(row=first_kpi_row, column=8)
             self.assertEqual(d_mom.data_type, "f")
             self.assertEqual(e_mom.data_type, "f")
-            self.assertEqual(h_yoy.data_type, "f")
-            for cell in (d_mom, e_mom, h_yoy):
+            for cell in (d_mom, e_mom):
                 formula = str(cell.value)
                 self.assertIn("ISNUMBER", formula)
-            self.assertIn("C{0}".format(first_kpi_row), str(e_mom.value))
-            self.assertIn("F{0}".format(first_kpi_row), str(h_yoy.value))
+                self.assertIn("B{0}".format(first_kpi_row), formula)
+                self.assertIn("C{0}".format(first_kpi_row), formula)
+
+            for col_idx in range(6, 9):
+                self.assertIsNone(ws.cell(row=first_kpi_row, column=col_idx).value)
 
             self.assertTrue(e_mom.font.bold)
-            self.assertTrue(ws.cell(row=first_kpi_row, column=8).font.bold)
             b_row3 = ws.cell(row=first_kpi_row, column=2)
             b_row4 = ws.cell(row=second_kpi_row, column=2)
             self.assertEqual(b_row3.fill.fgColor.rgb, "FFFFFFFF")
             self.assertEqual(b_row4.fill.fgColor.rgb, "FFD9E2F3")
+
+            self.assertGreaterEqual(_count_conditional_format_entries(ws), 3)
+
+
+class TestPipelineSmokeWithYoy(unittest.TestCase):
+    """Datos con historia hasta el mismo mes del año anterior: columnas YoY presentes."""
+
+    def test_workbook_includes_yoy_columns_and_formulas(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            df = pd.DataFrame(
+                [
+                    {"Periodo a Evaluar": "2025-04-01", "Auxiliar": "A", "Visitas": 4, "Dictamenes": 2},
+                    {"Periodo a Evaluar": "2026-03-01", "Auxiliar": "A", "Visitas": 2, "Dictamenes": 1},
+                    {"Periodo a Evaluar": "2026-04-01", "Auxiliar": "A", "Visitas": 5, "Dictamenes": 3},
+                    {"Periodo a Evaluar": "2026-04-01", "Auxiliar": "B", "Visitas": 1, "Dictamenes": 0},
+                ]
+            )
+            _resolution, _data, comparison = _build_pipeline(root, df)
+            self.assertTrue(comparison.df["valor_anio_anterior"].notna().any())
+
+            stacked_out = root / "comparativo.xlsx"
+            write_stacked_comparativo_workbook(results=[comparison], output_path=stacked_out)
+            self.assertTrue(stacked_out.exists())
+
+            wb = load_workbook(stacked_out, data_only=False)
+            ws = wb.active
+
+            self.assertEqual(ws.max_column, 8)
+
+            first_kpi_row = 3
+            d_mom = ws.cell(row=first_kpi_row, column=4)
+            e_mom = ws.cell(row=first_kpi_row, column=5)
+            g_yoy = ws.cell(row=first_kpi_row, column=7)
+            h_yoy = ws.cell(row=first_kpi_row, column=8)
+
+            for cell in (d_mom, e_mom, g_yoy, h_yoy):
+                self.assertEqual(cell.data_type, "f")
+                self.assertIn("ISNUMBER", str(cell.value))
+
+            self.assertIn("F{0}".format(first_kpi_row), str(g_yoy.value))
+            self.assertIn("F{0}".format(first_kpi_row), str(h_yoy.value))
+
+            self.assertTrue(e_mom.font.bold)
+            self.assertTrue(h_yoy.font.bold)
+
+            # Una regla por color (>0, <0, =0) en cada uno de los rangos MoM y YoY.
+            self.assertGreaterEqual(_count_conditional_format_entries(ws), 6)
 
 
 if __name__ == "__main__":

@@ -50,9 +50,9 @@ flowchart LR
   - La tendencia siempre asume `subir es bueno`.
 - `src/vfiic_kpis/excel_export.py`
   - `write_partitioned_workbook_for_form` (un workbook por formulario).
-  - `write_stacked_comparativo_workbook` (un workbook con un sheet apilado); las columnas derivadas de diferencia y % se emiten como fórmulas Excel.
+  - `write_stacked_comparativo_workbook` (un workbook con un sheet apilado); las columnas derivadas de diferencia y % se emiten como fórmulas Excel. Decide globalmente si incluir las columnas YoY a partir de los resultados (`_resolve_stacked_columns`).
 - `src/vfiic_kpis/excel_styling.py`
-  - Helpers reutilizables para pintar título, encabezado, formatos numéricos y color semántico en bloques con offset arbitrario.
+  - Helpers reutilizables para pintar título, encabezado, formatos numéricos, rayas de fila, bold de porcentajes y formato condicional de color semántico (`apply_semantic_conditional_format`) en bloques con offset arbitrario.
 - `src/vfiic_kpis/excel_theme.py`
   - Carga TOML de tema (colores, formatos, etiquetas de encabezado).
 - `src/vfiic_kpis/text_match.py`
@@ -73,7 +73,11 @@ flowchart TD
   noYoy --> exportNode
 ```
 
-En el Excel generado, las columnas de **diferencia y variación** (D, E, G y H en cada bloque: MoM y YoY) se escriben como **fórmulas** que referencian los valores base (mes actual, mes anterior, mismo mes año anterior). Así, quien edite o complete a mano esas celdas base en Excel verá actualizarse los cálculos sin `#DIV/0!` ni `#VALUE!` cuando falten datos o el denominador sea cero. El pipeline sigue rellenando los agregados y las tendencias en código para la exportación; el **color de fuente** en diferencias y porcentajes (`paint_semantic_pairs`) refleja la corrida de generación, no se recalcula automáticamente si el usuario cambia números después (un formato condicional en Excel podría hacerlo en el futuro).
+En el Excel generado, las columnas de **diferencia y variación** (D, E, G y H en cada bloque: MoM y YoY) se escriben como **fórmulas** que referencian los valores base (mes actual, mes anterior, mismo mes año anterior). Así, quien edite o complete a mano esas celdas base en Excel verá actualizarse los cálculos sin `#DIV/0!` ni `#VALUE!` cuando falten datos o el denominador sea cero.
+
+El **color de fuente** en diferencias y porcentajes se aplica como **formato condicional Excel** mediante `apply_semantic_conditional_format`, con tres reglas por rango: `> 0` → azul (positivo), `< 0` → rojo (negativo), `= 0` → negro (neutro). Como Excel reevalúa las reglas al recalcular fórmulas, el color se actualiza automáticamente cuando el usuario edita los valores base. El bold de los porcentajes se aplica como estilo base (`paint_porcentaje_bold`) y sobrevive a la evaluación condicional, ya que las reglas sólo sobrescriben `font.color`.
+
+Las **tres columnas YoY** (`Mismo mes año anterior`, `Diferencia (año anterior)` y `Variación % (año anterior)`) se omiten globalmente cuando ningún formulario alcanza 13 meses de historia, es decir, cuando ningún resultado tiene `valor_anio_anterior` no nulo. La decisión es "global any": basta con que un formulario tenga la columna llena para que las tres columnas YoY aparezcan en todos los bloques (los que carezcan de historia mostrarán celdas vacías). Esto se resuelve en `_resolve_stacked_columns` antes de escribir cualquier bloque, de modo que todos los bloques comparten la misma cabecera del sheet.
 
 ## Reconciliación schema vs raw
 

@@ -4,6 +4,7 @@ import re
 from datetime import date, datetime, time
 from typing import Any
 
+from openpyxl.formatting.rule import CellIsRule
 from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl.utils import get_column_letter
 from openpyxl.workbook.workbook import Workbook
@@ -272,35 +273,76 @@ def paint_block_data_row_stripes(
             ws.cell(row=row_idx, column=col_idx).fill = fill
 
 
-def paint_semantic_pairs(
+def paint_porcentaje_bold(
     ws: Worksheet,
     *,
-    column_pairs: list[tuple[int, str]],
-    trends: list[str],
-    theme: ExcelTheme,
+    column_indices: list[int],
     data_row_start: int,
+    data_row_end: int,
 ) -> None:
-    """Aplica color semántico a un conjunto de celdas según la tendencia por fila.
+    """Aplica `bold=True` como estilo base a las celdas de las columnas indicadas.
 
-    `column_pairs` lleva tuplas `(col_idx, kind)` donde `kind` se ignora hoy
-    pero permite extender el comportamiento más adelante. `trends` es una lista
-    paralela a las filas (índice 0 = `data_row_start`).
+    Pensado para columnas de porcentaje del comparativo apilado. El bold se
+    aplica como estilo base (no via formato condicional) para que sobreviva
+    la evaluación dinámica de color por valor: las reglas condicionales solo
+    sobrescriben `font.color`, dejando el bold intacto.
     """
-    for offset, trend in enumerate(trends):
-        row_idx = data_row_start + offset
-        color = semantic_color_argb(theme, trend or "neutral")
-        for col_idx, kind in column_pairs:
+    if data_row_end < data_row_start or not column_indices:
+        return
+    for col_idx in column_indices:
+        for row_idx in range(data_row_start, data_row_end + 1):
             cell = ws.cell(row=row_idx, column=col_idx)
-            bold = kind == "porcentaje"
+            current = cell.font
             cell.font = Font(
-                name=cell.font.name,
-                size=cell.font.size,
-                bold=bold,
-                italic=cell.font.italic,
-                underline=cell.font.underline,
-                strike=cell.font.strike,
-                color=color,
+                name=current.name,
+                size=current.size,
+                bold=True,
+                italic=current.italic,
+                underline=current.underline,
+                strike=current.strike,
+                color=current.color,
             )
+
+
+def apply_semantic_conditional_format(
+    ws: Worksheet,
+    theme: ExcelTheme,
+    *,
+    ranges: list[str],
+) -> None:
+    """Registra reglas de formato condicional sobre los rangos indicados.
+
+    Cada celda del rango se colorea en tiempo de evaluación según su valor
+    numérico:
+
+      - `> 0` → color `positive` del tema (azul por defecto).
+      - `< 0` → color `negative` del tema (rojo por defecto).
+      - `= 0` → color `neutral` del tema (negro por defecto).
+
+    Como las reglas se evalúan en Excel al recalcular fórmulas, los colores
+    se actualizan cuando el usuario edita los valores base que alimentan las
+    fórmulas de diferencia y variación.
+    """
+    if not ranges:
+        return
+
+    positive_color = semantic_color_argb(theme, "positive")
+    negative_color = semantic_color_argb(theme, "negative")
+    neutral_color = semantic_color_argb(theme, "neutral")
+
+    for rng in ranges:
+        ws.conditional_formatting.add(
+            rng,
+            CellIsRule(operator="greaterThan", formula=["0"], font=Font(color=positive_color)),
+        )
+        ws.conditional_formatting.add(
+            rng,
+            CellIsRule(operator="lessThan", formula=["0"], font=Font(color=negative_color)),
+        )
+        ws.conditional_formatting.add(
+            rng,
+            CellIsRule(operator="equal", formula=["0"], font=Font(color=neutral_color)),
+        )
 
 
 def finalize_uniform_widths(ws: Worksheet, theme: ExcelTheme) -> None:

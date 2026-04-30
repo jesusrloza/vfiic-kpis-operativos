@@ -7,20 +7,23 @@ import pandas as pd
 from openpyxl import Workbook
 from openpyxl.styles import Alignment
 
+from openpyxl.utils import get_column_letter
+
 from vfiic_kpis.excel_styling import (
+    apply_semantic_conditional_format,
     apply_sheet_theme,
     finalize_uniform_widths,
     paint_block_body,
     paint_block_data_row_stripes,
     paint_block_header,
-    paint_semantic_pairs,
+    paint_porcentaje_bold,
     paint_title_band,
 )
 from vfiic_kpis.excel_theme import load_excel_theme, resolve_header_label
 from vfiic_kpis.metrics import FormComparisonResult
 from vfiic_kpis.paths import DEFAULT_COMPARISON_V2_THEME, DEFAULT_PARTITIONED_THEME
 
-STACKED_COLUMNS: tuple[str, ...] = (
+STACKED_COLUMNS_FULL: tuple[str, ...] = (
     "indicador",
     "valor_actual",
     "valor_mes_anterior",
@@ -31,27 +34,72 @@ STACKED_COLUMNS: tuple[str, ...] = (
     "porcentaje_yoy",
 )
 
+STACKED_COLUMNS_NO_YOY: tuple[str, ...] = (
+    "indicador",
+    "valor_actual",
+    "valor_mes_anterior",
+    "diferencia_mom",
+    "porcentaje_mom",
+)
+
+# Compat: alias histórico (se mantenía como tuple inmutable de 8 columnas).
+STACKED_COLUMNS: tuple[str, ...] = STACKED_COLUMNS_FULL
+
 BLOCK_GAP_ROWS = 2
 
-# Columnas derivadas en el comparativo apilado: fórmulas Excel (B/C/F editables por el usuario).
+# Columnas derivadas en el comparativo apilado: fórmulas Excel (valores base editables por el usuario).
 _FORMULA_COLUMN_NAMES: frozenset[str] = frozenset(
     {"diferencia_mom", "porcentaje_mom", "diferencia_yoy", "porcentaje_yoy"}
 )
 
 
-def _comparativo_derived_formulas(row_idx: int) -> dict[str, str]:
-    """Fórmulas alineadas con `metrics._safe_percentage` (*100) y sin #DIV/0! / #VALUE!."""
+def _resolve_stacked_columns(results: list[FormComparisonResult]) -> tuple[str, ...]:
+    """Modo "global any": las 3 columnas YoY se incluyen sólo si al menos un
+    formulario alcanza 13 meses de historia (es decir, `valor_anio_anterior`
+    no nulo en alguna fila). En caso contrario se omiten para todos los bloques.
+    """
+    has_any_yoy = any(
+        result.df["valor_anio_anterior"].notna().any()
+        for result in results
+        if "valor_anio_anterior" in result.df.columns
+    )
+    return STACKED_COLUMNS_FULL if has_any_yoy else STACKED_COLUMNS_NO_YOY
+
+
+def _comparativo_derived_formulas(row_idx: int, columns: tuple[str, ...]) -> dict[str, str]:
+    """Fórmulas alineadas con `metrics._safe_percentage` (*100) y sin #DIV/0! / #VALUE!.
+
+    Las referencias se calculan a partir de la posición real de cada columna
+    base en `columns`, de modo que sigan apuntando bien aunque se omita el
+    bloque YoY (sin columna F).
+    """
     r = row_idx
-    return {
-        "diferencia_mom": f'=IF(OR(NOT(ISNUMBER(B{r})),NOT(ISNUMBER(C{r}))),"",B{r}-C{r})',
-        "porcentaje_mom": (
-            f'=IF(OR(NOT(ISNUMBER(B{r})),NOT(ISNUMBER(C{r}))),"",IF(C{r}=0,"",(B{r}-C{r})/C{r}*100))'
-        ),
-        "diferencia_yoy": f'=IF(OR(NOT(ISNUMBER(B{r})),NOT(ISNUMBER(F{r}))),"",B{r}-F{r})',
-        "porcentaje_yoy": (
-            f'=IF(OR(NOT(ISNUMBER(B{r})),NOT(ISNUMBER(F{r}))),"",IF(F{r}=0,"",(B{r}-F{r})/F{r}*100))'
-        ),
-    }
+    formulas: dict[str, str] = {}
+
+    valor_actual_letter = get_column_letter(columns.index("valor_actual") + 1)
+    valor_mes_anterior_letter = get_column_letter(columns.index("valor_mes_anterior") + 1)
+    b = valor_actual_letter
+    c = valor_mes_anterior_letter
+
+    formulas["diferencia_mom"] = (
+        f'=IF(OR(NOT(ISNUMBER({b}{r})),NOT(ISNUMBER({c}{r}))),"",{b}{r}-{c}{r})'
+    )
+    formulas["porcentaje_mom"] = (
+        f'=IF(OR(NOT(ISNUMBER({b}{r})),NOT(ISNUMBER({c}{r}))),"",'
+        f'IF({c}{r}=0,"",({b}{r}-{c}{r})/{c}{r}*100))'
+    )
+
+    if "valor_anio_anterior" in columns:
+        f = get_column_letter(columns.index("valor_anio_anterior") + 1)
+        formulas["diferencia_yoy"] = (
+            f'=IF(OR(NOT(ISNUMBER({b}{r})),NOT(ISNUMBER({f}{r}))),"",{b}{r}-{f}{r})'
+        )
+        formulas["porcentaje_yoy"] = (
+            f'=IF(OR(NOT(ISNUMBER({b}{r})),NOT(ISNUMBER({f}{r}))),"",'
+            f'IF({f}{r}=0,"",({b}{r}-{f}{r})/{f}{r}*100))'
+        )
+
+    return formulas
 
 
 def write_partitioned_workbook_for_form(
@@ -124,10 +172,10 @@ def _resolve_block_labels(
     return labels
 
 
-def _build_block_row(row: pd.Series) -> list:
-    """Devuelve los valores en el orden de `STACKED_COLUMNS`. `None` se mantiene para celdas vacías."""
+def _build_block_row(row: pd.Series, columns: tuple[str, ...]) -> list:
+    """Devuelve los valores en el orden de `columns`. `None` se mantiene para celdas vacías."""
     output: list = []
-    for column in STACKED_COLUMNS:
+    for column in columns:
         if column not in row:
             output.append(None)
             continue
@@ -155,7 +203,14 @@ def write_stacked_comparativo_workbook(
       - Filas (una por KPI): valores base (actual, mes anterior, año anterior) y
         fórmulas Excel para diferencias y variaciones % (MoM y YoY).
       - Dos filas vacías como separador entre bloques.
-    Al final se aplican anchos uniformes considerando todo el contenido.
+
+    Las tres columnas YoY (`Mismo mes año anterior`, `Diferencia (año anterior)`
+    y `Variación % (año anterior)`) se omiten globalmente cuando ningún
+    formulario tiene 13 meses de historia ("global any"). El color de fuente
+    en las celdas de diferencia/variación se aplica vía formato condicional
+    Excel, por lo que se actualiza al recalcular fórmulas si el usuario edita
+    los valores base. Al final se aplican anchos uniformes considerando todo
+    el contenido.
     """
     if not results:
         return
@@ -168,15 +223,22 @@ def write_stacked_comparativo_workbook(
     ws.title = sheet_name[:31] or "Comparativo"
     ws.sheet_view.showGridLines = theme.layout.show_grid_lines
 
-    column_count = len(STACKED_COLUMNS)
-    column_list = list(STACKED_COLUMNS)
-    diff_pct_mom_idx = column_list.index("diferencia_mom") + 1
+    columns = _resolve_stacked_columns(results)
+    column_count = len(columns)
+    column_list = list(columns)
+
+    diff_mom_idx = column_list.index("diferencia_mom") + 1
     pct_mom_idx = column_list.index("porcentaje_mom") + 1
-    diff_pct_yoy_idx = column_list.index("diferencia_yoy") + 1
-    pct_yoy_idx = column_list.index("porcentaje_yoy") + 1
+    has_yoy_columns = "diferencia_yoy" in column_list
+    diff_yoy_idx = column_list.index("diferencia_yoy") + 1 if has_yoy_columns else None
+    pct_yoy_idx = column_list.index("porcentaje_yoy") + 1 if has_yoy_columns else None
 
     next_row = 1
     first_data_row: int | None = None
+    semantic_ranges: list[str] = []
+    porcentaje_indices = [pct_mom_idx]
+    if pct_yoy_idx is not None:
+        porcentaje_indices.append(pct_yoy_idx)
 
     for result in results:
         title_row = next_row
@@ -195,20 +257,16 @@ def write_stacked_comparativo_workbook(
         paint_block_header(ws, theme, column_list, labels, row_idx=header_row)
 
         rows_written = 0
-        trends_mom: list[str] = []
-        trends_yoy: list[str] = []
         for offset, (_, kpi_row) in enumerate(result.df.iterrows()):
             row_idx = data_row_start + offset
-            block_values = _build_block_row(kpi_row)
-            derived = _comparativo_derived_formulas(row_idx)
-            for slot, internal in enumerate(STACKED_COLUMNS, start=1):
+            block_values = _build_block_row(kpi_row, columns)
+            derived = _comparativo_derived_formulas(row_idx, columns)
+            for slot, internal in enumerate(columns, start=1):
                 if internal in _FORMULA_COLUMN_NAMES:
                     cell = ws.cell(row=row_idx, column=slot, value=derived[internal])
                 else:
                     cell = ws.cell(row=row_idx, column=slot, value=block_values[slot - 1])
                 cell.alignment = Alignment(horizontal="left" if slot == 1 else "right", vertical="center")
-            trends_mom.append(str(kpi_row.get("tendencia_mom", "neutral")))
-            trends_yoy.append(str(kpi_row.get("tendencia_yoy", "neutral")))
             rows_written += 1
 
         if rows_written == 0:
@@ -225,25 +283,27 @@ def write_stacked_comparativo_workbook(
             data_row_end=data_row_end,
             column_count=column_count,
         )
-        paint_semantic_pairs(
+        paint_porcentaje_bold(
             ws,
-            column_pairs=[(diff_pct_mom_idx, "diferencia"), (pct_mom_idx, "porcentaje")],
-            trends=trends_mom,
-            theme=theme,
+            column_indices=porcentaje_indices,
             data_row_start=data_row_start,
+            data_row_end=data_row_end,
         )
-        paint_semantic_pairs(
-            ws,
-            column_pairs=[(diff_pct_yoy_idx, "diferencia"), (pct_yoy_idx, "porcentaje")],
-            trends=trends_yoy,
-            theme=theme,
-            data_row_start=data_row_start,
-        )
+
+        mom_start = get_column_letter(diff_mom_idx)
+        mom_end = get_column_letter(pct_mom_idx)
+        semantic_ranges.append(f"{mom_start}{data_row_start}:{mom_end}{data_row_end}")
+        if diff_yoy_idx is not None and pct_yoy_idx is not None:
+            yoy_start = get_column_letter(diff_yoy_idx)
+            yoy_end = get_column_letter(pct_yoy_idx)
+            semantic_ranges.append(f"{yoy_start}{data_row_start}:{yoy_end}{data_row_end}")
 
         if first_data_row is None:
             first_data_row = header_row
 
         next_row = data_row_end + 1 + BLOCK_GAP_ROWS
+
+    apply_semantic_conditional_format(ws, theme, ranges=semantic_ranges)
 
     if first_data_row is not None and theme.layout.freeze_panes:
         ws.freeze_panes = ws.cell(row=first_data_row + 1, column=1).coordinate
