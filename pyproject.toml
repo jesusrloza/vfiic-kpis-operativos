@@ -15,9 +15,9 @@ dependencies = [
 ]
 
 [project.scripts]
-vfiic-partitioned = "vfiic_kpis.cli:main_partitioned"
-vfiic-comparativo = "vfiic_kpis.cli:main_comparativo"
-vfiic-run-all = "vfiic_kpis.cli:main_run_all"
+generar-todos = "vfiic_kpis.cli:main_run_all"
+generar-comparativo = "vfiic_kpis.cli:main_comparativo"
+generar-particionado = "vfiic_kpis.cli:main_partitioned"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

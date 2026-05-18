@@ -94,17 +94,19 @@ def _parse_form(direccion: str, display_name: str, raw_value: Any) -> FormSpec:
     label = f"{direccion} :: {display_name}"
 
     if isinstance(raw_value, list):
-        ingesta_raw: dict[str, Any] = {}
-        kpis_raw = raw_value
-    elif isinstance(raw_value, dict):
-        ingesta_raw = raw_value.get("ingesta", {}) or {}
-        if not isinstance(ingesta_raw, dict):
-            raise ValueError(f"[{label}] `ingesta` debe ser un mapeo si se especifica.")
-        kpis_raw = raw_value.get("kpis", [])
-    else:
         raise ValueError(
-            f"[{label}] forma inválida: se esperaba lista de KPIs o mapeo con `ingesta` y `kpis`."
+            f"[{label}] forma inválida: use un bloque con `ingesta` y `kpis`. "
+            "Vea docs/guia-indicadores-yaml.md."
         )
+    if not isinstance(raw_value, dict):
+        raise ValueError(
+            f"[{label}] forma inválida: se esperaba un mapeo con `ingesta` y `kpis`."
+        )
+
+    ingesta_raw = raw_value.get("ingesta", {}) or {}
+    if not isinstance(ingesta_raw, dict):
+        raise ValueError(f"[{label}] `ingesta` debe ser un mapeo.")
+    kpis_raw = raw_value.get("kpis", [])
 
     if not isinstance(kpis_raw, list) or not kpis_raw:
         raise ValueError(f"[{label}] no hay KPIs definidos en el YAML.")
@@ -158,14 +160,16 @@ def _parse_form(direccion: str, display_name: str, raw_value: Any) -> FormSpec:
 def load_forms_from_yaml(yaml_path: Path) -> list[FormSpec]:
     """Carga el YAML de indicadores y devuelve `FormSpec` por formulario.
 
-    El YAML se estructura como `Dirección -> Formulario -> definición`. Cada
-    formulario puede ser una lista (legacy) con sólo KPIs o un mapeo con
-    `ingesta` y `kpis`.
+    El YAML se estructura como `Dirección -> Formulario -> definición`, donde
+    cada formulario es un mapeo con `ingesta` y `kpis`.
     """
     if not yaml_path.is_file():
         raise FileNotFoundError(f"No existe el archivo de schema YAML: {yaml_path}")
     with yaml_path.open("r", encoding="utf-8") as handle:
-        raw = yaml.safe_load(handle)
+        try:
+            raw = yaml.safe_load(handle)
+        except yaml.YAMLError as exc:
+            raise ValueError(f"YAML inválido en {yaml_path}: {exc}") from exc
     if raw is None:
         return []
     if not isinstance(raw, dict):

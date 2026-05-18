@@ -10,7 +10,6 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-# Mismas rutas por defecto que vfiic_kpis.paths
 PARTITIONED_DIR = PROJECT_ROOT / "outputs" / "particionados"
 COMPARATIVOS_DIR = PROJECT_ROOT / "outputs" / "comparativos"
 

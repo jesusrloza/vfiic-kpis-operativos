@@ -21,7 +21,7 @@ from vfiic_kpis.excel_styling import (
 )
 from vfiic_kpis.excel_theme import load_excel_theme, resolve_header_label
 from vfiic_kpis.metrics import FormComparisonResult
-from vfiic_kpis.paths import DEFAULT_COMPARISON_V2_THEME, DEFAULT_PARTITIONED_THEME
+from vfiic_kpis.paths import DEFAULT_COMPARISON_THEME, DEFAULT_PARTITIONED_THEME
 
 STACKED_COLUMNS_FULL: tuple[str, ...] = (
     "indicador",
@@ -216,7 +216,7 @@ def write_stacked_comparativo_workbook(
         return
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    theme = load_excel_theme(theme_path or DEFAULT_COMPARISON_V2_THEME)
+    theme = load_excel_theme(theme_path or DEFAULT_COMPARISON_THEME)
 
     workbook = Workbook()
     ws = workbook.active

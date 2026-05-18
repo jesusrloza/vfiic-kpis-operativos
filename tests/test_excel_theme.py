@@ -20,12 +20,12 @@ from vfiic_kpis.excel_theme import (
     match_column_rule,
     resolve_header_label,
 )
-from vfiic_kpis.paths import DEFAULT_COMPARISON_V2_THEME, DEFAULT_PARTITIONED_THEME
+from vfiic_kpis.paths import DEFAULT_COMPARISON_THEME, DEFAULT_PARTITIONED_THEME
 
 
 class TestExcelTheme(unittest.TestCase):
-    def test_load_default_comparison_v2_theme(self) -> None:
-        theme = load_excel_theme(DEFAULT_COMPARISON_V2_THEME)
+    def test_load_default_comparativo_theme(self) -> None:
+        theme = load_excel_theme(DEFAULT_COMPARISON_THEME)
         self.assertEqual(theme.header.fill_rgb, "1F4E79")
         self.assertEqual(theme.header.font_color_rgb, "FFFFFF")
         self.assertTrue(theme.header.bold)
@@ -47,8 +47,8 @@ class TestExcelTheme(unittest.TestCase):
         theme = load_excel_theme(DEFAULT_PARTITIONED_THEME)
         self.assertEqual(resolve_header_label("area_id", theme), "ID área")
 
-    def test_first_matching_rule_for_v2_percentage(self) -> None:
-        theme = load_excel_theme(DEFAULT_COMPARISON_V2_THEME)
+    def test_first_matching_rule_for_comparativo_percentage(self) -> None:
+        theme = load_excel_theme(DEFAULT_COMPARISON_THEME)
         rule = first_matching_rule("porcentaje_mom", theme.column_formats)
         self.assertIsNotNone(rule)
         assert rule is not None

@@ -41,7 +41,7 @@ def format_text_summary(report: ReconciliationReport, *, detail_json_path: Path 
     if _reconciliation_is_clean(report):
         n = len(report.matched)
         lines = [
-            "===== Reconciliación schema YAML vs inputs/raw =====",
+            "===== Reconciliación schema YAML vs inputs =====",
             f"{n} formulario(s) procesable(s); sin incidencias.",
             "====================================================",
         ]
@@ -56,20 +56,20 @@ def format_text_summary(report: ReconciliationReport, *, detail_json_path: Path 
     extra_files = [path.name for path in report.files_without_yaml]
 
     sections = [
-        "===== Reconciliación schema YAML vs inputs/raw =====",
+        "===== Reconciliación schema YAML vs inputs =====",
         f"Formularios procesables: {len(matched)}",
         _bullets(matched),
         "",
-        f"Formularios sin archivo en inputs/raw: {len(no_file)}",
+        f"Formularios sin archivo en inputs: {len(no_file)}",
         _bullets(no_file),
         "",
-        f"Formularios sin `ingesta` definida en el YAML: {len(no_ingesta)}",
+        f"Formularios con configuración incompleta en el YAML: {len(no_ingesta)}",
         _bullets(no_ingesta),
         "",
         f"Formularios con problemas de columnas: {len(column_issues)}",
         _bullets(column_issues),
         "",
-        f"Archivos en inputs/raw sin entrada en el YAML: {len(extra_files)}",
+        f"Archivos en inputs sin entrada en el YAML: {len(extra_files)}",
         _bullets(extra_files),
         "====================================================",
     ]
@@ -98,13 +98,13 @@ def report_to_dict(report: ReconciliationReport) -> dict:
     return {
         "procesables": [_resolution_to_dict(item) for item in report.matched],
         "sin_archivo": [_resolution_to_dict(item) for item in report.yaml_without_file],
-        "sin_ingesta": [_resolution_to_dict(item) for item in report.yaml_without_ingesta],
+        "config_incompleta": [_resolution_to_dict(item) for item in report.yaml_without_ingesta],
         "problemas_columnas": [_resolution_to_dict(item) for item in report.yaml_with_column_issues],
         "archivos_sin_schema": [str(path) for path in report.files_without_yaml],
         "totales": {
             "procesables": len(report.matched),
             "sin_archivo": len(report.yaml_without_file),
-            "sin_ingesta": len(report.yaml_without_ingesta),
+            "config_incompleta": len(report.yaml_without_ingesta),
             "problemas_columnas": len(report.yaml_with_column_issues),
             "archivos_sin_schema": len(report.files_without_yaml),
         },

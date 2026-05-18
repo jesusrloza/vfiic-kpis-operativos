@@ -17,13 +17,14 @@ from vfiic_kpis.manifest import FormResolution, ReconciliationReport, reconcile
 from vfiic_kpis.metrics import build_form_comparison
 from vfiic_kpis.paths import (
     DEFAULT_COMPARISON_OUTPUT,
-    DEFAULT_COMPARISON_V2_THEME,
+    DEFAULT_COMPARISON_THEME,
     DEFAULT_INPUT_DIR,
     DEFAULT_PARTITIONED_DIR,
     DEFAULT_PARTITIONED_THEME,
     DEFAULT_RECONCILIATION_LOG,
     DEFAULT_SCHEMA_PATH,
 )
+from vfiic_kpis.errores_usuario import imprimir_error, mensaje_para_usuario
 from vfiic_kpis.yaml_loader import load_forms_from_yaml
 
 FormData = tuple[FormResolution, pd.DataFrame]
@@ -55,7 +56,11 @@ def _add_common_args(parser: argparse.ArgumentParser) -> None:
 
 
 def _load_and_reconcile(schema_path: Path, input_dir: Path) -> ReconciliationReport:
-    forms = load_forms_from_yaml(schema_path)
+    try:
+        forms = load_forms_from_yaml(schema_path)
+    except (FileNotFoundError, ValueError) as exc:
+        imprimir_error("cargar el schema YAML", exc, ruta=schema_path)
+        raise SystemExit(1) from exc
     return reconcile(forms, input_dir)
 
 
@@ -68,7 +73,8 @@ def _read_form_or_none(resolution: FormResolution, log_prefix: str) -> pd.DataFr
     try:
         data = read_form(resolution)
     except Exception as exc:  # noqa: BLE001
-        print(f"[{log_prefix}] omitido {resolution.spec.display_name!r}: {exc}")
+        motivo = mensaje_para_usuario(exc, contexto=log_prefix, ruta=resolution.file_path)
+        print(f"[{log_prefix}] omitido {resolution.spec.display_name!r}: {motivo}")
         return None
     data, n_future = drop_future_period_rows(data)
     if n_future:
@@ -93,12 +99,16 @@ def _emit_partitioned(
             print(f"[partitioned] omitido {resolution.spec.display_name!r}: sin periodos parseables")
             continue
         out_path = output_dir / f"{_safe_filename(resolution.spec.area_id)}.xlsx"
-        write_partitioned_workbook_for_form(
-            data=data,
-            form_id=resolution.spec.area_id,
-            output_path=out_path,
-            theme_path=theme_path,
-        )
+        try:
+            write_partitioned_workbook_for_form(
+                data=data,
+                form_id=resolution.spec.area_id,
+                output_path=out_path,
+                theme_path=theme_path,
+            )
+        except Exception as exc:  # noqa: BLE001
+            imprimir_error(f"generar particionado ({resolution.spec.display_name})", exc, ruta=out_path)
+            raise SystemExit(1) from exc
         written.append(out_path)
         if verbose:
             print(f"[partitioned] {resolution.spec.display_name} -> {out_path}")
@@ -142,11 +152,15 @@ def _emit_comparativo(
         print("[comparativo] no hay formularios con datos suficientes; no se generó workbook")
         return None
 
-    write_stacked_comparativo_workbook(
-        results=results,
-        output_path=output_path,
-        theme_path=theme_path,
-    )
+    try:
+        write_stacked_comparativo_workbook(
+            results=results,
+            output_path=output_path,
+            theme_path=theme_path,
+        )
+    except Exception as exc:  # noqa: BLE001
+        imprimir_error("generar el comparativo", exc, ruta=output_path)
+        raise SystemExit(1) from exc
     if verbose:
         print(f"[comparativo] {len(results)} bloque(s) -> {output_path}")
     else:
@@ -201,7 +215,7 @@ def _parser_comparativo() -> argparse.ArgumentParser:
     )
     _add_common_args(parser)
     parser.add_argument("--output", type=Path, default=DEFAULT_COMPARISON_OUTPUT)
-    parser.add_argument("--theme", type=Path, default=DEFAULT_COMPARISON_V2_THEME)
+    parser.add_argument("--theme", type=Path, default=DEFAULT_COMPARISON_THEME)
     return parser
 
 
@@ -213,7 +227,7 @@ def _parser_all() -> argparse.ArgumentParser:
     parser.add_argument("--partitioned-dir", type=Path, default=DEFAULT_PARTITIONED_DIR)
     parser.add_argument("--partitioned-theme", type=Path, default=DEFAULT_PARTITIONED_THEME)
     parser.add_argument("--comparison-output", type=Path, default=DEFAULT_COMPARISON_OUTPUT)
-    parser.add_argument("--comparison-theme", type=Path, default=DEFAULT_COMPARISON_V2_THEME)
+    parser.add_argument("--comparison-theme", type=Path, default=DEFAULT_COMPARISON_THEME)
     return parser
 
 

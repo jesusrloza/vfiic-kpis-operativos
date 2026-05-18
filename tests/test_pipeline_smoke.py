@@ -54,7 +54,7 @@ def _build_pipeline(root: Path, df: pd.DataFrame):
     schema_path = root / "schema.yaml"
     schema_path.write_text(SCHEMA_BODY, encoding="utf-8")
 
-    input_dir = root / "raw"
+    input_dir = root / "inputs"
     input_dir.mkdir()
     df.to_excel(
         input_dir / "VFIIC KPIs Periciales - Demo.xlsx",

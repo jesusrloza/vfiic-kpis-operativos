@@ -54,7 +54,7 @@ Coordinacion Periciales:
         finally:
             path.unlink(missing_ok=True)
 
-    def test_form_with_legacy_list_shape_has_no_ingesta(self) -> None:
+    def test_rejects_list_only_form_definition(self) -> None:
         body = """
 Direccion X:
 
@@ -64,12 +64,8 @@ Direccion X:
 """
         path = _write_yaml(body)
         try:
-            forms = load_forms_from_yaml(path)
-            self.assertEqual(len(forms), 1)
-            spec = forms[0]
-            self.assertFalse(spec.has_ingesta)
-            self.assertIsNone(spec.archivo)
-            self.assertEqual(spec.kpis[0].columna_origen, "Reportes operativos")
+            with self.assertRaises(ValueError):
+                load_forms_from_yaml(path)
         finally:
             path.unlink(missing_ok=True)
 
@@ -78,8 +74,12 @@ Direccion X:
 Direccion Y:
 
   VFIIC KPIs Periciales - Análisis de Contexto:
-    - columna_origen: "Informes"
-      descripcion: "Informes"
+    ingesta:
+      archivo: "contexto.xlsx"
+      columnas_persona: ["Auxiliar"]
+    kpis:
+      - columna_origen: "Informes"
+        descripcion: "Informes"
 """
         path = _write_yaml(body)
         try:

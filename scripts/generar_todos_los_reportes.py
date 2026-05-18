@@ -13,4 +13,3 @@ from vfiic_kpis.cli import main_run_all
 
 if __name__ == "__main__":
     main_run_all()
-

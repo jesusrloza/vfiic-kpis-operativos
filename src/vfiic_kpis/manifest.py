@@ -10,12 +10,13 @@ from vfiic_kpis.text_match import (
     find_matching_column,
     fold,
 )
+from vfiic_kpis.errores_usuario import mensaje_para_usuario
 from vfiic_kpis.yaml_loader import FormSpec
 
 
 @dataclass(frozen=True)
 class FormResolution:
-    """Resultado de cruzar un `FormSpec` con `inputs/raw/`.
+    """Resultado de cruzar un `FormSpec` con los archivos en `inputs/`.
 
     Se considera "matched" cuando se localizó archivo, hoja, columna de fecha
     y al menos una columna de KPI utilizable. KPIs faltantes se reportan en
@@ -83,7 +84,7 @@ def reconcile(
 
     Reporta cada formulario en una de cuatro categorías:
       - matched: hay archivo y al menos un KPI lee columnas válidas.
-      - yaml_without_ingesta: el formulario en el YAML aún no define `ingesta`.
+      - yaml_without_ingesta: configuración incompleta en el YAML (`ingesta`).
       - yaml_without_file: hay `ingesta`, pero no encontramos el archivo.
       - yaml_with_column_issues: el archivo existe pero no tiene la fecha o
         ningún KPI mapea a sus columnas.
@@ -115,7 +116,7 @@ def reconcile(
                     resolved_person_columns=(),
                     available_kpis=(),
                     missing_columns=(),
-                    skip_reason="ingesta incompleta en YAML",
+                    skip_reason="configuración incompleta en el YAML",
                 )
             )
             continue
@@ -131,7 +132,7 @@ def reconcile(
                     resolved_person_columns=(),
                     available_kpis=(),
                     missing_columns=(),
-                    skip_reason="archivo no encontrado en inputs/raw",
+                    skip_reason="archivo no encontrado en inputs",
                 )
             )
             continue
@@ -139,6 +140,7 @@ def reconcile(
         try:
             available_columns, resolved_sheet = _read_excel_header(file_path, spec.hoja)
         except Exception as exc:  # noqa: BLE001
+            motivo = mensaje_para_usuario(exc, contexto="leer encabezados", ruta=file_path)
             yaml_with_column_issues.append(
                 FormResolution(
                     spec=spec,
@@ -148,7 +150,7 @@ def reconcile(
                     resolved_person_columns=(),
                     available_kpis=(),
                     missing_columns=(),
-                    skip_reason=f"no fue posible leer encabezados: {exc}",
+                    skip_reason=motivo,
                 )
             )
             continue

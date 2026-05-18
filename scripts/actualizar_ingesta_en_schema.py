@@ -1,4 +1,4 @@
-"""Regenera indicadores_vfiic_v5.yaml con ingesta+kpis para cada formulario con Excel en inputs/raw/."""
+"""Actualiza bloques `ingesta` en el schema a partir de los Excel en inputs/."""
 from __future__ import annotations
 
 import sys
@@ -8,7 +8,7 @@ import pandas as pd
 import yaml
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-RAW = PROJECT_ROOT / "inputs" / "raw"
+INPUTS = PROJECT_ROOT / "inputs"
 SCHEMA = PROJECT_ROOT / "schemas" / "indicadores_vfiic_v5.yaml"
 
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
@@ -62,6 +62,45 @@ def sheet_columns(path: Path) -> tuple[str, list[str]]:
     return sheet, [str(c) for c in header.columns]
 
 
+def _refresh_ingesta_from_excel(display_name: str, form_raw: dict, path: Path) -> dict:
+    sheet, cols = sheet_columns(path)
+    persons = detect_person_columns(cols)
+    if not persons:
+        raise SystemExit(f"Sin columnas de persona detectadas: {display_name!r} en {path.name}")
+
+    kpis_raw = form_raw.get("kpis", [])
+    if not isinstance(kpis_raw, list):
+        raise SystemExit(f"Formulario sin lista `kpis`: {display_name!r}")
+
+    kpis_out: list[dict] = []
+    for item in kpis_raw:
+        if not isinstance(item, dict):
+            raise SystemExit(f"KPI inválido en {display_name!r}")
+        co = str(item.get("columna_origen", "")).strip()
+        desc = str(item.get("descripcion", "")).strip() or co
+        resolved = find_matching_column(co, cols) or co
+        entry: dict = {"columna_origen": resolved, "descripcion": desc}
+        for key in ("aggregation", "value_parser"):
+            if key in item and item[key] is not None:
+                entry[key] = item[key]
+        kpis_out.append(entry)
+
+    if find_first_matching_column(["Periodo Evaluado", "Periodo a Evaluar"], cols) is None:
+        date_aliases = list(DEFAULT_DATE_ALIASES)
+    else:
+        date_aliases = ["Periodo Evaluado", "Periodo a Evaluar"]
+
+    return {
+        "ingesta": {
+            "archivo": path.name,
+            "hoja": sheet,
+            "columna_fecha": date_aliases,
+            "columnas_persona": persons,
+        },
+        "kpis": kpis_out,
+    }
+
+
 def main() -> None:
     with SCHEMA.open("r", encoding="utf-8") as f:
         data = yaml.safe_load(f)
@@ -75,40 +114,9 @@ def main() -> None:
             continue
         new_forms: dict = {}
         for display_name, form_raw in forms.items():
-            path = RAW / f"{display_name}.xlsx"
-            if path.is_file() and isinstance(form_raw, list):
-                sheet, cols = sheet_columns(path)
-                persons = detect_person_columns(cols)
-                if not persons:
-                    raise SystemExit(f"Sin columnas de persona detectadas: {display_name!r} en {path.name}")
-
-                kpis_out: list[dict] = []
-                for item in form_raw:
-                    if not isinstance(item, dict):
-                        raise SystemExit(f"KPI inválido en {display_name!r}")
-                    co = str(item.get("columna_origen", "")).strip()
-                    desc = str(item.get("descripcion", "")).strip() or co
-                    resolved = find_matching_column(co, cols) or co
-                    entry: dict = {"columna_origen": resolved, "descripcion": desc}
-                    for key in ("aggregation", "value_parser"):
-                        if key in item and item[key] is not None:
-                            entry[key] = item[key]
-                    kpis_out.append(entry)
-
-                if find_first_matching_column(["Periodo Evaluado", "Periodo a Evaluar"], cols) is None:
-                    date_aliases = list(DEFAULT_DATE_ALIASES)
-                else:
-                    date_aliases = ["Periodo Evaluado", "Periodo a Evaluar"]
-
-                new_forms[display_name] = {
-                    "ingesta": {
-                        "archivo": path.name,
-                        "hoja": sheet,
-                        "columna_fecha": date_aliases,
-                        "columnas_persona": persons,
-                    },
-                    "kpis": kpis_out,
-                }
+            path = INPUTS / f"{display_name}.xlsx"
+            if path.is_file() and isinstance(form_raw, dict) and "kpis" in form_raw:
+                new_forms[display_name] = _refresh_ingesta_from_excel(display_name, form_raw, path)
             else:
                 new_forms[display_name] = form_raw
         out[direccion] = new_forms
