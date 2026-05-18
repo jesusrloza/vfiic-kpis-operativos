@@ -24,7 +24,23 @@ from vfiic_kpis.paths import (
     DEFAULT_RECONCILIATION_LOG,
     DEFAULT_SCHEMA_PATH,
 )
-from vfiic_kpis.errores_usuario import imprimir_error, mensaje_para_usuario
+from vfiic_kpis.user_messages import (
+    TAG_COMPARATIVO,
+    TAG_PARTITIONED,
+    TAG_RUN_ALL,
+    MSG_NO_CALCULABLE_ROWS,
+    MSG_NO_PARSEABLE_PERIODS,
+    format_user_message,
+    print_comparativo_blocks,
+    print_comparativo_insufficient_data,
+    print_comparativo_workbook,
+    print_future_rows_dropped,
+    print_partitioned_count,
+    print_partitioned_none,
+    print_partitioned_written,
+    print_skipped_form,
+    print_user_error,
+)
 from vfiic_kpis.yaml_loader import load_forms_from_yaml
 
 FormData = tuple[FormResolution, pd.DataFrame]
@@ -32,12 +48,11 @@ FormData = tuple[FormResolution, pd.DataFrame]
 
 def _collect_loaded_data(
     matches: tuple[FormResolution, ...],
-    log_prefix: str,
+    log_tag: str,
 ) -> list[FormData]:
-    """Lee cada formulario una vez; avisos `[datos]` y errores usan `log_prefix`."""
     loaded: list[FormData] = []
     for resolution in matches:
-        data = _read_form_or_none(resolution, log_prefix)
+        data = _read_form_or_none(resolution, log_tag)
         if data is not None:
             loaded.append((resolution, data))
     return loaded
@@ -59,7 +74,7 @@ def _load_and_reconcile(schema_path: Path, input_dir: Path) -> ReconciliationRep
     try:
         forms = load_forms_from_yaml(schema_path)
     except (FileNotFoundError, ValueError) as exc:
-        imprimir_error("cargar el schema YAML", exc, ruta=schema_path)
+        print_user_error("cargar el schema YAML", exc, path=schema_path)
         raise SystemExit(1) from exc
     return reconcile(forms, input_dir)
 
@@ -69,20 +84,17 @@ def _safe_filename(area_id: str) -> str:
     return base or "forma"
 
 
-def _read_form_or_none(resolution: FormResolution, log_prefix: str) -> pd.DataFrame | None:
+def _read_form_or_none(resolution: FormResolution, log_tag: str) -> pd.DataFrame | None:
     try:
         data = read_form(resolution)
     except Exception as exc:  # noqa: BLE001
-        motivo = mensaje_para_usuario(exc, contexto=log_prefix, ruta=resolution.file_path)
-        print(f"[{log_prefix}] omitido {resolution.spec.display_name!r}: {motivo}")
+        reason = format_user_message(exc, context=log_tag, path=resolution.file_path)
+        print_skipped_form(log_tag, resolution.spec.display_name, reason)
         return None
     data, n_future = drop_future_period_rows(data)
     if n_future:
         archivo = resolution.spec.archivo or "(sin nombre)"
-        print(
-            f"[datos] omitidas {n_future} fila(s) con periodo futuro: "
-            f"{resolution.spec.display_name} (archivo: {archivo})"
-        )
+        print_future_rows_dropped(resolution.spec.display_name, archivo, n_future)
     return data
 
 
@@ -96,7 +108,7 @@ def _emit_partitioned(
     written: list[Path] = []
     for resolution, data in loaded:
         if data.empty or data["periodo_dt"].dropna().empty:
-            print(f"[partitioned] omitido {resolution.spec.display_name!r}: sin periodos parseables")
+            print_skipped_form(TAG_PARTITIONED, resolution.spec.display_name, MSG_NO_PARSEABLE_PERIODS)
             continue
         out_path = output_dir / f"{_safe_filename(resolution.spec.area_id)}.xlsx"
         try:
@@ -107,15 +119,15 @@ def _emit_partitioned(
                 theme_path=theme_path,
             )
         except Exception as exc:  # noqa: BLE001
-            imprimir_error(f"generar particionado ({resolution.spec.display_name})", exc, ruta=out_path)
+            print_user_error(f"generar particionado ({resolution.spec.display_name})", exc, path=out_path)
             raise SystemExit(1) from exc
         written.append(out_path)
         if verbose:
-            print(f"[partitioned] {resolution.spec.display_name} -> {out_path}")
+            print_partitioned_written(resolution.spec.display_name, out_path)
     if written:
-        print(f"[partitioned] {len(written)} workbook(s) en {output_dir}")
+        print_partitioned_count(len(written), output_dir)
     else:
-        print("[partitioned] ningún workbook generado")
+        print_partitioned_none()
     return written
 
 
@@ -126,7 +138,7 @@ def _process_partitioned(
     *,
     verbose: bool = False,
 ) -> list[Path]:
-    loaded = _collect_loaded_data(matches, "partitioned")
+    loaded = _collect_loaded_data(matches, TAG_PARTITIONED)
     return _emit_partitioned(loaded, output_dir, theme_path, verbose=verbose)
 
 
@@ -140,16 +152,16 @@ def _emit_comparativo(
     results = []
     for resolution, data in loaded:
         if data.empty or data["periodo_dt"].dropna().empty:
-            print(f"[comparativo] omitido {resolution.spec.display_name!r}: sin periodos parseables")
+            print_skipped_form(TAG_COMPARATIVO, resolution.spec.display_name, MSG_NO_PARSEABLE_PERIODS)
             continue
         result = build_form_comparison(data, resolution)
         if result is None or result.df.empty:
-            print(f"[comparativo] omitido {resolution.spec.display_name!r}: sin filas calculables")
+            print_skipped_form(TAG_COMPARATIVO, resolution.spec.display_name, MSG_NO_CALCULABLE_ROWS)
             continue
         results.append(result)
 
     if not results:
-        print("[comparativo] no hay formularios con datos suficientes; no se generó workbook")
+        print_comparativo_insufficient_data()
         return None
 
     try:
@@ -159,12 +171,12 @@ def _emit_comparativo(
             theme_path=theme_path,
         )
     except Exception as exc:  # noqa: BLE001
-        imprimir_error("generar el comparativo", exc, ruta=output_path)
+        print_user_error("generar el comparativo", exc, path=output_path)
         raise SystemExit(1) from exc
     if verbose:
-        print(f"[comparativo] {len(results)} bloque(s) -> {output_path}")
+        print_comparativo_blocks(len(results), output_path)
     else:
-        print(f"[comparativo] workbook: {output_path}")
+        print_comparativo_workbook(output_path)
     return output_path
 
 
@@ -175,7 +187,7 @@ def _process_comparativo(
     *,
     verbose: bool = False,
 ) -> Path | None:
-    loaded = _collect_loaded_data(matches, "comparativo")
+    loaded = _collect_loaded_data(matches, TAG_COMPARATIVO)
     return _emit_comparativo(loaded, output_path, theme_path, verbose=verbose)
 
 
@@ -193,7 +205,7 @@ def run_comparativo(args: argparse.Namespace) -> None:
 
 def run_all(args: argparse.Namespace) -> None:
     report = _load_and_reconcile(args.schema, args.input_dir)
-    loaded = _collect_loaded_data(report.matched, "run_all")
+    loaded = _collect_loaded_data(report.matched, TAG_RUN_ALL)
     _emit_partitioned(loaded, args.partitioned_dir, args.partitioned_theme, verbose=args.verbose)
     _emit_comparativo(loaded, args.comparison_output, args.comparison_theme, verbose=args.verbose)
     print_and_persist(report, args.reconciliation_log)

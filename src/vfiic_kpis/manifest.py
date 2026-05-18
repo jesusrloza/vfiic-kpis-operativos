@@ -10,17 +10,24 @@ from vfiic_kpis.text_match import (
     find_matching_column,
     fold,
 )
-from vfiic_kpis.errores_usuario import mensaje_para_usuario
+from vfiic_kpis.user_messages import (
+    SKIP_DATE_COLUMN_MISMATCH,
+    SKIP_FILE_NOT_FOUND_IN_INPUTS,
+    SKIP_HEADER_READ_FAILED,
+    SKIP_INCOMPLETE_YAML_CONFIG,
+    SKIP_KPI_COLUMN_MISMATCH,
+    SKIP_PERSON_COLUMN_MISMATCH,
+    format_user_message,
+)
 from vfiic_kpis.yaml_loader import FormSpec
 
 
 @dataclass(frozen=True)
 class FormResolution:
-    """Resultado de cruzar un `FormSpec` con los archivos en `inputs/`.
+    """Result of matching a `FormSpec` against files in `inputs/`.
 
-    Se considera "matched" cuando se localizó archivo, hoja, columna de fecha
-    y al menos una columna de KPI utilizable. KPIs faltantes se reportan en
-    `missing_columns` para que el usuario actualice el schema.
+    A form is processable when a file, sheet, date column, and at least one KPI
+    column were resolved. Missing KPI columns are listed in `missing_columns`.
     """
 
     spec: FormSpec
@@ -31,6 +38,7 @@ class FormResolution:
     available_kpis: tuple[str, ...]
     missing_columns: tuple[str, ...]
     skip_reason: str | None
+    skip_detail: str | None = None
 
     @property
     def is_processable(self) -> bool:
@@ -47,7 +55,7 @@ class ReconciliationReport:
 
 
 def _read_excel_header(path: Path, sheet: str | int | None) -> tuple[list[str], str | int]:
-    """Lee únicamente la fila de encabezados de un xlsx y devuelve la hoja resuelta."""
+    """Read only the header row from an xlsx file and return the resolved sheet."""
     sheet_arg: str | int = sheet if sheet is not None else 0
     header = pd.read_excel(path, sheet_name=sheet_arg, nrows=0)
     columns = [str(col) for col in header.columns]
@@ -55,11 +63,7 @@ def _read_excel_header(path: Path, sheet: str | int | None) -> tuple[list[str], 
 
 
 def _candidate_filenames(spec: FormSpec) -> list[str]:
-    """Devuelve los nombres de archivo plausibles para un `FormSpec`.
-
-    Cubre el caso en que el YAML aún no define `archivo` pero el nombre del
-    archivo en disco coincide con el `display_name` del formulario.
-    """
+    """Return plausible file names for a `FormSpec`."""
     candidates: list[str] = []
     if spec.archivo:
         candidates.append(spec.archivo)
@@ -67,11 +71,11 @@ def _candidate_filenames(spec: FormSpec) -> list[str]:
     return candidates
 
 
-def _resolve_file(spec: FormSpec, raw_files: list[Path]) -> Path | None:
-    """Localiza el archivo del formulario por nombre exacto o equivalencia plegada."""
+def _resolve_file(spec: FormSpec, input_files: list[Path]) -> Path | None:
+    """Locate the form file by exact or folded name."""
     if not spec.archivo:
         return None
-    candidates_by_name = {fold(p.name): p for p in raw_files}
+    candidates_by_name = {fold(p.name): p for p in input_files}
     target = fold(spec.archivo)
     return candidates_by_name.get(target)
 
@@ -80,18 +84,9 @@ def reconcile(
     forms: list[FormSpec],
     input_dir: Path,
 ) -> ReconciliationReport:
-    """Cruza la lista de `FormSpec` con los archivos disponibles en `input_dir`.
-
-    Reporta cada formulario en una de cuatro categorías:
-      - matched: hay archivo y al menos un KPI lee columnas válidas.
-      - yaml_without_ingesta: configuración incompleta en el YAML (`ingesta`).
-      - yaml_without_file: hay `ingesta`, pero no encontramos el archivo.
-      - yaml_with_column_issues: el archivo existe pero no tiene la fecha o
-        ningún KPI mapea a sus columnas.
-    Además lista `files_without_yaml` para visibilidad operativa.
-    """
-    raw_files: list[Path] = sorted(p for p in input_dir.glob("*.xlsx") if p.is_file())
-    files_by_folded_name = {fold(p.name): p for p in raw_files}
+    """Match `FormSpec` entries against xlsx files in `input_dir`."""
+    input_files: list[Path] = sorted(p for p in input_dir.glob("*.xlsx") if p.is_file())
+    files_by_folded_name = {fold(p.name): p for p in input_files}
 
     matched: list[FormResolution] = []
     yaml_without_ingesta: list[FormResolution] = []
@@ -116,12 +111,12 @@ def reconcile(
                     resolved_person_columns=(),
                     available_kpis=(),
                     missing_columns=(),
-                    skip_reason="configuración incompleta en el YAML",
+                    skip_reason=SKIP_INCOMPLETE_YAML_CONFIG,
                 )
             )
             continue
 
-        file_path = _resolve_file(spec, raw_files)
+        file_path = _resolve_file(spec, input_files)
         if file_path is None:
             yaml_without_file.append(
                 FormResolution(
@@ -132,7 +127,7 @@ def reconcile(
                     resolved_person_columns=(),
                     available_kpis=(),
                     missing_columns=(),
-                    skip_reason="archivo no encontrado en inputs",
+                    skip_reason=SKIP_FILE_NOT_FOUND_IN_INPUTS,
                 )
             )
             continue
@@ -140,7 +135,6 @@ def reconcile(
         try:
             available_columns, resolved_sheet = _read_excel_header(file_path, spec.hoja)
         except Exception as exc:  # noqa: BLE001
-            motivo = mensaje_para_usuario(exc, contexto="leer encabezados", ruta=file_path)
             yaml_with_column_issues.append(
                 FormResolution(
                     spec=spec,
@@ -150,7 +144,8 @@ def reconcile(
                     resolved_person_columns=(),
                     available_kpis=(),
                     missing_columns=(),
-                    skip_reason=motivo,
+                    skip_reason=SKIP_HEADER_READ_FAILED,
+                    skip_detail=format_user_message(exc, context="read_headers", path=file_path),
                 )
             )
             continue
@@ -175,11 +170,11 @@ def reconcile(
 
         skip_reason: str | None = None
         if resolved_date_column is None:
-            skip_reason = "ninguna columna de fecha del YAML coincidió con el archivo"
+            skip_reason = SKIP_DATE_COLUMN_MISMATCH
         elif not resolved_persons:
-            skip_reason = "ninguna columna de persona del YAML coincidió con el archivo"
+            skip_reason = SKIP_PERSON_COLUMN_MISMATCH
         elif not available_kpis:
-            skip_reason = "ningún KPI del YAML coincidió con columnas del archivo"
+            skip_reason = SKIP_KPI_COLUMN_MISMATCH
 
         resolution = FormResolution(
             spec=spec,
@@ -197,7 +192,7 @@ def reconcile(
         else:
             yaml_with_column_issues.append(resolution)
 
-    files_without_yaml = tuple(p for p in raw_files if p not in referenced_files)
+    files_without_yaml = tuple(p for p in input_files if p not in referenced_files)
 
     return ReconciliationReport(
         matched=tuple(matched),

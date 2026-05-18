@@ -41,8 +41,8 @@ flowchart LR
   - Resuelve hoja, columna de fecha (alias) y columnas de persona/KPI con `text_match.find_matching_column`.
 - `src/vfiic_kpis/log_report.py`
   - Imprime el resumen humano y persiste un JSON sidecar con el detalle de cada formulario.
-- `src/vfiic_kpis/errores_usuario.py`
-  - Mensajes breves en español para errores frecuentes (archivo abierto, YAML inválido, etc.).
+- `src/vfiic_kpis/user_messages.py`
+  - Único módulo con cadenas en español para consola, reconciliación y errores frecuentes (archivo abierto, YAML inválido, etc.).
 - `src/vfiic_kpis/io.py`
   - Lee un formulario ya resuelto. Compone `Agente/Titular` desde una o varias columnas, agrega `source_file`, `area_id`, `area_nombre` y delega normalización temporal a `prepare_common_columns`.
 - `src/vfiic_kpis/normalize.py`
@@ -93,8 +93,8 @@ El reporte de reconciliación se imprime al final de cada corrida y se persiste 
 
 ## Temas de presentación
 
-- `themes/excel_particionado.toml`: hoja `original` y mensuales del particionado.
-- `themes/excel_comparativo.toml`: bloques del comparativo apilado, con etiquetas parentéticas (`Diferencia (mes anterior)`, `Variación % (año anterior)`, etc.) y formatos numéricos por columna.
+- `themes/excel_partitioned.toml`: hoja `original` y mensuales del particionado.
+- `themes/excel_comparison.toml`: bloques del comparativo apilado, con etiquetas parentéticas (`Diferencia (mes anterior)`, `Variación % (año anterior)`, etc.) y formatos numéricos por columna.
 
 ## Escalabilidad
 

@@ -1,2 +1,2 @@
-"""Utilidades para procesar KPIs VFIIC."""
+"""Utilities for processing VFIIC KPIs."""
 

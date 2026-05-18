@@ -47,7 +47,7 @@ def parse_iso_date(value: object) -> datetime:
     text = str(value).strip()
     parsed = pd.to_datetime(text, errors="coerce")
     if pd.isna(parsed):
-        raise ValueError(f"Fecha invalida: {value!r}")
+        raise ValueError(f"Invalid date: {value!r}")
     assert isinstance(parsed, pd.Timestamp)
     return parsed.to_pydatetime()
 
@@ -85,11 +85,7 @@ def drop_future_period_rows(
     *,
     as_of: date | None = None,
 ) -> tuple[pd.DataFrame, int]:
-    """Excluye filas cuyo `periodo_dt` (día civil) es estrictamente posterior a `as_of`.
-
-    Por defecto `as_of` es la fecha local del proceso (`date.today()`).
-    Filas con `periodo_dt` nulo no se cuentan como futuras.
-    """
+    """Drop rows whose `periodo_dt` is strictly after `as_of` (defaults to today)."""
     if df.empty or "periodo_dt" not in df.columns:
         return df, 0
     ref = as_of or date.today()

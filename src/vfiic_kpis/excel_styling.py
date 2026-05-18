@@ -172,7 +172,7 @@ def apply_sheet_theme(
     internal_columns: list[str],
     theme: ExcelTheme,
 ) -> None:
-    """Aplica maquetación a una hoja ya escrita por pandas (fila 1 = encabezados internos)."""
+    """Apply theme styling to a pandas-written sheet (row 1 = internal headers)."""
     if not internal_columns:
         return
 
@@ -209,7 +209,7 @@ def paint_title_band(
     row_idx: int,
     column_count: int,
 ) -> None:
-    """Pinta una franja de título (merge horizontal) en la fila indicada."""
+    """Paint a merged title band on the given row."""
     if column_count < 1:
         return
     ws.merge_cells(start_row=row_idx, start_column=1, end_row=row_idx, end_column=column_count)
@@ -228,7 +228,7 @@ def paint_block_header(
     explicit_labels: list[str],
     row_idx: int,
 ) -> None:
-    """Pinta encabezados con etiquetas explícitas (admite labels dinámicos por mes)."""
+    """Paint headers using explicit labels (supports dynamic month labels)."""
     _paint_header_row(
         ws,
         theme,

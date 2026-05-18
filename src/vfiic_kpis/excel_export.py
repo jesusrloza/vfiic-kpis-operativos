@@ -42,22 +42,18 @@ STACKED_COLUMNS_NO_YOY: tuple[str, ...] = (
     "porcentaje_mom",
 )
 
-# Compat: alias histórico (se mantenía como tuple inmutable de 8 columnas).
 STACKED_COLUMNS: tuple[str, ...] = STACKED_COLUMNS_FULL
 
 BLOCK_GAP_ROWS = 2
 
-# Columnas derivadas en el comparativo apilado: fórmulas Excel (valores base editables por el usuario).
+# Derived comparison columns are Excel formulas over editable base value cells.
 _FORMULA_COLUMN_NAMES: frozenset[str] = frozenset(
     {"diferencia_mom", "porcentaje_mom", "diferencia_yoy", "porcentaje_yoy"}
 )
 
 
 def _resolve_stacked_columns(results: list[FormComparisonResult]) -> tuple[str, ...]:
-    """Modo "global any": las 3 columnas YoY se incluyen sólo si al menos un
-    formulario alcanza 13 meses de historia (es decir, `valor_anio_anterior`
-    no nulo en alguna fila). En caso contrario se omiten para todos los bloques.
-    """
+    """Global-any mode: include YoY columns only if any form has year-ago data."""
     has_any_yoy = any(
         result.df["valor_anio_anterior"].notna().any()
         for result in results
@@ -67,12 +63,7 @@ def _resolve_stacked_columns(results: list[FormComparisonResult]) -> tuple[str, 
 
 
 def _comparativo_derived_formulas(row_idx: int, columns: tuple[str, ...]) -> dict[str, str]:
-    """Fórmulas alineadas con `metrics._safe_percentage` (*100) y sin #DIV/0! / #VALUE!.
-
-    Las referencias se calculan a partir de la posición real de cada columna
-    base en `columns`, de modo que sigan apuntando bien aunque se omita el
-    bloque YoY (sin columna F).
-    """
+    """Build MoM/YoY Excel formulas aligned with `metrics._safe_percentage`."""
     r = row_idx
     formulas: dict[str, str] = {}
 
@@ -109,11 +100,7 @@ def write_partitioned_workbook_for_form(
     output_path: Path,
     theme_path: Path | None = None,
 ) -> None:
-    """Genera un Excel particionado por mes para un solo formulario.
-
-    Crea la hoja `original` con todos los registros y una hoja por cada mes con
-    datos. Si no existe ningún `periodo_mes_key` parseable, no escribe nada.
-    """
+    """Write a partitioned workbook for one form (original sheet plus one per month)."""
     if data.empty or "periodo_mes_key" not in data.columns:
         return
     months = sorted(data["periodo_mes_key"].dropna().unique())
@@ -141,8 +128,7 @@ def write_partitioned_workbook_for_form(
                 theme,
             )
 
-    # `form_id` se conserva en la firma para futuras anotaciones (metadata, propiedades).
-    _ = form_id
+    _ = form_id  # reserved for future metadata
 
 
 def _resolve_block_labels(
@@ -153,12 +139,7 @@ def _resolve_block_labels(
     mes_anterior: str | None,
     mes_anio_anterior: str | None,
 ) -> list[str]:
-    """Mapea cada columna interna a su etiqueta visible para el bloque.
-
-    Las etiquetas dependientes del mes (`valor_actual`, `valor_mes_anterior`,
-    `valor_anio_anterior`) toman el mes correspondiente; el resto consulta el
-    tema (`header_labels`).
-    """
+    """Map internal column names to visible header labels for one block."""
     labels: list[str] = []
     for internal in columns:
         if internal == "valor_actual":
@@ -173,7 +154,7 @@ def _resolve_block_labels(
 
 
 def _build_block_row(row: pd.Series, columns: tuple[str, ...]) -> list:
-    """Devuelve los valores en el orden de `columns`. `None` se mantiene para celdas vacías."""
+    """Return row values in `columns` order, preserving None for empty cells."""
     output: list = []
     for column in columns:
         if column not in row:
@@ -195,23 +176,7 @@ def write_stacked_comparativo_workbook(
     theme_path: Path | None = None,
     sheet_name: str = "Comparativo",
 ) -> None:
-    """Escribe un único workbook con un solo sheet apilado por formulario.
-
-    Cada bloque consta de:
-      - Título (merge horizontal con el `display_name` del formulario).
-      - Encabezados con etiquetas dinámicas de mes y rótulos parentéticos.
-      - Filas (una por KPI): valores base (actual, mes anterior, año anterior) y
-        fórmulas Excel para diferencias y variaciones % (MoM y YoY).
-      - Dos filas vacías como separador entre bloques.
-
-    Las tres columnas YoY (`Mismo mes año anterior`, `Diferencia (año anterior)`
-    y `Variación % (año anterior)`) se omiten globalmente cuando ningún
-    formulario tiene 13 meses de historia ("global any"). El color de fuente
-    en las celdas de diferencia/variación se aplica vía formato condicional
-    Excel, por lo que se actualiza al recalcular fórmulas si el usuario edita
-    los valores base. Al final se aplican anchos uniformes considerando todo
-    el contenido.
-    """
+    """Write one workbook with a single stacked comparison sheet."""
     if not results:
         return
 

@@ -7,6 +7,7 @@ from typing import Any
 import yaml
 
 from vfiic_kpis.text_match import slugify
+from vfiic_kpis.user_messages import YAML_GUIDE_REF
 
 DEFAULT_SHEET_NAME = "Form responses"
 DEFAULT_DATE_COLUMN_ALIASES: tuple[str, ...] = ("Periodo Evaluado", "Periodo a Evaluar")
@@ -25,13 +26,7 @@ class KpiSpec:
 
 @dataclass(frozen=True)
 class FormSpec:
-    """Definición completa de un formulario reportable.
-
-    `direccion` y `display_name` se preservan tal cual están escritos en el YAML
-    para mostrarlos como título de cada bloque del reporte. `area_id` se deriva
-    del `display_name` (o se sobreescribe con la clave `id` del YAML) y sirve
-    de base para nombres de archivo y bitácoras.
-    """
+    """Full definition of a reportable form."""
 
     area_id: str
     display_name: str
@@ -60,27 +55,30 @@ def _coerce_str_list(value: Any) -> tuple[str, ...]:
             if text:
                 items.append(text)
         return tuple(items)
-    raise ValueError(f"Se esperaba string o lista de strings, se recibió: {value!r}")
+    raise ValueError(f"Expected string or list of strings, got: {value!r}")
 
 
 def _parse_kpi_entry(entry: Any, *, form_label: str, index: int) -> KpiSpec:
     if not isinstance(entry, dict):
-        raise ValueError(f"[{form_label}] kpi #{index}: se esperaba un mapeo con `columna_origen` y `descripcion`.")
+        raise ValueError(
+            f"[{form_label}] kpi #{index}: expected a mapping with `columna_origen` and `descripcion`."
+        )
     columna = str(entry.get("columna_origen", "")).strip()
     descripcion = str(entry.get("descripcion", "")).strip()
     if not columna:
-        raise ValueError(f"[{form_label}] kpi #{index}: `columna_origen` es obligatorio.")
+        raise ValueError(f"[{form_label}] kpi #{index}: `columna_origen` is required.")
     if not descripcion:
         descripcion = columna
     aggregation = str(entry.get("aggregation", DEFAULT_AGGREGATION)).strip() or DEFAULT_AGGREGATION
     if aggregation not in ("sum", "count", "avg"):
         raise ValueError(
-            f"[{form_label}] kpi `{columna}`: `aggregation` inválido {aggregation!r}; use sum, count o avg."
+            f"[{form_label}] kpi `{columna}`: invalid `aggregation` {aggregation!r}; use sum, count, or avg."
         )
     value_parser = str(entry.get("value_parser", DEFAULT_VALUE_PARSER)).strip() or DEFAULT_VALUE_PARSER
     if value_parser not in ("numeric", "sum_cantidad"):
         raise ValueError(
-            f"[{form_label}] kpi `{columna}`: `value_parser` inválido {value_parser!r}; use numeric o sum_cantidad."
+            f"[{form_label}] kpi `{columna}`: invalid `value_parser` {value_parser!r}; "
+            "use numeric or sum_cantidad."
         )
     return KpiSpec(
         columna_origen=columna,
@@ -95,21 +93,18 @@ def _parse_form(direccion: str, display_name: str, raw_value: Any) -> FormSpec:
 
     if isinstance(raw_value, list):
         raise ValueError(
-            f"[{label}] forma inválida: use un bloque con `ingesta` y `kpis`. "
-            "Vea docs/guia-indicadores-yaml.md."
+            f"[{label}] invalid form: use a block with `ingesta` and `kpis`. See {YAML_GUIDE_REF}."
         )
     if not isinstance(raw_value, dict):
-        raise ValueError(
-            f"[{label}] forma inválida: se esperaba un mapeo con `ingesta` y `kpis`."
-        )
+        raise ValueError(f"[{label}] invalid form: expected a mapping with `ingesta` and `kpis`.")
 
     ingesta_raw = raw_value.get("ingesta", {}) or {}
     if not isinstance(ingesta_raw, dict):
-        raise ValueError(f"[{label}] `ingesta` debe ser un mapeo.")
+        raise ValueError(f"[{label}] `ingesta` must be a mapping.")
     kpis_raw = raw_value.get("kpis", [])
 
     if not isinstance(kpis_raw, list) or not kpis_raw:
-        raise ValueError(f"[{label}] no hay KPIs definidos en el YAML.")
+        raise ValueError(f"[{label}] no KPIs defined in the YAML.")
 
     kpis = tuple(
         _parse_kpi_entry(item, form_label=label, index=index)
@@ -158,22 +153,18 @@ def _parse_form(direccion: str, display_name: str, raw_value: Any) -> FormSpec:
 
 
 def load_forms_from_yaml(yaml_path: Path) -> list[FormSpec]:
-    """Carga el YAML de indicadores y devuelve `FormSpec` por formulario.
-
-    El YAML se estructura como `Dirección -> Formulario -> definición`, donde
-    cada formulario es un mapeo con `ingesta` y `kpis`.
-    """
+    """Load the indicators YAML and return one `FormSpec` per form."""
     if not yaml_path.is_file():
-        raise FileNotFoundError(f"No existe el archivo de schema YAML: {yaml_path}")
+        raise FileNotFoundError(f"Schema YAML file not found: {yaml_path}")
     with yaml_path.open("r", encoding="utf-8") as handle:
         try:
             raw = yaml.safe_load(handle)
         except yaml.YAMLError as exc:
-            raise ValueError(f"YAML inválido en {yaml_path}: {exc}") from exc
+            raise ValueError(f"Invalid YAML in {yaml_path}: {exc}") from exc
     if raw is None:
         return []
     if not isinstance(raw, dict):
-        raise ValueError(f"El YAML {yaml_path} debe ser un mapeo en su raíz.")
+        raise ValueError(f"YAML root in {yaml_path} must be a mapping.")
 
     forms: list[FormSpec] = []
     seen_ids: set[str] = set()
@@ -181,14 +172,15 @@ def load_forms_from_yaml(yaml_path: Path) -> list[FormSpec]:
         if forms_raw is None:
             continue
         if not isinstance(forms_raw, dict):
-            raise ValueError(f"[{direccion}] se esperaba un mapeo de formularios.")
+            raise ValueError(f"[{direccion}] expected a mapping of forms.")
         for display_name, form_raw in forms_raw.items():
             if form_raw is None:
                 continue
             spec = _parse_form(str(direccion), str(display_name), form_raw)
             if spec.area_id in seen_ids:
                 raise ValueError(
-                    f"`area_id` duplicado: {spec.area_id!r}. Defina `id` explícito en `ingesta` para distinguirlos."
+                    f"Duplicate `area_id`: {spec.area_id!r}. "
+                    "Set an explicit `id` under `ingesta` to distinguish forms."
                 )
             seen_ids.add(spec.area_id)
             forms.append(spec)

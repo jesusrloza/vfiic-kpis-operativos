@@ -5,11 +5,7 @@ import unicodedata
 
 
 def fold(text: object) -> str:
-    """Devuelve un texto sin acentos, en minúsculas y con espacios colapsados.
-
-    Pensado para comparar nombres de columnas, formularios o archivos donde
-    pueden variar mayúsculas, acentos o espacios duplicados.
-    """
+    """Normalize text for comparison: no accents, lowercase, collapsed spaces."""
     if text is None:
         return ""
     decomposed = unicodedata.normalize("NFKD", str(text))
@@ -19,17 +15,14 @@ def fold(text: object) -> str:
 
 
 def slugify(text: object) -> str:
-    """Convierte un texto a un identificador estable: ASCII, minúsculas, separadores `_`.
-
-    Útil para derivar `area_id` desde el nombre del formulario en el YAML.
-    """
+    """Convert text to a stable ASCII identifier with `_` separators."""
     folded = fold(text)
     base = re.sub(r"[^a-z0-9]+", "_", folded)
     return base.strip("_") or "forma"
 
 
 def find_matching_column(target: str, available: list[str]) -> str | None:
-    """Busca un nombre exacto, luego una coincidencia tras `fold` sobre las opciones."""
+    """Find an exact match, then a folded match among available column names."""
     if target in available:
         return target
     target_folded = fold(target)

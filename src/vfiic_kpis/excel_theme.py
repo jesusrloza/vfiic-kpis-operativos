@@ -98,7 +98,7 @@ def _normalize_rgb(value: str) -> str:
         return text.upper()
     if len(text) == 8 and text[:2].upper() == "FF" and all(c in "0123456789abcdefABCDEF" for c in text[2:]):
         return text[2:].upper()
-    raise ValueError(f"Color RGB invalido: {value!r}")
+    raise ValueError(f"Invalid RGB color: {value!r}")
 
 
 def _rgb_to_argb(rgb6: str) -> str:
@@ -107,7 +107,7 @@ def _rgb_to_argb(rgb6: str) -> str:
 
 def _parse_match(value: object) -> MatchKind:
     if value not in ("exact", "prefix", "suffix", "regex"):
-        raise ValueError(f"match invalido: {value!r}")
+        raise ValueError(f"Invalid match kind: {value!r}")
     return value  # type: ignore[return-value]
 
 
@@ -123,7 +123,7 @@ def _parse_rule(raw: dict[str, Any]) -> ColumnFormatRule:
 
 def load_excel_theme(path: Path) -> ExcelTheme:
     if not path.is_file():
-        raise FileNotFoundError(f"No existe el archivo de tema: {path}")
+        raise FileNotFoundError(f"Theme file not found: {path}")
     data = tomllib.loads(path.read_text(encoding="utf-8"))
 
     header_raw = data.get("header", {}) or {}
@@ -135,26 +135,26 @@ def load_excel_theme(path: Path) -> ExcelTheme:
     row_stripes_raw = data.get("row_stripes", {}) or {}
     labels_raw = data.get("header_labels", {}) or {}
     if not isinstance(labels_raw, dict):
-        raise ValueError("header_labels debe ser una tabla clave-valor.")
+        raise ValueError("header_labels must be a key-value table.")
 
     formats_raw = data.get("column_formats", [])
     if formats_raw is None:
         formats_raw = []
     if not isinstance(formats_raw, list):
-        raise ValueError("column_formats debe ser una lista de tablas.")
+        raise ValueError("column_formats must be a list of tables.")
 
     rules: list[ColumnFormatRule] = []
     for idx, item in enumerate(formats_raw):
         if not isinstance(item, dict):
-            raise ValueError(f"column_formats[{idx}] debe ser una tabla.")
+            raise ValueError(f"column_formats[{idx}] must be a table.")
         rule = _parse_rule(item)
         if rule.match != "regex" and not rule.pattern:
-            raise ValueError(f"column_formats[{idx}] requiere pattern.")
+            raise ValueError(f"column_formats[{idx}] requires pattern.")
         if rule.match == "regex":
             try:
                 re.compile(rule.pattern)
             except re.error as exc:
-                raise ValueError(f"Regex invalido en column_formats[{idx}]: {exc}") from exc
+                raise ValueError(f"Invalid regex in column_formats[{idx}]: {exc}") from exc
         rules.append(rule)
 
     header = HeaderTheme(
@@ -218,7 +218,7 @@ def load_excel_theme(path: Path) -> ExcelTheme:
 
 
 def friendly_header_label(internal: str) -> str:
-    """Etiqueta legible cuando no hay mapa explícito: guiones bajo a espacios y capitalización simple."""
+    """Fallback readable label when no explicit theme mapping exists."""
     base = internal.replace("_", " ").strip()
     if not base:
         return internal

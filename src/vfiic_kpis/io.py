@@ -7,20 +7,15 @@ from vfiic_kpis.normalize import prepare_common_columns
 
 
 def read_form(resolution: FormResolution) -> pd.DataFrame:
-    """Lee el archivo de un formulario ya resuelto por `manifest.reconcile`.
-
-    Aplica el alias real de fecha y persona (post fold) y agrega columnas
-    `periodo_dt`, `periodo_mes_key`, `periodo_mes_label` y `_agent_sort` para
-    los reportes posteriores.
-    """
+    """Read a reconciled form file and add normalized period and agent columns."""
     if not resolution.is_processable or resolution.file_path is None:
         raise ValueError(
-            f"FormResolution {resolution.spec.display_name!r} no es procesable: "
-            f"{resolution.skip_reason or 'sin razón explícita'}"
+            f"FormResolution {resolution.spec.display_name!r} is not processable: "
+            f"{resolution.skip_reason or 'no explicit reason'}"
         )
     if resolution.resolved_date_column is None or not resolution.resolved_person_columns:
         raise ValueError(
-            f"FormResolution {resolution.spec.display_name!r} no resolvió fecha o persona."
+            f"FormResolution {resolution.spec.display_name!r} did not resolve date or person columns."
         )
 
     sheet = resolution.resolved_sheet if resolution.resolved_sheet is not None else 0

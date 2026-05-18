@@ -14,11 +14,10 @@ from vfiic_kpis.yaml_loader import FormSpec, KpiSpec
 
 @dataclass(frozen=True)
 class FormComparisonResult:
-    """Resultado tabular de un formulario para el reporte stacked.
+    """Tabular comparison result for one form in the stacked workbook.
 
-    `df` lleva una fila por KPI con MoM y YoY nullable. Las etiquetas de
-    encabezados dependientes del mes (último mes, mes anterior, mismo mes
-    año anterior) se exponen como atributos para que el writer las pinte.
+    `df` has one row per KPI with nullable MoM and YoY values. Month-dependent
+    header labels are exposed as attributes for the Excel writer.
     """
 
     spec: FormSpec
@@ -42,7 +41,7 @@ def _parse_numeric_like(value: object, parser: str) -> float | None:
         text = "" if value is None else str(value)
         values = re.findall(r"Cantidad:\s*([0-9]+(?:\.[0-9]+)?)", text)
         return float(sum(float(item) for item in values))
-    raise ValueError(f"value_parser no soportado: {parser}")
+    raise ValueError(f"Unsupported value_parser: {parser}")
 
 
 def _aggregate_for_month(
@@ -67,7 +66,7 @@ def _aggregate_for_month(
 
 
 def _trend_kind(delta: float | None) -> str:
-    """Tendencia siempre con la convención 'subir es bueno'."""
+    """Trend always uses the convention that higher is better."""
     if delta is None:
         return "na"
     if delta == 0:
@@ -86,13 +85,13 @@ def _year_ago(dt: datetime) -> datetime:
 
 
 def build_form_comparison(df: pd.DataFrame, resolution: FormResolution) -> FormComparisonResult | None:
-    """Construye el comparativo MoM + YoY para un formulario.
+    """Build the MoM + YoY comparison for one form.
 
-    - El último mes con datos define las etiquetas dinámicas.
-    - Si no existe mes anterior, las columnas MoM se dejan en `None`.
-    - Si no existe mismo mes del año previo, las columnas YoY se dejan en `None`.
-    - Cada KPI suma todas las filas del mes (multi-row por mes).
-    Devuelve `None` si no hay un solo periodo parseable.
+    - The latest month with data defines dynamic labels.
+    - MoM columns are `None` when the previous month is missing.
+    - YoY columns are `None` when the same month last year is missing.
+    - Each KPI sums all rows in the month.
+    Returns `None` when no period could be parsed.
     """
     if df.empty or "periodo_dt" not in df.columns:
         return None
