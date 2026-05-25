@@ -6,11 +6,13 @@ from pathlib import Path
 import pandas as pd
 
 from vfiic_kpis.text_match import (
+    build_input_file_index,
     find_first_matching_column,
     find_matching_column,
     fold,
 )
 from vfiic_kpis.user_messages import (
+    SKIP_AMBIGUOUS_INPUT_FILE,
     SKIP_DATE_COLUMN_MISMATCH,
     SKIP_FILE_NOT_FOUND_IN_INPUTS,
     SKIP_HEADER_READ_FAILED,
@@ -62,22 +64,42 @@ def _read_excel_header(path: Path, sheet: str | int | None) -> tuple[list[str], 
     return columns, sheet_arg
 
 
-def _candidate_filenames(spec: FormSpec) -> list[str]:
-    """Return plausible file names for a `FormSpec`."""
-    candidates: list[str] = []
-    if spec.archivo:
-        candidates.append(spec.archivo)
-    candidates.append(f"{spec.display_name}.xlsx")
-    return candidates
+def _resolve_file(
+    spec: FormSpec,
+    *,
+    files_by_folded_name: dict[str, Path],
+    canonical_index: dict[str, list[Path]],
+) -> tuple[Path | None, str | None, str | None]:
+    """Locate the form file: exact name, then canonical basename (prefixed inputs).
 
-
-def _resolve_file(spec: FormSpec, input_files: list[Path]) -> Path | None:
-    """Locate the form file by exact or folded name."""
+    Returns ``(path, skip_reason, skip_detail)``. On success, skip fields are ``None``.
+    """
     if not spec.archivo:
-        return None
-    candidates_by_name = {fold(p.name): p for p in input_files}
-    target = fold(spec.archivo)
-    return candidates_by_name.get(target)
+        return None, None, None
+
+    target_folded = fold(spec.archivo)
+    candidates: list[Path] = []
+    seen: set[str] = set()
+
+    def _add(path: Path) -> None:
+        key = str(path)
+        if key not in seen:
+            seen.add(key)
+            candidates.append(path)
+
+    exact = files_by_folded_name.get(target_folded)
+    if exact is not None:
+        _add(exact)
+    for path in canonical_index.get(target_folded, []):
+        _add(path)
+
+    if len(candidates) == 1:
+        return candidates[0], None, None
+    if len(candidates) > 1:
+        names = ", ".join(sorted(p.name for p in candidates))
+        return None, SKIP_AMBIGUOUS_INPUT_FILE, names
+
+    return None, None, None
 
 
 def reconcile(
@@ -87,6 +109,7 @@ def reconcile(
     """Match `FormSpec` entries against xlsx files in `input_dir`."""
     input_files: list[Path] = sorted(p for p in input_dir.glob("*.xlsx") if p.is_file())
     files_by_folded_name = {fold(p.name): p for p in input_files}
+    canonical_index = build_input_file_index(input_files)
 
     matched: list[FormResolution] = []
     yaml_without_ingesta: list[FormResolution] = []
@@ -95,10 +118,15 @@ def reconcile(
     referenced_files: set[Path] = set()
 
     for spec in forms:
-        for candidate in _candidate_filenames(spec):
-            match = files_by_folded_name.get(fold(candidate))
-            if match is not None:
-                referenced_files.add(match)
+        if not spec.has_ingesta:
+            continue
+        file_path, _, _ = _resolve_file(
+            spec,
+            files_by_folded_name=files_by_folded_name,
+            canonical_index=canonical_index,
+        )
+        if file_path is not None:
+            referenced_files.add(file_path)
 
     for spec in forms:
         if not spec.has_ingesta:
@@ -116,20 +144,39 @@ def reconcile(
             )
             continue
 
-        file_path = _resolve_file(spec, input_files)
+        file_path, file_skip_reason, file_skip_detail = _resolve_file(
+            spec,
+            files_by_folded_name=files_by_folded_name,
+            canonical_index=canonical_index,
+        )
         if file_path is None:
-            yaml_without_file.append(
-                FormResolution(
-                    spec=spec,
-                    file_path=None,
-                    resolved_sheet=None,
-                    resolved_date_column=None,
-                    resolved_person_columns=(),
-                    available_kpis=(),
-                    missing_columns=(),
-                    skip_reason=SKIP_FILE_NOT_FOUND_IN_INPUTS,
+            if file_skip_reason == SKIP_AMBIGUOUS_INPUT_FILE:
+                yaml_with_column_issues.append(
+                    FormResolution(
+                        spec=spec,
+                        file_path=None,
+                        resolved_sheet=None,
+                        resolved_date_column=None,
+                        resolved_person_columns=(),
+                        available_kpis=(),
+                        missing_columns=(),
+                        skip_reason=SKIP_AMBIGUOUS_INPUT_FILE,
+                        skip_detail=file_skip_detail,
+                    )
                 )
-            )
+            else:
+                yaml_without_file.append(
+                    FormResolution(
+                        spec=spec,
+                        file_path=None,
+                        resolved_sheet=None,
+                        resolved_date_column=None,
+                        resolved_person_columns=(),
+                        available_kpis=(),
+                        missing_columns=(),
+                        skip_reason=SKIP_FILE_NOT_FOUND_IN_INPUTS,
+                    )
+                )
             continue
 
         try:

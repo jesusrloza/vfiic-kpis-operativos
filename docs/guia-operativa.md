@@ -6,7 +6,7 @@ Flujo habitual para generar reportes KPI a partir de exportaciones Excel (Jotfor
 
 | Carpeta | Uso |
 |---------|-----|
-| `inputs/` | Copie aquí los `.xlsx` exportados (un archivo por formulario). |
+| `inputs/` | Copie aquí los `.xlsx` exportados (un archivo por formulario). El nombre puede ir sin prefijo, o con `AREA - ` o `PERSONA - ` delante del nombre definido en el YAML (use solo una modalidad por corrida). |
 | `schemas/indicadores_vfiic_v5.yaml` | Catálogo de formularios, columnas e indicadores. |
 | `outputs/comparativos/` | Reporte comparativo apilado (`comparativo_kpis.xlsx`). |
 | `outputs/particionados/` | Un Excel por formulario con hojas por mes. |
@@ -15,7 +15,7 @@ Flujo habitual para generar reportes KPI a partir de exportaciones Excel (Jotfor
 
 ## Pasos mensuales
 
-1. Copie los archivos `.xlsx` nuevos o actualizados en `inputs/`.
+1. Copie los archivos `.xlsx` nuevos o actualizados en `inputs/` (p. ej. `AREA - VFIIC KPIs ....xlsx` o el mismo nombre sin prefijo que en `ingesta.archivo`).
 2. Si su jefe cambió indicadores o columnas, edite el schema y/o el Excel (véase [guia-indicadores-yaml.md](guia-indicadores-yaml.md)).
 3. Active el entorno virtual (véase [guia-instalacion.md](guia-instalacion.md)).
 4. Ejecute uno de estos comandos desde la raíz del proyecto:
@@ -47,7 +47,7 @@ Al final de cada corrida verá un resumen que clasifica formularios y archivos:
 - **Procesables**: listos para el reporte.
 - **Sin archivo en inputs**: el YAML referencia un Excel que no está en `inputs/`.
 - **Configuración incompleta en el YAML**: falta `archivo`, fechas o columnas de persona en `ingesta`.
-- **Problemas de columnas**: el Excel existe pero no coinciden fecha, persona o KPIs.
+- **Problemas de columnas**: el Excel existe pero no coinciden fecha, persona o KPIs; o hay varios `.xlsx` para el mismo formulario (p. ej. con y sin prefijo `AREA - `).
 - **Archivos en inputs sin entrada en el YAML**: `.xlsx` huérfanos.
 
 ## Problemas frecuentes
@@ -55,7 +55,7 @@ Al final de cada corrida verá un resumen que clasifica formularios y archivos:
 | Síntoma | Qué hacer |
 |---------|-----------|
 | Mensaje de archivo abierto en Excel | Cierre el `.xlsx` en Excel (insumo o reporte generado) y vuelva a ejecutar el script. |
-| Formulario sin archivo | Verifique el nombre en `ingesta.archivo` y que el archivo esté en `inputs/`. |
+| Formulario sin archivo | Verifique el nombre en `ingesta.archivo` (sin prefijo) y que el archivo esté en `inputs/`, con o sin `AREA - ` / `PERSONA - `. |
 | KPI sin columna | Ajuste `columna_origen` en el YAML o el encabezado en el Excel exportado. |
 | Error al leer el YAML | Revise indentación y sintaxis; véase [guia-indicadores-yaml.md](guia-indicadores-yaml.md). |
 
@@ -74,12 +74,3 @@ flowchart LR
   script --> outPart
 ```
 
-## Mantenimiento del schema
-
-Si necesita regenerar bloques `ingesta` a partir de los Excel en `inputs/` (uso puntual):
-
-```bash
-python scripts/actualizar_ingesta_en_schema.py
-```
-
-Revise siempre el YAML antes de confirmar cambios en producción.

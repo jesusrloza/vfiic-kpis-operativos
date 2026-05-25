@@ -13,6 +13,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 from vfiic_kpis.manifest import reconcile
+from vfiic_kpis.user_messages import SKIP_AMBIGUOUS_INPUT_FILE
 from vfiic_kpis.yaml_loader import FormSpec, KpiSpec
 
 
@@ -101,11 +102,10 @@ class TestManifestReconcile(unittest.TestCase):
             self.assertEqual(resolution.available_kpis, ("Col Existente",))
             self.assertEqual(resolution.missing_columns, ("Col Inexistente",))
 
-    def test_file_matching_display_name_is_not_orphan(self) -> None:
+    def test_file_without_ingesta_archivo_is_orphan(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             input_dir = Path(tmp)
             df = pd.DataFrame([{"Col": 1}])
-            (input_dir / "VFIIC KPIs - Demo.xlsx").write_bytes(b"")
             df.to_excel(
                 input_dir / "VFIIC KPIs - Demo.xlsx",
                 index=False,
@@ -124,7 +124,7 @@ class TestManifestReconcile(unittest.TestCase):
             )
             report = reconcile([spec], input_dir)
             self.assertEqual(len(report.yaml_without_ingesta), 1)
-            self.assertEqual(report.files_without_yaml, ())
+            self.assertEqual(len(report.files_without_yaml), 1)
 
     def test_form_with_no_matching_kpis_goes_to_column_issues(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -136,6 +136,76 @@ class TestManifestReconcile(unittest.TestCase):
             report = reconcile([spec], input_dir)
             self.assertEqual(len(report.matched), 0)
             self.assertEqual(len(report.yaml_with_column_issues), 1)
+
+    def _write_demo_workbook(self, input_dir: Path, filename: str) -> None:
+        df = pd.DataFrame(
+            [{"Periodo Evaluado": "2026-04-01", "Auxiliar": "A", "Col": 1}]
+        )
+        df.to_excel(input_dir / filename, index=False, sheet_name="Form responses")
+
+    def test_area_prefixed_file_resolves(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            input_dir = Path(tmp)
+            self._write_demo_workbook(input_dir, "AREA - demo.xlsx")
+            spec = _make_spec(archivo="demo.xlsx", kpis=("Col",))
+            report = reconcile([spec], input_dir)
+            self.assertEqual(len(report.matched), 1)
+            self.assertEqual(report.matched[0].file_path.name, "AREA - demo.xlsx")
+            self.assertEqual(report.files_without_yaml, ())
+
+    def test_persona_prefixed_file_resolves(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            input_dir = Path(tmp)
+            self._write_demo_workbook(input_dir, "PERSONA - demo.xlsx")
+            spec = _make_spec(archivo="demo.xlsx", kpis=("Col",))
+            report = reconcile([spec], input_dir)
+            self.assertEqual(len(report.matched), 1)
+            self.assertEqual(report.matched[0].file_path.name, "PERSONA - demo.xlsx")
+
+    def test_unprefixed_file_still_resolves(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            input_dir = Path(tmp)
+            self._write_demo_workbook(input_dir, "demo.xlsx")
+            spec = _make_spec(archivo="demo.xlsx", kpis=("Col",))
+            report = reconcile([spec], input_dir)
+            self.assertEqual(len(report.matched), 1)
+            self.assertEqual(report.matched[0].file_path.name, "demo.xlsx")
+
+    def test_area_and_persona_same_form_is_ambiguous(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            input_dir = Path(tmp)
+            self._write_demo_workbook(input_dir, "AREA - demo.xlsx")
+            self._write_demo_workbook(input_dir, "PERSONA - demo.xlsx")
+            spec = _make_spec(archivo="demo.xlsx", kpis=("Col",))
+            report = reconcile([spec], input_dir)
+            self.assertEqual(len(report.matched), 0)
+            self.assertEqual(len(report.yaml_with_column_issues), 1)
+            self.assertEqual(
+                report.yaml_with_column_issues[0].skip_reason,
+                SKIP_AMBIGUOUS_INPUT_FILE,
+            )
+
+    def test_unprefixed_and_area_same_form_is_ambiguous(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            input_dir = Path(tmp)
+            self._write_demo_workbook(input_dir, "demo.xlsx")
+            self._write_demo_workbook(input_dir, "AREA - demo.xlsx")
+            spec = _make_spec(archivo="demo.xlsx", kpis=("Col",))
+            report = reconcile([spec], input_dir)
+            self.assertEqual(len(report.matched), 0)
+            self.assertEqual(len(report.yaml_with_column_issues), 1)
+            self.assertEqual(
+                report.yaml_with_column_issues[0].skip_reason,
+                SKIP_AMBIGUOUS_INPUT_FILE,
+            )
+
+    def test_prefixed_file_without_yaml_is_orphan(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            input_dir = Path(tmp)
+            self._write_demo_workbook(input_dir, "AREA - orphan.xlsx")
+            report = reconcile([], input_dir)
+            self.assertEqual(len(report.files_without_yaml), 1)
+            self.assertEqual(report.files_without_yaml[0].name, "AREA - orphan.xlsx")
 
 
 if __name__ == "__main__":

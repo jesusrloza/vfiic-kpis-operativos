@@ -37,7 +37,7 @@ flowchart LR
   - Deriva `area_id` por slug de `display_name` (override con `ingesta.id`).
 - `src/vfiic_kpis/manifest.py`
   - Reconcilia los `FormSpec` con `inputs/`.
-  - Resuelve archivos por nombre exacto o equivalencia tras `fold` (sin acentos, casefold).
+  - Resuelve archivos por nombre canónico del YAML, con o sin prefijos `AREA - ` / `PERSONA - ` en disco, y equivalencia tras `fold` (sin acentos, casefold). Si varias variantes del mismo formulario coexisten en `inputs/`, marca ambigüedad.
   - Resuelve hoja, columna de fecha (alias) y columnas de persona/KPI con `text_match.find_matching_column`.
 - `src/vfiic_kpis/log_report.py`
   - Imprime el resumen humano y persiste un JSON sidecar con el detalle de cada formulario.
@@ -58,7 +58,7 @@ flowchart LR
 - `src/vfiic_kpis/excel_theme.py`
   - Carga TOML de tema (colores, formatos, etiquetas de encabezado).
 - `src/vfiic_kpis/text_match.py`
-  - `fold`, `slugify`, `find_matching_column` para tolerar variaciones de mayúsculas y acentos en nombres de archivos y columnas.
+  - `fold`, `slugify`, `find_matching_column`, `canonical_input_basename` y `build_input_file_index` para tolerar variaciones de mayúsculas y acentos en nombres de archivos y columnas, y prefijos `AREA - ` / `PERSONA - ` en insumos.
 
 ## Decisiones del comparativo
 
@@ -88,7 +88,7 @@ El reporte de reconciliación se imprime al final de cada corrida y se persiste 
 - `procesables`: formulario con `ingesta` completa y archivo, al menos un KPI mapea.
 - `sin_archivo`: formulario con `ingesta` pero sin archivo en `inputs/`.
 - `config_incompleta`: falta `archivo`, fechas o columnas de persona en el YAML.
-- `problemas_columnas`: archivo localizado pero columna de fecha o KPIs no coinciden.
+- `problemas_columnas`: archivo localizado pero columna de fecha o KPIs no coinciden; o varios archivos coinciden con el mismo formulario.
 - `archivos_sin_schema`: `.xlsx` en `inputs/` que no aparecen en el YAML.
 
 ## Temas de presentación

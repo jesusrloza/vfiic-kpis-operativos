@@ -29,7 +29,7 @@ Nombre de la Dirección:
 
 | Campo | Descripción |
 |-------|-------------|
-| `archivo` | Nombre del `.xlsx` dentro de `inputs/` (debe coincidir). |
+| `archivo` | Nombre canónico del `.xlsx` **sin** prefijo. En `inputs/` puede copiarse así, o como `AREA - …` o `PERSONA - …` (mismo contenido de columnas; no deje dos variantes del mismo formulario a la vez). |
 | `hoja` | Hoja a leer; por lo general `Form responses`. |
 | `columna_fecha` | Una o varias columnas; se usa la primera que exista en el archivo. |
 | `columnas_persona` | Columnas para armar el nombre del agente/titular en el reporte. |
@@ -67,7 +67,7 @@ Borre la entrada completa de la lista `kpis` (las dos líneas `columna_origen` /
 
 ## Agregar un formulario nuevo
 
-1. Copie el `.xlsx` a `inputs/`.
+1. Copie el `.xlsx` a `inputs/` (con o sin prefijo `AREA - ` / `PERSONA - `).
 2. Agregue un bloque bajo la dirección correspondiente siguiendo la plantilla.
 3. Ajuste `archivo`, `columna_fecha`, `columnas_persona` y la lista `kpis`.
 4. Genere reportes y corrija lo que indique la reconciliación.

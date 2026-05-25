@@ -15,10 +15,12 @@ SKIP_DATE_COLUMN_MISMATCH = "date_column_mismatch"
 SKIP_PERSON_COLUMN_MISMATCH = "person_column_mismatch"
 SKIP_KPI_COLUMN_MISMATCH = "kpi_column_mismatch"
 SKIP_HEADER_READ_FAILED = "header_read_failed"
+SKIP_AMBIGUOUS_INPUT_FILE = "ambiguous_input_file"
 
 SKIP_REASON_MESSAGES: dict[str, str] = {
     SKIP_INCOMPLETE_YAML_CONFIG: "configuración incompleta en el YAML",
     SKIP_FILE_NOT_FOUND_IN_INPUTS: "archivo no encontrado en inputs",
+    SKIP_AMBIGUOUS_INPUT_FILE: "varios archivos en inputs coinciden con el mismo formulario",
     SKIP_DATE_COLUMN_MISMATCH: "ninguna columna de fecha del YAML coincidió con el archivo",
     SKIP_PERSON_COLUMN_MISMATCH: "ninguna columna de persona del YAML coincidió con el archivo",
     SKIP_KPI_COLUMN_MISMATCH: "ningún KPI del YAML coincidió con columnas del archivo",
@@ -53,6 +55,9 @@ def format_skip_reason(
         return None
     if code == SKIP_HEADER_READ_FAILED and detail:
         return detail
+    if code == SKIP_AMBIGUOUS_INPUT_FILE and detail:
+        base = SKIP_REASON_MESSAGES[code]
+        return f"{base}: {detail}"
     return SKIP_REASON_MESSAGES.get(code, code)
 
 

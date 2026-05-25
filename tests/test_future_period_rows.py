@@ -58,11 +58,52 @@ class TestDropFuturePeriodRows(unittest.TestCase):
         self.assertEqual(len(out), 1)
         self.assertEqual(out.iloc[0]["metric"], 1)
 
-    def test_keeps_same_day_as_as_of(self) -> None:
+    def test_keeps_same_month_as_as_of(self) -> None:
         df = pd.DataFrame([{"periodo_dt": pd.Timestamp("2026-06-01"), "x": 1}])
         out, n = drop_future_period_rows(df, as_of=date(2026, 6, 1))
         self.assertEqual(n, 0)
         self.assertEqual(len(out), 1)
+
+    def test_keeps_end_of_month_when_as_of_is_earlier_in_same_month(self) -> None:
+        df = pd.DataFrame(
+            [
+                {"periodo_dt": pd.Timestamp("2026-04-30"), "metric": 1},
+                {"periodo_dt": pd.Timestamp("2026-05-31"), "metric": 2},
+            ]
+        )
+        out, n = drop_future_period_rows(df, as_of=date(2026, 5, 25))
+        self.assertEqual(n, 0)
+        self.assertEqual(len(out), 2)
+
+    def test_drops_next_month_same_year(self) -> None:
+        df = pd.DataFrame(
+            [
+                {"periodo_dt": pd.Timestamp("2026-05-15"), "metric": 1},
+                {"periodo_dt": pd.Timestamp("2026-06-01"), "metric": 99},
+            ]
+        )
+        out, n = drop_future_period_rows(df, as_of=date(2026, 5, 25))
+        self.assertEqual(n, 1)
+        self.assertEqual(len(out), 1)
+        self.assertEqual(out.iloc[0]["metric"], 1)
+
+    def test_comparativo_may_vs_april_after_month_filter(self) -> None:
+        df = pd.DataFrame(
+            [
+                {"periodo_dt": pd.Timestamp("2026-04-30"), "metric": 10},
+                {"periodo_dt": pd.Timestamp("2026-05-31"), "metric": 20},
+            ]
+        )
+        filtered, n = drop_future_period_rows(df, as_of=date(2026, 5, 25))
+        self.assertEqual(n, 0)
+        spec = _spec_metric()
+        result = build_form_comparison(filtered, _resolution(spec))
+        assert result is not None
+        self.assertEqual(result.mes_actual_label, "Mayo 2026")
+        self.assertEqual(result.mes_anterior_label, "Abril 2026")
+        row = result.df.iloc[0]
+        self.assertEqual(row["valor_actual"], 20.0)
+        self.assertEqual(row["valor_mes_anterior"], 10.0)
 
     def test_comparativo_uses_max_after_drop(self) -> None:
         df = pd.DataFrame(

@@ -8,7 +8,6 @@ Comandos para generar reportes (ejecutar desde la raíz del proyecto, con el ent
 | `generar_comparativo.py` | Solo comparativo apilado | `outputs/comparativos/comparativo_kpis.xlsx` |
 | `generar_particionado.py` | Un Excel por formulario (hojas por mes) | `outputs/particionados/` |
 | `limpiar_salidas.py` | Borra Excel generados en salidas | — |
-| `actualizar_ingesta_en_schema.py` | Mantenimiento: refresca `ingesta` desde Excel | `schemas/indicadores_vfiic_v5.yaml` |
 
 Ejemplo:
 

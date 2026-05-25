@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from pathlib import Path
+
+INPUT_FILE_PREFIXES: tuple[str, ...] = ("AREA - ", "PERSONA - ")
 
 
 def fold(text: object) -> str:
@@ -39,3 +42,20 @@ def find_first_matching_column(targets: list[str], available: list[str]) -> str 
         if match is not None:
             return match
     return None
+
+
+def canonical_input_basename(filename: str) -> str:
+    """Strip a known AREA/PERSONA prefix; otherwise return the filename unchanged."""
+    for prefix in INPUT_FILE_PREFIXES:
+        if filename.startswith(prefix):
+            return filename[len(prefix) :]
+    return filename
+
+
+def build_input_file_index(input_files: list[Path]) -> dict[str, list[Path]]:
+    """Map folded canonical basenames to all input paths that resolve to them."""
+    index: dict[str, list[Path]] = {}
+    for path in input_files:
+        key = fold(canonical_input_basename(path.name))
+        index.setdefault(key, []).append(path)
+    return index

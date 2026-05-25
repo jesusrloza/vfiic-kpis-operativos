@@ -85,13 +85,18 @@ def drop_future_period_rows(
     *,
     as_of: date | None = None,
 ) -> tuple[pd.DataFrame, int]:
-    """Drop rows whose `periodo_dt` is strictly after `as_of` (defaults to today)."""
+    """Drop rows whose evaluation month is strictly after `as_of` (defaults to today).
+
+    Comparison uses calendar year and month only, so a period like 31/05/2026 is kept
+    when `as_of` falls anywhere in May 2026.
+    """
     if df.empty or "periodo_dt" not in df.columns:
         return df, 0
     ref = as_of or date.today()
-    ts_ref = pd.Timestamp(ref).normalize()
+    ref_ym = ref.year * 12 + ref.month
     series = pd.to_datetime(df["periodo_dt"], errors="coerce")
-    future_mask = series.notna() & (series.dt.normalize() > ts_ref)
+    period_ym = series.dt.year * 12 + series.dt.month
+    future_mask = series.notna() & (period_ym > ref_ym)
     n_drop = int(future_mask.sum())
     if n_drop == 0:
         return df, 0
