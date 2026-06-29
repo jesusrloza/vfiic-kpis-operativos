@@ -5,11 +5,12 @@ import unittest
 from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SRC = PROJECT_ROOT / "src"
-if str(SRC) not in sys.path:
-    sys.path.insert(0, str(SRC))
+LIB = PROJECT_ROOT / "lib"
+if str(LIB) not in sys.path:
+    sys.path.insert(0, str(LIB))
 
 from vfiic_kpis.user_messages import (
+    SKIP_DUPLICATE_INPUT_FILE,
     SKIP_FILE_NOT_FOUND_IN_INPUTS,
     SKIP_INCOMPLETE_YAML_CONFIG,
     format_skip_reason,
@@ -47,6 +48,10 @@ class TestUserMessages(unittest.TestCase):
         self.assertEqual(
             format_skip_reason(SKIP_FILE_NOT_FOUND_IN_INPUTS),
             "archivo no encontrado en inputs",
+        )
+        self.assertIn(
+            "distintas carpetas",
+            format_skip_reason(SKIP_DUPLICATE_INPUT_FILE, detail="demo.xlsx: a/demo.xlsx, b/demo.xlsx"),
         )
 
 

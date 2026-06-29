@@ -5,7 +5,7 @@ Procesa exportaciones de formularios (Jotform / Google Sheets) y genera:
 1. **Comparativo apilado** — un workbook con todos los formularios, variación mes anterior y año anterior cuando hay historia.
 2. **Particionados** — un Excel por formulario con hoja `original` y una hoja por mes.
 
-La configuración vive en `schemas/indicadores_vfiic_v5.yaml`. Los insumos van en `inputs/` (archivos `.xlsx`).
+La configuración vive en `schemas/indicadores_vfiic_v5.yaml`. Los insumos van en `inputs/` (archivos `.xlsx`, en la raíz o en subcarpetas).
 
 ## Documentación
 
@@ -15,6 +15,7 @@ La configuración vive en `schemas/indicadores_vfiic_v5.yaml`. Los insumos van e
 | [docs/guia-operativa.md](docs/guia-operativa.md) | Uso diario: copiar Excel, correr scripts, leer salidas |
 | [docs/guia-indicadores-yaml.md](docs/guia-indicadores-yaml.md) | Editar formularios e indicadores en el YAML |
 | [docs/arquitectura.md](docs/arquitectura.md) | Detalle técnico del pipeline |
+| [docs/TODO.md](docs/TODO.md) | Pendientes y notas para desarrolladores |
 
 ## Inicio rápido
 
@@ -28,14 +29,17 @@ python scripts/generar_todos_los_reportes.py
 
 Salidas: `outputs/comparativos/comparativo_kpis.xlsx`, `outputs/particionados/`, bitácora en `logs/reconciliacion.json`.
 
-Scripts disponibles: ver [scripts/README.md](scripts/README.md).
+**Comandos para operadores:** use únicamente los scripts en [scripts/](scripts/) (véase [scripts/README.md](scripts/README.md)).
 
 ## Estructura del proyecto
 
-- `inputs/` — exportaciones Excel por formulario
-- `schemas/` — catálogo YAML
-- `themes/` — formato visual de los reportes Excel
-- `scripts/` — comandos para generar o limpiar salidas
-- `outputs/` — reportes generados
-- `logs/` — reconciliación JSON
-- `src/vfiic_kpis/` — código del pipeline
+| Carpeta | Quién la usa | Para qué |
+|---------|--------------|----------|
+| `inputs/` | Operadores | Exportaciones `.xlsx` (pueden organizarse en subcarpetas) |
+| `schemas/` | Operadores / coordinadores | Catálogo YAML de formularios e indicadores |
+| `scripts/` | **Operadores** | Comandos para generar o limpiar reportes |
+| `outputs/` | Operadores | Reportes generados |
+| `logs/` | Operadores | Reconciliación JSON |
+| `themes/` | Desarrollo | Formato visual de los Excel de salida |
+| `lib/vfiic_kpis/` | Desarrollo | Código interno del pipeline (no ejecutar directamente) |
+| `tests/` | Desarrollo | Pruebas automatizadas |

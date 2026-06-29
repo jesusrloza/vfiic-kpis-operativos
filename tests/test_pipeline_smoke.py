@@ -9,9 +9,9 @@ import pandas as pd
 from openpyxl import load_workbook
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SRC = PROJECT_ROOT / "src"
-if str(SRC) not in sys.path:
-    sys.path.insert(0, str(SRC))
+LIB = PROJECT_ROOT / "lib"
+if str(LIB) not in sys.path:
+    sys.path.insert(0, str(LIB))
 
 from vfiic_kpis.excel_export import (
     write_partitioned_workbook_for_form,

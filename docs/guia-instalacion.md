@@ -47,4 +47,4 @@ pip install -e .
 
 ## Siguiente paso
 
-Vaya a [guia-operativa.md](guia-operativa.md) para copiar insumos y generar reportes.
+Vaya a [guia-operativa.md](guia-operativa.md) para copiar insumos y generar reportes con los scripts en `scripts/`.

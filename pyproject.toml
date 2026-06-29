@@ -20,8 +20,8 @@ generar-comparativo = "vfiic_kpis.cli:main_comparativo"
 generar-particionado = "vfiic_kpis.cli:main_partitioned"
 
 [tool.setuptools]
-package-dir = {"" = "src"}
+package-dir = {"" = "lib"}
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["lib"]
 

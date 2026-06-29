@@ -12,3 +12,14 @@ logs/*.json
 
 inputs/**/*.xls
 inputs/**/*.xlsx
+
+# Escenarios demo comprimidos (no versionar insumos empaquetados)
+inputs/**/*.zip
+inputs/**/*.7z
+inputs/**/*.rar
+inputs/**/*.tar
+inputs/**/*.tar.gz
+inputs/**/*.tgz
+inputs/**/*.gz
+inputs/**/*.bz2
+inputs/**/*.xz

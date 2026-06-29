@@ -1,6 +1,6 @@
 # Scripts
 
-Comandos para generar reportes (ejecutar desde la raíz del proyecto, con el entorno virtual activado).
+**Estos son los únicos comandos que debe ejecutar el operador** para generar o limpiar reportes. Ejecute siempre desde la raíz del proyecto, con el entorno virtual activado (véase [docs/guia-instalacion.md](../docs/guia-instalacion.md)).
 
 | Script | Qué genera | Salida |
 |--------|------------|--------|
@@ -15,4 +15,6 @@ Ejemplo:
 python scripts/generar_todos_los_reportes.py
 ```
 
-Tras `pip install -e .` también puede usar: `generar-todos`, `generar-comparativo`, `generar-particionado`.
+Tras `pip install -e .` también puede usar los comandos de consola `generar-todos`, `generar-comparativo` y `generar-particionado`; el flujo recomendado sigue siendo `python scripts/...`.
+
+El código que implementa el pipeline vive en `lib/vfiic_kpis/` y no debe ejecutarse directamente.

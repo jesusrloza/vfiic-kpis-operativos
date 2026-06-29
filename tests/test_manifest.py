@@ -8,12 +8,12 @@ from pathlib import Path
 import pandas as pd
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-SRC = PROJECT_ROOT / "src"
-if str(SRC) not in sys.path:
-    sys.path.insert(0, str(SRC))
+LIB = PROJECT_ROOT / "lib"
+if str(LIB) not in sys.path:
+    sys.path.insert(0, str(LIB))
 
 from vfiic_kpis.manifest import reconcile
-from vfiic_kpis.user_messages import SKIP_AMBIGUOUS_INPUT_FILE
+from vfiic_kpis.user_messages import SKIP_AMBIGUOUS_INPUT_FILE, SKIP_DUPLICATE_INPUT_FILE
 from vfiic_kpis.yaml_loader import FormSpec, KpiSpec
 
 
@@ -137,11 +137,11 @@ class TestManifestReconcile(unittest.TestCase):
             self.assertEqual(len(report.matched), 0)
             self.assertEqual(len(report.yaml_with_column_issues), 1)
 
-    def _write_demo_workbook(self, input_dir: Path, filename: str) -> None:
+    def _write_demo_workbook(self, directory: Path, filename: str) -> None:
         df = pd.DataFrame(
             [{"Periodo Evaluado": "2026-04-01", "Auxiliar": "A", "Col": 1}]
         )
-        df.to_excel(input_dir / filename, index=False, sheet_name="Form responses")
+        df.to_excel(directory / filename, index=False, sheet_name="Form responses")
 
     def test_area_prefixed_file_resolves(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -206,6 +206,69 @@ class TestManifestReconcile(unittest.TestCase):
             report = reconcile([], input_dir)
             self.assertEqual(len(report.files_without_yaml), 1)
             self.assertEqual(report.files_without_yaml[0].name, "AREA - orphan.xlsx")
+
+    def test_subdirectory_file_resolves(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            input_dir = Path(tmp)
+            subdir = input_dir / "area_x"
+            subdir.mkdir()
+            self._write_demo_workbook(subdir, "demo.xlsx")
+            spec = _make_spec(archivo="demo.xlsx", kpis=("Col",))
+            report = reconcile([spec], input_dir)
+            self.assertEqual(len(report.matched), 1)
+            self.assertIn("area_x", report.matched[0].file_path.as_posix())
+
+    def test_duplicate_basename_blocks_matching(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            input_dir = Path(tmp)
+            area_a = input_dir / "area_a"
+            area_b = input_dir / "area_b"
+            area_a.mkdir()
+            area_b.mkdir()
+            self._write_demo_workbook(area_a, "demo.xlsx")
+            self._write_demo_workbook(area_b, "demo.xlsx")
+            spec = _make_spec(archivo="demo.xlsx", kpis=("Col",))
+            report = reconcile([spec], input_dir)
+            self.assertEqual(len(report.matched), 0)
+            self.assertEqual(len(report.duplicate_input_files), 1)
+            self.assertEqual(report.duplicate_input_files[0][0], "demo.xlsx")
+            self.assertEqual(len(report.yaml_with_column_issues), 1)
+            self.assertEqual(
+                report.yaml_with_column_issues[0].skip_reason,
+                SKIP_DUPLICATE_INPUT_FILE,
+            )
+
+    def test_duplicate_paths_listed_in_detail(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            input_dir = Path(tmp)
+            area_a = input_dir / "area_a"
+            area_b = input_dir / "area_b"
+            area_a.mkdir()
+            area_b.mkdir()
+            self._write_demo_workbook(area_a, "demo.xlsx")
+            self._write_demo_workbook(area_b, "demo.xlsx")
+            spec = _make_spec(archivo="demo.xlsx", kpis=("Col",))
+            report = reconcile([spec], input_dir)
+            detail = report.yaml_with_column_issues[0].skip_detail or ""
+            self.assertIn("area_a/demo.xlsx", detail)
+            self.assertIn("area_b/demo.xlsx", detail)
+
+    def test_non_duplicate_files_still_process(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            input_dir = Path(tmp)
+            area_a = input_dir / "area_a"
+            area_b = input_dir / "area_b"
+            area_a.mkdir()
+            area_b.mkdir()
+            self._write_demo_workbook(area_a, "dup.xlsx")
+            self._write_demo_workbook(area_b, "dup.xlsx")
+            self._write_demo_workbook(input_dir, "ok.xlsx")
+            dup_spec = _make_spec(archivo="dup.xlsx", kpis=("Col",))
+            ok_spec = _make_spec(archivo="ok.xlsx", kpis=("Col",))
+            report = reconcile([dup_spec, ok_spec], input_dir)
+            self.assertEqual(len(report.matched), 1)
+            self.assertEqual(report.matched[0].spec.archivo, "ok.xlsx")
+            self.assertEqual(len(report.duplicate_input_files), 1)
 
 
 if __name__ == "__main__":

@@ -29,7 +29,7 @@ Nombre de la Dirección:
 
 | Campo | Descripción |
 |-------|-------------|
-| `archivo` | Nombre canónico del `.xlsx` **sin** prefijo. En `inputs/` puede copiarse así, o como `AREA - …` o `PERSONA - …` (mismo contenido de columnas; no deje dos variantes del mismo formulario a la vez). |
+| `archivo` | Nombre del `.xlsx` tal como debe llamarse (sin ruta de carpeta). El archivo puede estar en `inputs/` o en cualquier subcarpeta, siempre que ese nombre sea **único** en todo el árbol. Opcionalmente puede anteponer `AREA - ` al copiar el archivo. |
 | `hoja` | Hoja a leer; por lo general `Form responses`. |
 | `columna_fecha` | Una o varias columnas; se usa la primera que exista en el archivo. |
 | `columnas_persona` | Columnas para armar el nombre del agente/titular en el reporte. |
@@ -46,7 +46,7 @@ Nombre de la Dirección:
 
 ## Agregar un indicador
 
-1. Confirme que la columna existe en el Excel en `inputs/`.
+1. Confirme que la columna existe en el Excel en `inputs/` (o en una subcarpeta de `inputs/`).
 2. En el bloque `kpis` del formulario, agregue:
 
 ```yaml
@@ -67,7 +67,7 @@ Borre la entrada completa de la lista `kpis` (las dos líneas `columna_origen` /
 
 ## Agregar un formulario nuevo
 
-1. Copie el `.xlsx` a `inputs/` (con o sin prefijo `AREA - ` / `PERSONA - `).
+1. Copie el `.xlsx` a `inputs/` o a una subcarpeta (el nombre debe coincidir con `ingesta.archivo`).
 2. Agregue un bloque bajo la dirección correspondiente siguiendo la plantilla.
 3. Ajuste `archivo`, `columna_fecha`, `columnas_persona` y la lista `kpis`.
 4. Genere reportes y corrija lo que indique la reconciliación.

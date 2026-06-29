@@ -14,6 +14,7 @@ from vfiic_kpis.text_match import (
 from vfiic_kpis.user_messages import (
     SKIP_AMBIGUOUS_INPUT_FILE,
     SKIP_DATE_COLUMN_MISMATCH,
+    SKIP_DUPLICATE_INPUT_FILE,
     SKIP_FILE_NOT_FOUND_IN_INPUTS,
     SKIP_HEADER_READ_FAILED,
     SKIP_INCOMPLETE_YAML_CONFIG,
@@ -48,12 +49,78 @@ class FormResolution:
 
 
 @dataclass(frozen=True)
+class InputDiscovery:
+    """Spreadsheet files found under ``input_dir`` and indexes for reconciliation."""
+
+    usable_files: tuple[Path, ...]
+    duplicate_groups: tuple[tuple[str, tuple[Path, ...]], ...]
+    files_by_folded_name: dict[str, list[Path]]
+    canonical_index: dict[str, list[Path]]
+    duplicate_basenames: frozenset[str]
+
+
+@dataclass(frozen=True)
 class ReconciliationReport:
     matched: tuple[FormResolution, ...] = field(default_factory=tuple)
     yaml_without_file: tuple[FormResolution, ...] = field(default_factory=tuple)
     yaml_without_ingesta: tuple[FormResolution, ...] = field(default_factory=tuple)
     yaml_with_column_issues: tuple[FormResolution, ...] = field(default_factory=tuple)
     files_without_yaml: tuple[Path, ...] = field(default_factory=tuple)
+    duplicate_input_files: tuple[tuple[str, tuple[Path, ...]], ...] = field(default_factory=tuple)
+    input_dir: Path | None = None
+
+
+def relative_input_path(path: Path, input_dir: Path) -> str:
+    """Return ``path`` relative to ``input_dir`` for operator-facing messages."""
+    try:
+        return path.relative_to(input_dir).as_posix()
+    except ValueError:
+        return path.name
+
+
+def discover_input_spreadsheets(input_dir: Path) -> InputDiscovery:
+    """Recursively find ``.xlsx`` files under ``input_dir`` and detect duplicate basenames."""
+    all_files = sorted(
+        p
+        for p in input_dir.rglob("*.xlsx")
+        if p.is_file() and not p.name.startswith("~$")
+    )
+    by_basename: dict[str, list[Path]] = {}
+    for path in all_files:
+        by_basename.setdefault(path.name, []).append(path)
+
+    duplicate_groups = tuple(
+        (name, tuple(sorted(paths, key=str)))
+        for name, paths in sorted(by_basename.items())
+        if len(paths) > 1
+    )
+    duplicate_basenames = frozenset(name for name, _ in duplicate_groups)
+    duplicate_paths = {path for _, paths in duplicate_groups for path in paths}
+    usable_files = tuple(path for path in all_files if path not in duplicate_paths)
+
+    files_by_folded_name: dict[str, list[Path]] = {}
+    for path in usable_files:
+        files_by_folded_name.setdefault(fold(path.name), []).append(path)
+
+    canonical_index = build_input_file_index(list(usable_files))
+
+    return InputDiscovery(
+        usable_files=usable_files,
+        duplicate_groups=duplicate_groups,
+        files_by_folded_name=files_by_folded_name,
+        canonical_index=canonical_index,
+        duplicate_basenames=duplicate_basenames,
+    )
+
+
+def _duplicate_detail(
+    basename: str,
+    paths: tuple[Path, ...],
+    *,
+    input_dir: Path,
+) -> str:
+    rel_paths = sorted(relative_input_path(path, input_dir) for path in paths)
+    return f"{basename}: {', '.join(rel_paths)}"
 
 
 def _read_excel_header(path: Path, sheet: str | int | None) -> tuple[list[str], str | int]:
@@ -67,8 +134,11 @@ def _read_excel_header(path: Path, sheet: str | int | None) -> tuple[list[str], 
 def _resolve_file(
     spec: FormSpec,
     *,
-    files_by_folded_name: dict[str, Path],
+    files_by_folded_name: dict[str, list[Path]],
     canonical_index: dict[str, list[Path]],
+    duplicate_basenames: frozenset[str],
+    duplicate_groups: tuple[tuple[str, tuple[Path, ...]], ...],
+    input_dir: Path,
 ) -> tuple[Path | None, str | None, str | None]:
     """Locate the form file: exact name, then canonical basename (prefixed inputs).
 
@@ -76,6 +146,15 @@ def _resolve_file(
     """
     if not spec.archivo:
         return None, None, None
+
+    if spec.archivo in duplicate_basenames:
+        for basename, paths in duplicate_groups:
+            if basename == spec.archivo:
+                return (
+                    None,
+                    SKIP_DUPLICATE_INPUT_FILE,
+                    _duplicate_detail(basename, paths, input_dir=input_dir),
+                )
 
     target_folded = fold(spec.archivo)
     candidates: list[Path] = []
@@ -87,16 +166,17 @@ def _resolve_file(
             seen.add(key)
             candidates.append(path)
 
-    exact = files_by_folded_name.get(target_folded)
-    if exact is not None:
-        _add(exact)
+    for path in files_by_folded_name.get(target_folded, []):
+        _add(path)
     for path in canonical_index.get(target_folded, []):
         _add(path)
 
     if len(candidates) == 1:
         return candidates[0], None, None
     if len(candidates) > 1:
-        names = ", ".join(sorted(p.name for p in candidates))
+        names = ", ".join(
+            sorted(relative_input_path(path, input_dir) for path in candidates)
+        )
         return None, SKIP_AMBIGUOUS_INPUT_FILE, names
 
     return None, None, None
@@ -106,10 +186,11 @@ def reconcile(
     forms: list[FormSpec],
     input_dir: Path,
 ) -> ReconciliationReport:
-    """Match `FormSpec` entries against xlsx files in `input_dir`."""
-    input_files: list[Path] = sorted(p for p in input_dir.glob("*.xlsx") if p.is_file())
-    files_by_folded_name = {fold(p.name): p for p in input_files}
-    canonical_index = build_input_file_index(input_files)
+    """Match `FormSpec` entries against xlsx files in `input_dir` (recursive)."""
+    discovery = discover_input_spreadsheets(input_dir)
+    input_files = list(discovery.usable_files)
+    files_by_folded_name = discovery.files_by_folded_name
+    canonical_index = discovery.canonical_index
 
     matched: list[FormResolution] = []
     yaml_without_ingesta: list[FormResolution] = []
@@ -117,14 +198,18 @@ def reconcile(
     yaml_with_column_issues: list[FormResolution] = []
     referenced_files: set[Path] = set()
 
+    resolve_kwargs = {
+        "files_by_folded_name": files_by_folded_name,
+        "canonical_index": canonical_index,
+        "duplicate_basenames": discovery.duplicate_basenames,
+        "duplicate_groups": discovery.duplicate_groups,
+        "input_dir": input_dir,
+    }
+
     for spec in forms:
         if not spec.has_ingesta:
             continue
-        file_path, _, _ = _resolve_file(
-            spec,
-            files_by_folded_name=files_by_folded_name,
-            canonical_index=canonical_index,
-        )
+        file_path, _, _ = _resolve_file(spec, **resolve_kwargs)
         if file_path is not None:
             referenced_files.add(file_path)
 
@@ -144,13 +229,9 @@ def reconcile(
             )
             continue
 
-        file_path, file_skip_reason, file_skip_detail = _resolve_file(
-            spec,
-            files_by_folded_name=files_by_folded_name,
-            canonical_index=canonical_index,
-        )
+        file_path, file_skip_reason, file_skip_detail = _resolve_file(spec, **resolve_kwargs)
         if file_path is None:
-            if file_skip_reason == SKIP_AMBIGUOUS_INPUT_FILE:
+            if file_skip_reason in (SKIP_AMBIGUOUS_INPUT_FILE, SKIP_DUPLICATE_INPUT_FILE):
                 yaml_with_column_issues.append(
                     FormResolution(
                         spec=spec,
@@ -160,7 +241,7 @@ def reconcile(
                         resolved_person_columns=(),
                         available_kpis=(),
                         missing_columns=(),
-                        skip_reason=SKIP_AMBIGUOUS_INPUT_FILE,
+                        skip_reason=file_skip_reason,
                         skip_detail=file_skip_detail,
                     )
                 )
@@ -247,4 +328,6 @@ def reconcile(
         yaml_without_file=tuple(yaml_without_file),
         yaml_with_column_issues=tuple(yaml_with_column_issues),
         files_without_yaml=files_without_yaml,
+        duplicate_input_files=discovery.duplicate_groups,
+        input_dir=input_dir,
     )

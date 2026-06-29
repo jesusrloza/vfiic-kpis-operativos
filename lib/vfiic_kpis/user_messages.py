@@ -16,11 +16,13 @@ SKIP_PERSON_COLUMN_MISMATCH = "person_column_mismatch"
 SKIP_KPI_COLUMN_MISMATCH = "kpi_column_mismatch"
 SKIP_HEADER_READ_FAILED = "header_read_failed"
 SKIP_AMBIGUOUS_INPUT_FILE = "ambiguous_input_file"
+SKIP_DUPLICATE_INPUT_FILE = "duplicate_input_file"
 
 SKIP_REASON_MESSAGES: dict[str, str] = {
     SKIP_INCOMPLETE_YAML_CONFIG: "configuración incompleta en el YAML",
     SKIP_FILE_NOT_FOUND_IN_INPUTS: "archivo no encontrado en inputs",
     SKIP_AMBIGUOUS_INPUT_FILE: "varios archivos en inputs coinciden con el mismo formulario",
+    SKIP_DUPLICATE_INPUT_FILE: "varios archivos con el mismo nombre en distintas carpetas de inputs",
     SKIP_DATE_COLUMN_MISMATCH: "ninguna columna de fecha del YAML coincidió con el archivo",
     SKIP_PERSON_COLUMN_MISMATCH: "ninguna columna de persona del YAML coincidió con el archivo",
     SKIP_KPI_COLUMN_MISMATCH: "ningún KPI del YAML coincidió con columnas del archivo",
@@ -55,7 +57,7 @@ def format_skip_reason(
         return None
     if code == SKIP_HEADER_READ_FAILED and detail:
         return detail
-    if code == SKIP_AMBIGUOUS_INPUT_FILE and detail:
+    if code in (SKIP_AMBIGUOUS_INPUT_FILE, SKIP_DUPLICATE_INPUT_FILE) and detail:
         base = SKIP_REASON_MESSAGES[code]
         return f"{base}: {detail}"
     return SKIP_REASON_MESSAGES.get(code, code)
@@ -178,12 +180,27 @@ def _format_resolution_line(resolution) -> str:
     return " | ".join(parts)
 
 
+def _relative_input_path(path: Path, input_dir: Path | None) -> str:
+    if input_dir is None:
+        return path.name
+    try:
+        return path.relative_to(input_dir).as_posix()
+    except ValueError:
+        return path.name
+
+
+def _format_duplicate_group_line(basename: str, paths: tuple[Path, ...], input_dir: Path | None) -> str:
+    rel_paths = sorted(_relative_input_path(path, input_dir) for path in paths)
+    return f"{basename} -> {', '.join(rel_paths)}"
+
+
 def _reconciliation_is_clean(report) -> bool:
     return (
         not report.yaml_without_file
         and not report.yaml_without_ingesta
         and not report.yaml_with_column_issues
         and not report.files_without_yaml
+        and not report.duplicate_input_files
     )
 
 
@@ -204,7 +221,14 @@ def format_reconciliation_summary(report, *, detail_json_path: Path | None = Non
     no_file = [_format_resolution_line(item) for item in report.yaml_without_file]
     no_config = [_format_resolution_line(item) for item in report.yaml_without_ingesta]
     column_issues = [_format_resolution_line(item) for item in report.yaml_with_column_issues]
-    extra_files = [path.name for path in report.files_without_yaml]
+    input_dir = report.input_dir
+    duplicate_files = [
+        _format_duplicate_group_line(basename, paths, input_dir)
+        for basename, paths in report.duplicate_input_files
+    ]
+    extra_files = [
+        _relative_input_path(path, input_dir) for path in report.files_without_yaml
+    ]
 
     sections = [
         "===== Reconciliación schema YAML vs inputs =====",
@@ -219,6 +243,9 @@ def format_reconciliation_summary(report, *, detail_json_path: Path | None = Non
         "",
         f"Formularios con problemas de columnas: {len(column_issues)}",
         _bullets(column_issues),
+        "",
+        f"Archivos con nombre duplicado en inputs: {len(duplicate_files)}",
+        _bullets(duplicate_files),
         "",
         f"Archivos en inputs sin entrada en el YAML: {len(extra_files)}",
         _bullets(extra_files),
@@ -251,17 +278,30 @@ def resolution_to_user_dict(resolution) -> dict:
 
 
 def reconciliation_report_to_user_dict(report) -> dict:
+    input_dir = report.input_dir
     return {
         "procesables": [resolution_to_user_dict(item) for item in report.matched],
         "sin_archivo": [resolution_to_user_dict(item) for item in report.yaml_without_file],
         "config_incompleta": [resolution_to_user_dict(item) for item in report.yaml_without_ingesta],
         "problemas_columnas": [resolution_to_user_dict(item) for item in report.yaml_with_column_issues],
-        "archivos_sin_schema": [str(path) for path in report.files_without_yaml],
+        "archivos_duplicados": [
+            {
+                "nombre": basename,
+                "rutas": [
+                    _relative_input_path(path, input_dir) for path in paths
+                ],
+            }
+            for basename, paths in report.duplicate_input_files
+        ],
+        "archivos_sin_schema": [
+            _relative_input_path(path, input_dir) for path in report.files_without_yaml
+        ],
         "totales": {
             "procesables": len(report.matched),
             "sin_archivo": len(report.yaml_without_file),
             "config_incompleta": len(report.yaml_without_ingesta),
             "problemas_columnas": len(report.yaml_with_column_issues),
+            "archivos_duplicados": len(report.duplicate_input_files),
             "archivos_sin_schema": len(report.files_without_yaml),
         },
     }
