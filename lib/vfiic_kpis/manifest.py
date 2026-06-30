@@ -7,7 +7,8 @@ import pandas as pd
 
 from vfiic_kpis.text_match import (
     build_input_file_index,
-    find_first_matching_column,
+    discover_date_column,
+    discover_person_columns,
     find_matching_column,
     fold,
 )
@@ -278,14 +279,19 @@ def reconcile(
             )
             continue
 
-        resolved_date_column = find_first_matching_column(
+        resolved_date_column = discover_date_column(
             list(spec.columna_fecha_aliases), available_columns
         )
-        resolved_persons = tuple(
-            match
-            for match in (find_matching_column(col, available_columns) for col in spec.columnas_persona)
-            if match
-        )
+        if spec.columnas_persona:
+            resolved_persons = tuple(
+                match
+                for match in (
+                    find_matching_column(col, available_columns) for col in spec.columnas_persona
+                )
+                if match
+            )
+        else:
+            resolved_persons = discover_person_columns(available_columns)
 
         available_kpis: list[str] = []
         missing_kpis: list[str] = []

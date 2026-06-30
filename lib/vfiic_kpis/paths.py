@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 DEFAULT_INPUT_DIR = Path("inputs")
-DEFAULT_SCHEMA_PATH = Path("schemas/indicadores_vfiic_v5.yaml")
+DEFAULT_SCHEMA_PATH = Path("schemas/indicadores_vfiic_v6.yaml")
 
 DEFAULT_PARTITIONED_DIR = Path("outputs/particionados")
 DEFAULT_COMPARISON_OUTPUT = Path("outputs/comparativos/comparativo_kpis.xlsx")

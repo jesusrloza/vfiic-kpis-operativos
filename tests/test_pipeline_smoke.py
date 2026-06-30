@@ -27,17 +27,20 @@ SCHEMA_BODY = """
 Coordinacion Periciales:
 
   VFIIC KPIs Periciales - Demo:
-    ingesta:
-      archivo: "VFIIC KPIs Periciales - Demo.xlsx"
-      hoja: "Form responses"
-      columna_fecha: ["Periodo Evaluado", "Periodo a Evaluar"]
-      columnas_persona: ["Auxiliar"]
-    kpis:
-      - columna_origen: "Visitas"
-        descripcion: "Visitas realizadas"
-      - columna_origen: "Dictamenes"
-        descripcion: "Dictamenes realizados"
+    - columna_origen: "Visitas"
+      descripcion: "Visitas realizadas"
+    - columna_origen: "Dictamenes"
+      descripcion: "Dictamenes realizados"
 """
+
+DEMO_ROW = {
+    "Periodo a Evaluar": "2026-04-01",
+    "Agente - Nombre(s)": "Ana",
+    "Agente - Apellido Paterno": "Lopez",
+    "Agente - Apellido Materno": "Perez",
+    "Visitas": 2,
+    "Dictamenes": 1,
+}
 
 
 def _count_conditional_format_entries(ws) -> int:
@@ -59,7 +62,6 @@ def _build_pipeline(root: Path, df: pd.DataFrame):
     df.to_excel(
         input_dir / "VFIIC KPIs Periciales - Demo.xlsx",
         index=False,
-        sheet_name="Form responses",
     )
 
     forms = load_forms_from_yaml(schema_path)
@@ -80,9 +82,15 @@ class TestPipelineSmokeNoYoy(unittest.TestCase):
             root = Path(tmp)
             df = pd.DataFrame(
                 [
-                    {"Periodo a Evaluar": "2026-03-01", "Auxiliar": "A", "Visitas": 2, "Dictamenes": 1},
-                    {"Periodo a Evaluar": "2026-04-01", "Auxiliar": "A", "Visitas": 5, "Dictamenes": 3},
-                    {"Periodo a Evaluar": "2026-04-01", "Auxiliar": "B", "Visitas": 1, "Dictamenes": 0},
+                    {**DEMO_ROW, "Periodo a Evaluar": "2026-03-01", "Visitas": 2, "Dictamenes": 1},
+                    {**DEMO_ROW, "Periodo a Evaluar": "2026-04-01", "Visitas": 5, "Dictamenes": 3},
+                    {
+                        **DEMO_ROW,
+                        "Periodo a Evaluar": "2026-04-01",
+                        "Agente - Nombre(s)": "Bea",
+                        "Visitas": 1,
+                        "Dictamenes": 0,
+                    },
                 ]
             )
             resolution, data, comparison = _build_pipeline(root, df)
@@ -139,10 +147,16 @@ class TestPipelineSmokeWithYoy(unittest.TestCase):
             root = Path(tmp)
             df = pd.DataFrame(
                 [
-                    {"Periodo a Evaluar": "2025-04-01", "Auxiliar": "A", "Visitas": 4, "Dictamenes": 2},
-                    {"Periodo a Evaluar": "2026-03-01", "Auxiliar": "A", "Visitas": 2, "Dictamenes": 1},
-                    {"Periodo a Evaluar": "2026-04-01", "Auxiliar": "A", "Visitas": 5, "Dictamenes": 3},
-                    {"Periodo a Evaluar": "2026-04-01", "Auxiliar": "B", "Visitas": 1, "Dictamenes": 0},
+                    {**DEMO_ROW, "Periodo a Evaluar": "2025-04-01", "Visitas": 4, "Dictamenes": 2},
+                    {**DEMO_ROW, "Periodo a Evaluar": "2026-03-01", "Visitas": 2, "Dictamenes": 1},
+                    {**DEMO_ROW, "Periodo a Evaluar": "2026-04-01", "Visitas": 5, "Dictamenes": 3},
+                    {
+                        **DEMO_ROW,
+                        "Periodo a Evaluar": "2026-04-01",
+                        "Agente - Nombre(s)": "Bea",
+                        "Visitas": 1,
+                        "Dictamenes": 0,
+                    },
                 ]
             )
             _resolution, _data, comparison = _build_pipeline(root, df)

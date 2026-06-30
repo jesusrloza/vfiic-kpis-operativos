@@ -7,7 +7,7 @@ Flujo habitual para generar reportes KPI a partir de exportaciones Excel (Jotfor
 | Carpeta | Uso |
 |---------|-----|
 | `inputs/` | Copie aquí los `.xlsx` exportados (un archivo por formulario). Puede usar subcarpetas para organizarlos (p. ej. por área o mes). El YAML solo guarda el **nombre** del archivo, no la ruta. |
-| `schemas/indicadores_vfiic_v5.yaml` | Catálogo de formularios, columnas e indicadores. |
+| `schemas/indicadores_vfiic_v6.yaml` | Catálogo de formularios, columnas e indicadores. |
 | `outputs/comparativos/` | Reporte comparativo apilado (`comparativo_kpis.xlsx`). |
 | `outputs/particionados/` | Un Excel por formulario con hojas por mes. |
 | `logs/` | Bitácora de reconciliación (`reconciliacion.json`). |
@@ -67,7 +67,7 @@ Al final de cada corrida verá un resumen que clasifica formularios y archivos:
 ```mermaid
 flowchart LR
   excel["Excel en inputs/ o subcarpetas"]
-  yaml["schemas/indicadores_vfiic_v5.yaml"]
+  yaml["schemas/indicadores_vfiic_v6.yaml"]
   script["scripts/generar_*.py"]
   outComp["outputs/comparativos/"]
   outPart["outputs/particionados/"]

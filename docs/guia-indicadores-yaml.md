@@ -1,8 +1,8 @@
 # Guía del schema de indicadores
 
-Archivo: `schemas/indicadores_vfiic_v5.yaml`
+Archivo: `schemas/indicadores_vfiic_v6.yaml`
 
-Cada formulario se define con un bloque **`ingesta`** (cómo leer el Excel) y una lista **`kpis`** (qué indicadores mostrar en el comparativo).
+Cada formulario se define con el **nombre del formulario** (debe coincidir con el `.xlsx` en `inputs/`) y una **lista de KPIs**. El sistema infiere el resto: nombre de archivo, primera hoja, columna de periodo y columnas de persona.
 
 ## Plantilla por formulario
 
@@ -10,72 +10,72 @@ Cada formulario se define con un bloque **`ingesta`** (cómo leer el Excel) y un
 Nombre de la Dirección:
 
   VFIIC KPIs Nombre del Formulario:
-    ingesta:
-      archivo: "VFIIC KPIs Nombre del Formulario.xlsx"
-      hoja: "Form responses"
-      columna_fecha:
-        - "Periodo Evaluado"
-        - "Periodo a Evaluar"
-      columnas_persona:
-        - "Agente - Nombre(s)"
-        - "Agente - Apellido Paterno"
-        - "Agente - Apellido Materno"
-    kpis:
-      - columna_origen: "Nombre exacto de columna en Excel"
-        descripcion: "Etiqueta visible en el reporte"
+    - columna_origen: "Nombre exacto de columna en Excel"
+    - columna_origen: "Otra columna"
+      descripcion: "Etiqueta distinta en el reporte"
+    - "Columna como texto simple"
 ```
 
-### Campos de `ingesta`
+### Qué infiere el sistema
 
-| Campo | Descripción |
-|-------|-------------|
-| `archivo` | Nombre del `.xlsx` tal como debe llamarse (sin ruta de carpeta). El archivo puede estar en `inputs/` o en cualquier subcarpeta, siempre que ese nombre sea **único** en todo el árbol. Opcionalmente puede anteponer `AREA - ` al copiar el archivo. |
-| `hoja` | Hoja a leer; por lo general `Form responses`. |
-| `columna_fecha` | Una o varias columnas; se usa la primera que exista en el archivo. |
-| `columnas_persona` | Columnas para armar el nombre del agente/titular en el reporte. |
-| `id` | (Opcional) Identificador interno si el nombre del formulario no basta. |
+| Aspecto | Comportamiento |
+|---------|----------------|
+| Archivo Excel | `{nombre del formulario}.xlsx` |
+| Hoja | Primera hoja del libro |
+| Columna de periodo | Busca `Periodo Evaluado`, `Periodo a Evaluar` u otra columna cuyo nombre contenga «periodo» |
+| Columnas de persona | Detecta grupos como `Agente - Nombre(s)` + apellidos, `Perito - …`, `Titular - …`, etc. |
+| Etiqueta en reporte | Title case español a partir de `columna_origen` (conectores en minúscula: de, en, la, …) |
 
 ### Campos de cada KPI
 
 | Campo | Obligatorio | Descripción |
 |-------|-------------|-------------|
-| `columna_origen` | Sí | Encabezado tal como viene en el Excel. |
-| `descripcion` | Sí | Texto que verá el usuario en el comparativo. |
+| `columna_origen` | Sí | Encabezado tal como viene en el Excel. También puede escribirse como texto simple: `- "Mi columna"`. |
+| `descripcion` | No | Solo si la etiqueta del comparativo debe diferir de la columna. Si se omite, se genera automáticamente en title case. |
 | `aggregation` | No | `sum` (predeterminado), `count` o `avg`. |
 | `value_parser` | No | `numeric` (predeterminado) o `sum_cantidad`. |
 
 ## Agregar un indicador
 
 1. Confirme que la columna existe en el Excel en `inputs/` (o en una subcarpeta de `inputs/`).
-2. En el bloque `kpis` del formulario, agregue:
+2. En la lista del formulario, agregue:
 
 ```yaml
-      - columna_origen: "Nueva métrica"
-        descripcion: "Nueva métrica (etiqueta corta)"
+    - columna_origen: "Nueva métrica"
+```
+
+Si el reporte debe mostrar otro texto:
+
+```yaml
+    - columna_origen: "Nueva métrica"
+      descripcion: "Etiqueta corta en el reporte"
 ```
 
 3. Ejecute `python scripts/generar_comparativo.py` (o `generar_todos_los_reportes.py`) y revise la reconciliación.
 
 ## Modificar un indicador
 
-- Cambie `descripcion` para el texto del reporte.
+- Cambie `descripcion` para el texto del reporte (o elimínela para usar la etiqueta automática).
 - Cambie `columna_origen` si el encabezado en el Excel cambió.
 
 ## Eliminar un indicador
 
-Borre la entrada completa de la lista `kpis` (las dos líneas `columna_origen` / `descripcion` y opcionales).
+Borre la entrada completa de la lista (una o dos líneas según tenga `descripcion`).
 
 ## Agregar un formulario nuevo
 
-1. Copie el `.xlsx` a `inputs/` o a una subcarpeta (el nombre debe coincidir con `ingesta.archivo`).
-2. Agregue un bloque bajo la dirección correspondiente siguiendo la plantilla.
-3. Ajuste `archivo`, `columna_fecha`, `columnas_persona` y la lista `kpis`.
-4. Genere reportes y corrija lo que indique la reconciliación.
+1. Copie el `.xlsx` a `inputs/` o a una subcarpeta. El nombre del archivo debe ser `{nombre del formulario}.xlsx`.
+2. Agregue un bloque bajo la dirección correspondiente con la lista de KPIs.
+3. Genere reportes y corrija lo que indique la reconciliación.
+
+## Formato legacy (v5)
+
+El formato anterior con bloques `ingesta` y `kpis` sigue soportado. Referencia archivada en `schemas/archive/indicadores_vfiic_v5.yaml`.
 
 ## Errores al guardar el YAML
 
 - Use espacios (no tabuladores) para la indentación.
-- Las listas bajo `kpis` llevan guión `-` al inicio de cada ítem.
-- No use una lista suelta de KPIs sin bloque `ingesta`; el sistema exige la plantilla completa.
+- Las listas llevan guión `-` al inicio de cada ítem.
+- Los comentarios con `#` al inicio de línea son válidos.
 
 Si el script reporta error de YAML, el mensaje en consola indica el formulario afectado; compare con esta guía.

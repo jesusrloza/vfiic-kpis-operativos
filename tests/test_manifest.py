@@ -270,6 +270,38 @@ class TestManifestReconcile(unittest.TestCase):
             self.assertEqual(report.matched[0].spec.archivo, "ok.xlsx")
             self.assertEqual(len(report.duplicate_input_files), 1)
 
+    def test_auto_detects_person_columns_when_yaml_omits_them(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            input_dir = Path(tmp)
+            df = pd.DataFrame(
+                [
+                    {
+                        "Periodo Evaluado": "2026-04-01",
+                        "Agente - Nombre(s)": "Ana",
+                        "Agente - Apellido Paterno": "Lopez",
+                        "Agente - Apellido Materno": "Perez",
+                        "Col": 1,
+                    }
+                ]
+            )
+            df.to_excel(input_dir / "demo.xlsx", index=False)
+            spec = FormSpec(
+                area_id="demo",
+                display_name="Demo",
+                direccion="D",
+                archivo="demo.xlsx",
+                hoja=0,
+                columna_fecha_aliases=("Periodo Evaluado", "Periodo a Evaluar"),
+                columnas_persona=(),
+                agent_output_column="Agente/Titular",
+                kpis=(KpiSpec(columna_origen="Col", descripcion="Col"),),
+            )
+            report = reconcile([spec], input_dir)
+            self.assertEqual(len(report.matched), 1)
+            resolution = report.matched[0]
+            self.assertEqual(len(resolution.resolved_person_columns), 3)
+            self.assertEqual(resolution.resolved_sheet, 0)
+
 
 if __name__ == "__main__":
     unittest.main()

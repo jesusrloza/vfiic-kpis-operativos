@@ -28,7 +28,7 @@ Los operadores **no** necesitan abrir `lib/`; los scripts en `scripts/` son el c
 
 ```mermaid
 flowchart LR
-  yaml["schemas/indicadores_vfiic_v5.yaml"] --> loader["yaml_loader.py FormSpec"]
+  yaml["schemas/indicadores_vfiic_v6.yaml"] --> loader["yaml_loader.py FormSpec"]
   inputDir["inputs/**/*.xlsx"] --> discover["discover_input_spreadsheets"]
   discover --> manifest["manifest.py reconcile"]
   loader --> manifest

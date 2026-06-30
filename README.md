@@ -5,7 +5,7 @@ Procesa exportaciones de formularios (Jotform / Google Sheets) y genera:
 1. **Comparativo apilado** — un workbook con todos los formularios, variación mes anterior y año anterior cuando hay historia.
 2. **Particionados** — un Excel por formulario con hoja `original` y una hoja por mes.
 
-La configuración vive en `schemas/indicadores_vfiic_v5.yaml`. Los insumos van en `inputs/` (archivos `.xlsx`, en la raíz o en subcarpetas).
+La configuración vive en `schemas/indicadores_vfiic_v6.yaml`. Los insumos van en `inputs/` (archivos `.xlsx`, en la raíz o en subcarpetas).
 
 ## Documentación
 
