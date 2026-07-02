@@ -15,7 +15,6 @@ dependencies = [
 ]
 
 [project.scripts]
-generar-todos = "vfiic_kpis.cli:main_run_all"
 generar-comparativo = "vfiic_kpis.cli:main_comparativo"
 generar-particionado = "vfiic_kpis.cli:main_partitioned"
 

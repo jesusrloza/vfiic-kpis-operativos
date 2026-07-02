@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Elimina los artefactos generados en outputs/particionados y outputs/comparativos."""
+"""Elimina los artefactos generados en outputs/particionados, outputs/comparativos y outputs/errors."""
 
 from __future__ import annotations
 
@@ -12,6 +12,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 PARTITIONED_DIR = PROJECT_ROOT / "outputs" / "particionados"
 COMPARATIVOS_DIR = PROJECT_ROOT / "outputs" / "comparativos"
+ERRORS_DIR = PROJECT_ROOT / "outputs" / "errors"
 
 
 def _remove_path(path: Path) -> None:
@@ -36,7 +37,7 @@ def _clear_directory(root: Path, *, dry_run: bool) -> list[Path]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Vacía outputs/particionados y outputs/comparativos (Excel generados)."
+        description="Vacía outputs/particionados, outputs/comparativos y outputs/errors."
     )
     parser.add_argument(
         "--dry-run",
@@ -48,6 +49,7 @@ def main() -> int:
     targets = [
         ("particionados", PARTITIONED_DIR),
         ("comparativos", COMPARATIVOS_DIR),
+        ("errors", ERRORS_DIR),
     ]
     total = 0
     for label, directory in targets:

@@ -7,7 +7,9 @@ __pycache__/
 ~$*.xlsx
 
 # Salidas generadas
-outputs/**/*.xlsx
+outputs/**/*
+!outputs/**/
+!outputs/**/.gitkeep
 logs/*.json
 
 inputs/**/*.xls

@@ -11,8 +11,10 @@ La configuración vive en `schemas/indicadores_vfiic_v6.yaml`. Los insumos van e
 
 | Guía | Para quién |
 |------|------------|
+| [docs/README.md](docs/README.md) | Índice de toda la documentación |
 | [docs/guia-instalacion.md](docs/guia-instalacion.md) | Instalar Python y dependencias (Windows primero) |
 | [docs/guia-operativa.md](docs/guia-operativa.md) | Uso diario: copiar Excel, correr scripts, leer salidas |
+| [docs/errores-y-validacion.md](docs/errores-y-validacion.md) | Incidencias de captura, consola y reportes detallado/crítico |
 | [docs/guia-indicadores-yaml.md](docs/guia-indicadores-yaml.md) | Editar formularios e indicadores en el YAML |
 | [docs/arquitectura.md](docs/arquitectura.md) | Detalle técnico del pipeline |
 | [docs/TODO.md](docs/TODO.md) | Pendientes y notas para desarrolladores |
@@ -24,10 +26,10 @@ python -m venv .venv
 # Windows: .venv\Scripts\activate
 # macOS/Linux: source .venv/bin/activate
 pip install -e .
-python scripts/generar_todos_los_reportes.py
+python scripts/generar_comparativo.py
 ```
 
-Salidas: `outputs/comparativos/comparativo_kpis.xlsx`, `outputs/particionados/`, bitácora en `logs/reconciliacion.json`.
+Salidas: `outputs/comparativos/comparativo_kpis_<timestamp>.xlsx`, `outputs/particionados/` (con `generar_particionado.py`), bitácora en `logs/reconciliacion.json`.
 
 **Comandos para operadores:** use únicamente los scripts en [scripts/](scripts/) (véase [scripts/README.md](scripts/README.md)).
 

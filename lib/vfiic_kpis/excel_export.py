@@ -103,7 +103,12 @@ def write_partitioned_workbook_for_form(
     """Write a partitioned workbook for one form (original sheet plus one per month)."""
     if data.empty or "periodo_mes_key" not in data.columns:
         return
-    months = sorted(data["periodo_mes_key"].dropna().unique())
+    months = (
+        data.groupby("periodo_mes_key")["periodo_dt"]
+        .max()
+        .sort_values(ascending=False)
+        .index.tolist()
+    )
     if not months:
         return
 

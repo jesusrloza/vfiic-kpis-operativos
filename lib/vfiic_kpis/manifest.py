@@ -46,7 +46,11 @@ class FormResolution:
 
     @property
     def is_processable(self) -> bool:
-        return self.skip_reason is None and bool(self.available_kpis)
+        if not self.available_kpis or self.file_path is None or self.resolved_date_column is None:
+            return False
+        if self.skip_reason is None:
+            return True
+        return self.skip_reason == SKIP_PERSON_COLUMN_MISMATCH
 
 
 @dataclass(frozen=True)
@@ -305,10 +309,10 @@ def reconcile(
         skip_reason: str | None = None
         if resolved_date_column is None:
             skip_reason = SKIP_DATE_COLUMN_MISMATCH
-        elif not resolved_persons:
-            skip_reason = SKIP_PERSON_COLUMN_MISMATCH
         elif not available_kpis:
             skip_reason = SKIP_KPI_COLUMN_MISMATCH
+        elif not resolved_persons:
+            skip_reason = SKIP_PERSON_COLUMN_MISMATCH
 
         resolution = FormResolution(
             spec=spec,
@@ -321,7 +325,7 @@ def reconcile(
             skip_reason=skip_reason,
         )
 
-        if skip_reason is None:
+        if skip_reason is None or skip_reason == SKIP_PERSON_COLUMN_MISMATCH:
             matched.append(resolution)
         else:
             yaml_with_column_issues.append(resolution)

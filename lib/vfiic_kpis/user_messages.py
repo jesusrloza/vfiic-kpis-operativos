@@ -31,7 +31,7 @@ SKIP_REASON_MESSAGES: dict[str, str] = {
 TAG_DATA = "datos"
 TAG_PARTITIONED = "particionado"
 TAG_COMPARATIVO = "comparativo"
-TAG_RUN_ALL = "todos"
+TAG_ERRORS = "errores"
 
 YAML_GUIDE_REF = "docs/guia-indicadores-yaml.md"
 
@@ -128,6 +128,10 @@ def print_skipped_form(tag: str, display_name: str, reason: str) -> None:
     print_status(tag, f"omitido {display_name!r}: {reason}")
 
 
+def print_form_warning(tag: str, display_name: str, reason: str) -> None:
+    print_status(tag, f"advertencia {display_name!r}: {reason}")
+
+
 def print_future_rows_dropped(display_name: str, archivo: str, count: int) -> None:
     print_status(
         TAG_DATA,
@@ -157,6 +161,28 @@ def print_comparativo_workbook(output_path: Path) -> None:
 
 def print_comparativo_insufficient_data() -> None:
     print_status(TAG_COMPARATIVO, "no hay formularios con datos suficientes; no se generó workbook")
+
+
+def print_capture_errors_written(
+    count: int,
+    markdown_path: Path,
+    *,
+    critical_markdown_path: Path | None = None,
+) -> None:
+    if critical_markdown_path is not None:
+        print_status(
+            TAG_ERRORS,
+            f"{count} formulario(s) con incidencias -> {markdown_path} (criticos: {critical_markdown_path})",
+        )
+        return
+    print_status(
+        TAG_ERRORS,
+        f"{count} formulario(s) con incidencias -> {markdown_path}",
+    )
+
+
+def print_capture_errors_clean() -> None:
+    print_status(TAG_ERRORS, "sin incidencias de captura; no se generó reporte")
 
 
 def _bullets(lines: Iterable[str]) -> str:
@@ -233,7 +259,6 @@ def format_reconciliation_summary(report, *, detail_json_path: Path | None = Non
     sections = [
         "===== Reconciliación schema YAML vs inputs =====",
         f"Formularios procesables: {len(matched)}",
-        _bullets(matched),
         "",
         f"Formularios sin archivo en inputs: {len(no_file)}",
         _bullets(no_file),

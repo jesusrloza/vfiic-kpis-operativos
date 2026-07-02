@@ -4,8 +4,8 @@
 
 Procesar exportaciones de formularios Jotform (un `.xlsx` por formulario bajo `inputs/`, en cualquier subcarpeta) y producir, a partir de un único schema YAML como fuente de verdad, dos artefactos ejecutivos:
 
-1. **Comparativo apilado**: un workbook con un solo sheet `Comparativo` donde cada formulario forma un bloque (título + encabezado + filas) separado del siguiente por dos filas vacías. Los anchos de columna se aplican al final, considerando todo el contenido.
-2. **Particionado por mes**: un workbook por formulario con la hoja `original` y una hoja por cada `YYYY_mon` con datos.
+1. **Comparativo apilado** (reporte principal): un workbook con un solo sheet `Comparativo` donde cada formulario forma un bloque (título + encabezado + filas) separado del siguiente por dos filas vacías. Los anchos de columna se aplican al final, considerando todo el contenido.
+2. **Particionado por mes** (presentación alternativa): un workbook por formulario con la hoja `original` y una hoja por cada `YYYY_mon` con datos, ordenadas de **más reciente a más antigua**.
 
 Ambos artefactos respetan las reglas:
 
@@ -28,17 +28,27 @@ Los operadores **no** necesitan abrir `lib/`; los scripts en `scripts/` son el c
 
 ```mermaid
 flowchart LR
-  yaml["schemas/indicadores_vfiic_v6.yaml"] --> loader["yaml_loader.py FormSpec"]
+  yaml["schemas/indicadores_vfiic_v6.yaml"] --> loader["yaml_loader.py"]
   inputDir["inputs/**/*.xlsx"] --> discover["discover_input_spreadsheets"]
   discover --> manifest["manifest.py reconcile"]
   loader --> manifest
   manifest --> reader["io.py read_form"]
-  reader --> normalize["normalize.py prepare_common_columns"]
-  normalize --> metrics["metrics.py build_form_comparison"]
-  normalize --> partWriter["excel_export.write_partitioned_workbook_for_form"]
-  metrics --> stackWriter["excel_export.write_stacked_comparativo_workbook"]
-  manifest --> logs["log_report.py reconciliacion"]
+  reader --> validate["row_validation.py"]
+  validate --> metrics["metrics.py build_form_comparison"]
+  validate --> partWriter["excel_export particionado"]
+  metrics --> stackWriter["excel_export comparativo"]
+  validate --> severity["issue_severity.py"]
+  severity --> errors["capture_errors.py"]
+  manifest --> logs["log_report.py"]
+  cli["cli.py"] --> reader
+  cli --> stackWriter
+  cli --> partWriter
+  cli --> errors
 ```
+
+Los scripts `generar_comparativo.py` y `generar_particionado.py` invocan el mismo núcleo de lectura y validación; solo difieren en la etapa de exportación final.
+
+Incidencias de captura (severidad, reportes detallado y crítico): [errores-y-validacion.md](errores-y-validacion.md).
 
 ## Descubrimiento de insumos
 
@@ -64,14 +74,24 @@ flowchart LR
 - `lib/vfiic_kpis/user_messages.py`
   - Único módulo con cadenas en español para consola, reconciliación y errores frecuentes (archivo abierto, YAML inválido, etc.).
 - `lib/vfiic_kpis/io.py`
-  - Lee un formulario ya resuelto. Compone `Agente/Titular` desde una o varias columnas, agrega `source_file`, `area_id`, `area_nombre` y delega normalización temporal a `prepare_common_columns`.
+  - Lee un formulario ya resuelto. Compone `Agente/Titular` desde una o varias columnas (o cadena vacía si no hay columnas de persona), agrega `source_file`, `area_id`, `area_nombre` y delega validación a `row_validation.validate_and_prepare`.
+- `lib/vfiic_kpis/row_validation.py`
+  - Valida cada fila del Excel: periodo, KPIs, agente opcional, periodos futuros y filas vacías. Devuelve el DataFrame filtrado y una lista de `RowIssue`.
+- `lib/vfiic_kpis/issue_severity.py`
+  - Clasifica incidencias en breaking, warning e info; determina qué entra al reporte crítico y qué se imprime en consola.
+- `lib/vfiic_kpis/capture_errors.py`
+  - Ensambla `CaptureErrorReport` y escribe cuatro archivos en `outputs/errors/` (detallado y crítico, `.md` + `.json`).
+- `lib/vfiic_kpis/paths.py`
+  - Rutas de salida con timestamp de la carpeta de captura (`comparativo_kpis_<stamp>.xlsx`, `errores_captura_<stamp>.*`).
+- `lib/vfiic_kpis/cli.py`
+  - Orquesta corrida de comparativo o particionado: reconciliación, lectura, exportación y reportes de error.
 - `lib/vfiic_kpis/normalize.py`
   - Convierte `periodo` a `datetime`, calcula `periodo_mes_key`, `periodo_mes_label` y la llave de orden alfabético sin acentos.
 - `lib/vfiic_kpis/metrics.py`
   - `build_form_comparison(df, resolution)` produce un `FormComparisonResult` con una fila por KPI: `valor_actual`, `valor_mes_anterior`, `valor_anio_anterior`, `diferencia_mom`, `porcentaje_mom`, `tendencia_mom`, `diferencia_yoy`, `porcentaje_yoy`, `tendencia_yoy`, junto con etiquetas legibles del mes actual, mes anterior y mismo mes año anterior.
   - La tendencia siempre asume `subir es bueno`.
 - `lib/vfiic_kpis/excel_export.py`
-  - `write_partitioned_workbook_for_form` (un workbook por formulario).
+  - `write_partitioned_workbook_for_form` (un workbook por formulario; hojas mensuales ordenadas por `periodo_dt` descendente).
   - `write_stacked_comparativo_workbook` (un workbook con un sheet apilado); las columnas derivadas de diferencia y % se emiten como fórmulas Excel. Decide globalmente si incluir las columnas YoY a partir de los resultados (`_resolve_stacked_columns`).
 - `lib/vfiic_kpis/excel_styling.py`
   - Helpers reutilizables para pintar título, encabezado, formatos numéricos, rayas de fila, bold de porcentajes y formato condicional de color semántico (`apply_semantic_conditional_format`) en bloques con offset arbitrario.
@@ -101,18 +121,29 @@ El **color de fuente** en diferencias y porcentajes se aplica como **formato con
 
 Las **tres columnas YoY** (`Mismo mes año anterior`, `Diferencia (año anterior)` y `Variación % (año anterior)`) se omiten globalmente cuando ningún formulario alcanza 13 meses de historia, es decir, cuando ningún resultado tiene `valor_anio_anterior` no nulo. La decisión es "global any": basta con que un formulario tenga la columna llena para que las tres columnas YoY aparezcan en todos los bloques (los que carezcan de historia mostrarán celdas vacías). Esto se resuelve en `_resolve_stacked_columns` antes de escribir cualquier bloque, de modo que todos los bloques comparten la misma cabecera del sheet.
 
+## Particionado por mes
+
+`write_partitioned_workbook_for_form` escribe:
+
+1. Hoja `original` con todas las filas válidas.
+2. Una hoja por `periodo_mes_key` (p. ej. `2026_jun`), en orden **cronológico descendente** (mes más reciente primero), usando `periodo_dt` y no orden alfabético de la clave.
+
+Dentro de cada hoja mensual, las filas se ordenan alfabéticamente por agente (`_agent_sort`).
+
 ## Reconciliación schema vs inputs
 
 El reporte de reconciliación se imprime al final de cada corrida y se persiste en `logs/reconciliacion.json` con estas categorías:
 
-- `procesables`: formulario con `ingesta` completa y archivo, al menos un KPI mapea.
+- `procesables`: formulario con `ingesta` completa, archivo resuelto, columna de fecha y al menos un KPI mapeado. Incluye formularios con `person_column_mismatch` si de lo contrario son procesables.
 - `sin_archivo`: formulario con `ingesta` pero sin archivo usable bajo `inputs/`.
-- `config_incompleta`: falta `archivo`, fechas o columnas de persona en el YAML.
-- `problemas_columnas`: archivo localizado pero columna de fecha o KPIs no coinciden; varios archivos resuelven al mismo formulario; o el formulario apunta a un nombre duplicado.
+- `config_incompleta`: falta `archivo`, fechas u otros campos obligatorios en el YAML.
+- `problemas_columnas`: archivo localizado pero columna de fecha o KPIs no coinciden; varios archivos resuelven al mismo formulario; o el formulario apunta a un nombre duplicado. **No** incluye aquí los formularios que solo carecen de columnas de persona pero sí tienen fecha y KPIs (esos van a `procesables` con `skip_reason` informativo).
 - `archivos_duplicados`: mismo basename en rutas distintas bajo `inputs/` (ninguna copia se procesa hasta resolver el conflicto).
 - `archivos_sin_schema`: `.xlsx` en `inputs/` que no aparecen en el YAML.
 
 Las rutas en consola y JSON se expresan relativas a `inputs/` cuando es posible.
+
+Para la taxonomía breaking / advertencia / informativo en filas y consola, véase [errores-y-validacion.md](errores-y-validacion.md).
 
 ## Temas de presentación
 

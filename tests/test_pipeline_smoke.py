@@ -68,7 +68,8 @@ def _build_pipeline(root: Path, df: pd.DataFrame):
     report = reconcile(forms, input_dir)
     assert len(report.matched) == 1
     resolution = report.matched[0]
-    data = read_form(resolution)
+    read_result = read_form(resolution)
+    data = read_result.df
     comparison = build_form_comparison(data, resolution)
     assert comparison is not None
     return resolution, data, comparison
@@ -189,6 +190,55 @@ class TestPipelineSmokeWithYoy(unittest.TestCase):
 
             # Una regla por color (>0, <0, =0) en cada uno de los rangos MoM y YoY.
             self.assertGreaterEqual(_count_conditional_format_entries(ws), 6)
+
+
+class TestPipelineSmokePartialRows(unittest.TestCase):
+    """Filas inválidas intercaladas no deben impedir el comparativo."""
+
+    def test_invalid_rows_are_skipped_but_valid_rows_generate_workbook(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            rows = [
+                {
+                    **DEMO_ROW,
+                    "Periodo a Evaluar": "2026-03-01",
+                    "Visitas": 2,
+                    "Dictamenes": 1,
+                },
+                {
+                    **DEMO_ROW,
+                    "Periodo a Evaluar": pd.NaT,
+                    "Agente - Nombre(s)": "",
+                    "Agente - Apellido Paterno": "",
+                    "Agente - Apellido Materno": "",
+                    "Visitas": pd.NA,
+                    "Dictamenes": pd.NA,
+                },
+                {
+                    **DEMO_ROW,
+                    "Periodo a Evaluar": "2026-04-01",
+                    "Visitas": 5,
+                    "Dictamenes": 3,
+                },
+                {
+                    **DEMO_ROW,
+                    "Periodo a Evaluar": "2026-06-28",
+                    "Agente - Nombre(s)": "",
+                    "Agente - Apellido Paterno": "",
+                    "Agente - Apellido Materno": "",
+                    "Visitas": pd.NA,
+                    "Dictamenes": pd.NA,
+                },
+            ]
+            df = pd.DataFrame(rows)
+            resolution, data, comparison = _build_pipeline(root, df)
+            self.assertEqual(len(data), 2)
+            self.assertIsNotNone(comparison)
+            self.assertGreaterEqual(len(comparison.df), 1)
+
+            stacked_out = root / "comparativo.xlsx"
+            write_stacked_comparativo_workbook(results=[comparison], output_path=stacked_out)
+            self.assertTrue(stacked_out.exists())
 
 
 if __name__ == "__main__":

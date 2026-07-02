@@ -36,7 +36,27 @@ SPANISH_MONTH_FULL = {
 }
 
 
+def is_missing_date(value: object) -> bool:
+    """Return True when `value` carries no usable evaluation period."""
+    if value is None:
+        return True
+    if isinstance(value, float) and pd.isna(value):
+        return True
+    if value is pd.NaT:
+        return True
+    if isinstance(value, pd.Timestamp) and pd.isna(value):
+        return True
+    if isinstance(value, datetime) and pd.isna(value):
+        return True
+    text = str(value).strip()
+    if not text or text.casefold() in {"nat", "nan", "none"}:
+        return True
+    return False
+
+
 def parse_iso_date(value: object) -> datetime:
+    if is_missing_date(value):
+        raise ValueError(f"Invalid date: {value!r}")
     if isinstance(value, pd.Timestamp):
         return value.to_pydatetime()
     if isinstance(value, datetime):

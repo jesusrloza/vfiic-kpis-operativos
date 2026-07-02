@@ -2,6 +2,12 @@
 
 Este archivo recoge mejoras planificadas y convenciones que **no** forman parte de la guía operativa para quienes generan reportes.
 
+## Resuelto recientemente
+
+- Clasificación de incidencias (breaking / advertencia / informativo), reportes detallado y crítico, y consola `omitido` vs `advertencia`: documentado en [errores-y-validacion.md](errores-y-validacion.md).
+- Validación relajada de agente para el comparativo (periodo + KPIs suficientes).
+- Orden de hojas mensuales en particionado (más reciente primero).
+
 ## Flujo AREA vs PERSONA (iteración futura)
 
 Hoy la operación espera **llenado por áreas**. El código tolera archivos con prefijo `AREA - ` en el nombre, y también reconoce `PERSONA - ` por compatibilidad, pero el flujo operativo completo para captura por persona queda para una iteración posterior.

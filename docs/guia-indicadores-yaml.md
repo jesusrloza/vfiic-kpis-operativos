@@ -51,7 +51,7 @@ Si el reporte debe mostrar otro texto:
       descripcion: "Etiqueta corta en el reporte"
 ```
 
-3. Ejecute `python scripts/generar_comparativo.py` (o `generar_todos_los_reportes.py`) y revise la reconciliación.
+3. Ejecute `python scripts/generar_comparativo.py` y revise la reconciliación.
 
 ## Modificar un indicador
 

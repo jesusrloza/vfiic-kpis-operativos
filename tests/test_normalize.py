@@ -10,7 +10,7 @@ LIB = PROJECT_ROOT / "lib"
 if str(LIB) not in sys.path:
     sys.path.insert(0, str(LIB))
 
-from vfiic_kpis.normalize import parse_iso_date
+from vfiic_kpis.normalize import is_missing_date, parse_iso_date
 
 
 class TestNormalize(unittest.TestCase):
@@ -21,6 +21,21 @@ class TestNormalize(unittest.TestCase):
     def test_parse_iso_text(self) -> None:
         parsed = parse_iso_date("2026-04-01")
         self.assertEqual(parsed.date(), datetime(2026, 4, 1).date())
+
+    def test_nat_is_missing_date(self) -> None:
+        import pandas as pd
+
+        self.assertTrue(is_missing_date(pd.NaT))
+
+    def test_parse_nat_raises(self) -> None:
+        import pandas as pd
+
+        with self.assertRaises(ValueError):
+            parse_iso_date(pd.NaT)
+
+    def test_parse_float_nan_raises(self) -> None:
+        with self.assertRaises(ValueError):
+            parse_iso_date(float("nan"))
 
 
 if __name__ == "__main__":
