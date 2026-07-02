@@ -25,8 +25,8 @@ from vfiic_kpis.paths import DEFAULT_COMPARISON_THEME, DEFAULT_PARTITIONED_THEME
 
 STACKED_COLUMNS_FULL: tuple[str, ...] = (
     "indicador",
-    "valor_actual",
     "valor_mes_anterior",
+    "valor_actual",
     "diferencia_mom",
     "porcentaje_mom",
     "valor_anio_anterior",
@@ -36,8 +36,8 @@ STACKED_COLUMNS_FULL: tuple[str, ...] = (
 
 STACKED_COLUMNS_NO_YOY: tuple[str, ...] = (
     "indicador",
-    "valor_actual",
     "valor_mes_anterior",
+    "valor_actual",
     "diferencia_mom",
     "porcentaje_mom",
 )
